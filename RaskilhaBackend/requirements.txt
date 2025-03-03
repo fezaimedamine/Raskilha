@@ -1,3 +1,4 @@
 mvn clean install
 mvn clean
+mvn clean
 mvn dependency:purge-local-repository
