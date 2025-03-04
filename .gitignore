@@ -1,26 +1,98 @@
-# Ignore node_modules for Next.js (frontend)
-frontend/node_modules/
-
-# Ignore Next.js build files
-frontend/.next/
-frontend/out/
-
-# Ignore environment files
-*.env
-
-# Ignore Spring Boot's build directory (Maven or Gradle)
-backend/target/
-backend/.gradle/
-backend/.mvn/
-backend/.idea/
-
-# Ignore IDE specific files
-.vscode/
-.idea/
-
-# OS-specific files
+# General
 .DS_Store
-Thumbs.db
-
-# Ignore logs
 *.log
+*.env
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+node_modules/
+dist/
+build/
+out/
+.cache/
+.temp/
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Spring Boot (Backend)
+/target/
+/.mvn/
+/mvnw
+/mvnw.cmd
+/.settings/
+/.classpath
+/.project
+/.springBeans
+/bin/
+/logs/
+*.properties
+*.yml
+
+# Next.js (Frontend)
+/.next/
+/node_modules/
+/.npm
+/.yarn
+/yarn.lock
+/package-lock.json
+/.pnp
+/.pnp.js
+/.cache
+/out/
+/public/static
+.next/cache/
+
+# Dependency directories
+**/node_modules/
+**/jspm_packages/
+**/bower_components/
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# IDE specific files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# System files
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Testing
+/coverage/
+/junit/
+/test-results/
+*.junit.xml
+*.lcov
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
