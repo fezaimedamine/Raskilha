@@ -1,4 +1,4 @@
 mvn clean install
 mvn clean
-mvn clean
 mvn dependency:purge-local-repository
+// aprés chaque ajout des dépendences il faut taper dans terminale : # mvn clean install
