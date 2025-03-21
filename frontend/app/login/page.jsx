@@ -5,27 +5,25 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { IoIosLogIn } from 'react-icons/io';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const router = useRouter(); 
+  const router = useRouter();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const changeVisible = () => {
     setPasswordVisible((prev) => !prev);
   };
 
-  
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/login', {  
+      // Send a POST request to the Spring Boot login endpoint
+      const response = await fetch('http://localhost:8081/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,11 +32,18 @@ const Login = () => {
       });
 
       const data = await response.json();
-      if (data.success) {
-        localStorage.setItem('userDetails', JSON.stringify(data.data)); 
-        router.push('/menu');
+
+      if (response.ok) {
+        // Save the token and user details in localStorage
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userDetails', JSON.stringify(data.user));
+
+        // Redirect to the menu page
+        //router.push('/signup');
+        console.log('Ceci est le token et le email : '+data.token + ' + '+ data.user);
       } else {
-        setError(data.message);
+        // Handle errors returned by the backend
+        setError(data.message || 'Login failed');
       }
     } catch (error) {
       setError('Error during login: ' + error.message);
@@ -113,12 +118,21 @@ const Login = () => {
           </form>
 
           <p className="text-center text-sm text-gray-600">
-            Don't have an account? <Link href="/signup" className="text-gray-500 hover:underline hover:text-gray-700">Sign up</Link>
+            Don't have an account?{' '}
+            <Link href="/signup" className="text-gray-500 hover:underline hover:text-gray-700">
+              Sign up
+            </Link>
           </p>
         </div>
 
-        
-        <Image src="/Images/Waste management-amico (1).png" width={600} height={500} alt="Team Illustration" unoptimized priority/>
+        <Image
+          src="/Images/Waste management-amico (1).png"
+          width={600}
+          height={500}
+          alt="Team Illustration"
+          unoptimized
+          priority
+        />
       </div>
     </div>
   );

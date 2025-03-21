@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -17,8 +18,8 @@ import java.security.Key;
 @Component
 public class JwtUtil {
 
-    public static final String SECRET = "567891233456789009876545678934526408752109726328736T2YY3TT2827337332544219826355328882T2TT33388373763509876540099097ZA1112222BDVSDD";
-
+    @Value("${jwt.secret}") // Charge la valeur de la variable d'environnement
+    private String SECRET;
     private Key getSignKey() {
         byte[] keyBytes = java.util.Base64.getDecoder().decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);

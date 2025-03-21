@@ -2,93 +2,74 @@ package com.example.RaskilhaBackend.Controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.RaskilhaBackend.Service.CustomUserDetailsService;
 import com.example.RaskilhaBackend.Service.UserService;
-import com.example.RaskilhaBackend.Repository.UserRepository;
 import com.example.RaskilhaBackend.Security.utils.JwtUtil;
 import com.example.RaskilhaBackend.DTO.LoginRequest;
 import com.example.RaskilhaBackend.DTO.LoginResponse;
 import com.example.RaskilhaBackend.Entity.UserEntity;
-import com.example.RaskilhaBackend.Exception.AuthenticationException;
 
-import java.util.Optional;
-
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, 
-                          CustomUserDetailsService userDetailsService, UserRepository userRepository) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
+                          CustomUserDetailsService userDetailsService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
-public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-    System.out.println("Received request: " + loginRequest.getEmail() + ", " + loginRequest.getPassword());
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    String hashedPassword = encoder.encode("azerty");
-    System.out.println("password hachééééééé:" + hashedPassword);
-    String email = loginRequest.getEmail();
-    String password = loginRequest.getPassword();
-    Optional<UserEntity> userOpt = userRepository.findByEmail(email);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        logger.info("Tentative de connexion pour l'email : {}", loginRequest.getEmail());
 
-    if (userOpt.isEmpty()) {
-        throw new AuthenticationException("Invalid email");
-    }
-    
-    UserEntity user = userOpt.get();
+        // Vérifier l'utilisateur et le mot de passe via UserService
+        UserEntity user = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
 
-    System.out.println("Provided password: " + password);
-    System.out.println("Stored password: " + user.getPassword());
+        // Authentification via Spring Security
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), loginRequest.getPassword()));
 
-    if (!passwordEncoder.matches(password, user.getPassword())) {
-        throw new AuthenticationException("Invalid password");
+        // Générer le token JWT
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        String token = jwtUtil.generateToken(userDetails.getUsername());
+
+        return ResponseEntity.ok(new LoginResponse(token, user));
     }
 
-    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
-    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
-    String token=jwtUtil.generateToken(userDetails.getUsername());
-    LoginResponse response = new LoginResponse(token, user);
-
-    // Retourner la réponse avec le statut HTTP 200 (OK)
-    return ResponseEntity.ok(response);
-}
-    @Autowired
-    private UserService userService;
-    // the endpoint for signup
     @PostMapping("/signup")
     public ResponseEntity<String> registerUser(@RequestBody UserEntity user) {
-        logger.info("Received signup request for email: {}", user.getEmail());
+        logger.info("Requête d'inscription reçue pour l'email : {}", user.getEmail());
 
         try {
             userService.createAccount(user);
-            return ResponseEntity.ok("User registered successfully!");
+            return ResponseEntity.ok("Utilisateur enregistré avec succès !");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserEntity> updateUser(@PathVariable Long id, @RequestBody UserEntity userDetails) {
+        try {
+            UserEntity updatedUser = userService.updateUser(id, userDetails);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

@@ -4,22 +4,21 @@
     "description": "A full-stack project with Next.js frontend and Spring Boot backend",
     "main": "index.js",
     "scripts": {
-      "dev": "npm run dev --workspace frontend",
-      "build": "npm run build --workspace frontend",
-      "start": "npm run start --workspace frontend",
-      "backend-start": "cd backend && ./mvnw spring-boot:run",  
-      "frontend-start": "npm run dev --workspace frontend",
-      "backend-build": "cd backend && ./mvnw clean install"
+        "dev": "npm run dev --workspace frontend",
+        "build": "npm run build --workspace frontend",
+        "start": "npm run start --workspace frontend",
+        "backend-start": "cd backend && ./mvnw spring-boot:run",
+        "frontend-start": "npm run dev --workspace frontend",
+        "backend-build": "cd backend && ./mvnw clean install"
     },
     "workspaces": [
-      "frontend",
-      "backend"
+        "frontend",
+        "backend"
     ],
     "dependencies": {
-      "frontend": "file:./frontend"
+        "frontend": "file:./frontend",
+        "my-project": "file:"
     },
-    "devDependencies": {},
     "author": "Louay",
     "license": "MIT"
-  }
-  
+}
