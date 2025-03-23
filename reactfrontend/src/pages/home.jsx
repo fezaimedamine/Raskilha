@@ -1,16 +1,16 @@
 import React from "react";
 import { MdLocationOn } from "react-icons/md";
 import { BiSolidRightArrow } from "react-icons/bi";
-import recycleIllustration from "../Images/upscalemedia-transformed.png"; // Import the image
-import logo from "../Images/logo.png"; // Import the logo
+import recycleIllustration from "../Images/upscalemedia-transformed.png";
+import logo from "../Images/logo.png"; 
 
-export default function Home() {
+const Home = () => {
   return (
     <div className="bg-white text-black h-screen px-4 flex flex-col justify-between">
-      {/* Header */}
+      
       <div className="flex justify-around items-center p-6 gap-14">
         <div className="text-2xl font-bold flex items-center ml-4">
-          <img src={logo} width={200} height={200} alt="logo" /> {/* Use <img> instead of Next.js Image */}
+          <img src={logo} width={200} height={200} alt="logo" /> 
         </div>
         <ul className="flex items-center gap-10">
           <li>Home</li>
@@ -23,7 +23,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Main Content */}
+      
       <div className="flex flex-row justify-between items-center h-1/2 w-full px-6 md:px-20 py-16">
         <div className="w-1/3">
           <h1 className="text-6xl font-bold">
@@ -46,7 +46,7 @@ export default function Home() {
         </div>
         <div className="w-2/3 flex justify-center mt-10 md:mt-0">
           <img
-            src={recycleIllustration} // Use the imported image
+            src={recycleIllustration} 
             width={800}
             height={600}
             alt="Recycling Illustration"
@@ -54,7 +54,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Footer */}
+      
       <div className="flex justify-around items-center px-6 md:px-20 py-10">
         <div className="flex items-center space-x-2 text-green-300">
           <span>
@@ -82,3 +82,4 @@ export default function Home() {
     </div>
   );
 }
+export default Home;

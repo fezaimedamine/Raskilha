@@ -3,16 +3,18 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/login"; 
 import Signup from "./pages/signup"; 
 import ProfileSettings from "./pages/profile";
+import Home from "./pages/home";
+import Map  from "./pages/map";
 function App() {
   return (
     <Router>
       <Routes>
   
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<ProfileSettings />} />
-
+        <Route path="/map" element={<Map />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
