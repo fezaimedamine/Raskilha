@@ -10,6 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pubs")
 public class PubController {
+
     @Autowired
     private PubService pubService;
 
@@ -20,7 +21,7 @@ public class PubController {
 
     @GetMapping("/{id}")
     public PubEntity getPubById(@PathVariable Long id) {
-        return pubService.getPubById(id).orElseThrow(() -> new RuntimeException("Pub not found"));
+        return pubService.getPubById(id).orElseThrow(() -> new RuntimeException("Pub non trouvé"));
     }
 
     @PostMapping
@@ -36,5 +37,17 @@ public class PubController {
     @DeleteMapping("/{id}")
     public void deletePub(@PathVariable Long id) {
         pubService.deletePub(id);
+    }
+
+    // Endpoint pour récupérer les publications d’une région
+    @GetMapping("/region/{ville}")
+    public List<PubEntity> getPubsByRegion(@PathVariable String ville) {
+        return pubService.getPubsByRegion(ville);
+    }
+
+    // Endpoint pour récupérer les publications de la région d'un utilisateur
+    @GetMapping("/region/user/{userId}")
+    public List<PubEntity> getPubsByUserRegion(@PathVariable Long userId) {
+        return pubService.getPubsByUserRegion(userId);
     }
 }

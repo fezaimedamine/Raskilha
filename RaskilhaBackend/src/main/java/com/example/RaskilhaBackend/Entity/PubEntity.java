@@ -6,6 +6,8 @@ import lombok.Data;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 @Entity
 @Table(name = "publications")
@@ -28,5 +30,6 @@ public class PubEntity {
     private String type; // Exemple : "OFFRE", "DEMANDE"
 
     @OneToMany(mappedBy = "pub", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Commentaire> commentaires;
 }
