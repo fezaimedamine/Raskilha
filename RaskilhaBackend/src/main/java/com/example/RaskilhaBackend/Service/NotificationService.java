@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class NotificationService {
     private final PubRepository pubRepository;
     private final UserRepository userRepository;
-    public List<PubEntity> getPubsByUserRegion(Long userId) {
+    public List<PubEntity> getNotifications(Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         
