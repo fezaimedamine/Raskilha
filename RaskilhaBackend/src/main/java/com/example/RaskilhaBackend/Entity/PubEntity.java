@@ -19,9 +19,7 @@ public class PubEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String titre;
-
     //private String image; // URL de l'image
     @Lob
     private byte[] image;

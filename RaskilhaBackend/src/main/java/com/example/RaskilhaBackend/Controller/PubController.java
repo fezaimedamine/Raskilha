@@ -1,5 +1,4 @@
 package com.example.RaskilhaBackend.Controller;
-
 import com.example.RaskilhaBackend.Entity.PubEntity;
 import com.example.RaskilhaBackend.Service.PubService;
 import org.springframework.beans.factory.annotation.Autowired;
