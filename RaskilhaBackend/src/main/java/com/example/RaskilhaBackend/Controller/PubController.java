@@ -49,4 +49,10 @@ public class PubController {
     public List<PubEntity> getPubsByUserRegion(@PathVariable Long userId) {
         return pubService.getPubsByUserRegion(userId);
     }
+
+    @GetMapping("/search-by-title")
+    public List<PubEntity> searchPubs(@RequestParam String titre) {
+        return pubService.searchPubsByTitle(titre);
+}
+
 }

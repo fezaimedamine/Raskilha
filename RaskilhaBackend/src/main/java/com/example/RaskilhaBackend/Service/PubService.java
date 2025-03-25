@@ -57,4 +57,8 @@ public class PubService {
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         return pubRepository.findByLocalisation_Ville(user.getRegion());
     }
+    public List<PubEntity> searchPubsByTitle(String titre) {
+        return pubRepository.findByTitreContainingIgnoreCase(titre);
+    }
+    
 }

@@ -2,6 +2,7 @@ package com.example.RaskilhaBackend.Controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +17,10 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
+    @Autowired
     private final NotificationService notificationService;
 
-    @GetMapping("/notifications/{ville}")
+    @GetMapping("/{id}")
     public List<PubEntity> getLastFivePubs(@PathVariable Long id) {
         return notificationService.getNotifications(id);
 }
