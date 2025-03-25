@@ -15,6 +15,13 @@ public class CommentaireController {
     private CommentaireService commentaireService;
 
     // Ajouter un commentaire
+    /*exemple: http://localhost:8081/commentaires/ajouter
+     * {
+    "texte": "Superbe publication !",
+    "dateCreation": "2025-03-23T10:30:00",
+    "pub": { "id": 3 }
+    }
+     */
     @PostMapping("/ajouter")
     public Commentaire ajouterCommentaire(@RequestBody Commentaire commentaire) {
         return commentaireService.ajouterCommentaire(commentaire);

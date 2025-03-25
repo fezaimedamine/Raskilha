@@ -20,6 +20,7 @@ public class NotificationController {
     @Autowired
     private final NotificationService notificationService;
 
+    //exemple : http://localhost:8081/api/notifications/3
     @GetMapping("/{id}")
     public List<PubEntity> getLastFivePubs(@PathVariable Long id) {
         return notificationService.getNotifications(id);

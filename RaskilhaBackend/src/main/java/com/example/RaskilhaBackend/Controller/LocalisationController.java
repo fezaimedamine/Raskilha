@@ -16,6 +16,13 @@ public class LocalisationController {
     private final LocalisationService localisationService;
 
     // Ajouter une localisation
+    /*exemple: http://localhost:8081/api/localisations
+     * {
+    "nom": "Tunis",
+    "latitude": 50.858844,
+    "longitude": 3.294351
+        }
+     */
     @PostMapping
     public ResponseEntity<LocalisationEntity> ajouterLocalisation(@RequestBody LocalisationEntity localisation) {
         LocalisationEntity saved = localisationService.ajouterLocalisation(localisation);
