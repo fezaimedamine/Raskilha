@@ -5,7 +5,7 @@ import logo from "../Images/logo.png";
 
 const Sidebar = () => {
   return (
-    <div className="h-screen bg-gray-50 text-gray-800 flex flex-col items-center p-4 shadow-lg w-20 md:w-72 transition-all duration-300">
+    <div className="h-screen fixed bottom-0 bg-gray-50 text-gray-800 flex flex-col items-center p-4 shadow-lg w-20 md:w-64 transition-all duration-300">
       {/* Logo (Masqué sur mobile) */}
       <div className="hidden md:flex items-center mb-6">
         <img src={logo} width={200} height={200} alt="logo" />
