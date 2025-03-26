@@ -77,7 +77,7 @@ const Map = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
 
-      <div className="w-full h-screen p-4">
+      <div className="w-[calc(100vw-80px)] md:w-[calc(100vw-240px)] md:ml-64  ml-20 h-screen p-4">
         <MapContainer
           center={userLocation || [48.8566, 2.3522]}
           zoom={5} 

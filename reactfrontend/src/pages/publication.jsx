@@ -55,7 +55,7 @@ function PostCard({ post }) {
   };
     return (
       <>
-      <div className="flex flex-col  w-80 lg:w-1/2 border-2 border-gray-300 rounded-lg   cursor-pointer" >
+      <div className="flex flex-col  w-80 md:2/3 lg:w-5/12 border-2 border-gray-300 rounded-lg   cursor-pointer" >
       <div className=" p-4 flex flex-col gap-2 w-full hover:bg-gray-200" onClick={toggleExpand} >
         <div className="flex items-center  gap-3" >
           <img className="w-10 h-10 rounded-full" src={post.profile_image} alt="" />
@@ -87,7 +87,7 @@ function PostCard({ post }) {
       </div>
       
       {isExpanded && (
-        <div className="fixed inset-0  bg-gray-400 bg-opacity-60 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
+        <div className="fixed inset-0  bg-slate-700 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
         onClick={toggleExpand}>
          
           <div className="bg-white p-5  w-7/12  relative rounded-lg shadow-lg transition-transform transform scale-100 "
@@ -183,7 +183,7 @@ export default function Publication() {
      <Sidebar/>
      
 
-   <div className="flex w-screen items-center flex-col gap-9  mb-5">
+   <div className="flex ml-24 items-center flex-col gap-9 mt-16  mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
    <MenuBar/>
    
         {filteredPosts.length > 0 ? (
