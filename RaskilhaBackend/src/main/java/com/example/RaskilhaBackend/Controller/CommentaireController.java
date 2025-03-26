@@ -28,6 +28,7 @@ public class CommentaireController {
     }
 
     // Récupérer tous les commentaires
+    // exemple: http://localhost:8081/commentaires/all
     @GetMapping("/all")
     public List<Commentaire> getAllCommentaires() {
         return commentaireService.getAllCommentaires();
