@@ -5,6 +5,7 @@ import Signup from "./pages/signup";
 import ProfileSettings from "./pages/profile";
 import Home from "./pages/home";
 import Map  from "./pages/map";
+import Recyclage from "./pages/publication";
 function App() {
   return (
     <Router>
@@ -15,7 +16,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<ProfileSettings />} />
         <Route path="/map" element={<Map />} />
-
+        <Route path="/publication" element={<Recyclage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

@@ -13,9 +13,9 @@ const Sidebar = () => {
 
       {/* Navigation */}
       <nav className="flex flex-col gap-4  items-center ">
-        <SidebarLink to="/" icon={<FaHome />} label="Accueil" />
+        <SidebarLink to="/publication" icon={<FaHome />} label="Accueil" />
         <SidebarLink to="/map" icon={<FaMapMarkedAlt />} label="Map" />
-        <SidebarLink to="/recycling" icon={<FaRecycle />} label="Recyclage" />
+        <SidebarLink to="/publication" icon={<FaRecycle />} label="Recyclage" />
         <SidebarLink to="/profile" icon={<FaUserCircle />} label="Profil" />
       </nav>
     </div>
