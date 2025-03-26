@@ -29,7 +29,7 @@ const Login = () => {
       const data = await response.json();
       if (data.success) {
         localStorage.setItem("userDetails", JSON.stringify(data.data)); // Save user details to localStorage
-        navigate("/menu"); // Redirect to the menu page
+        navigate("/map"); 
       } else {
         setError(data.message);
       }
