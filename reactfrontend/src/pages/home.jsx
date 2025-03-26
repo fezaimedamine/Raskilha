@@ -79,7 +79,7 @@ const Home = () => {
           <span>Recycling</span>
         </div>
       </div>
-    </div>
+    </div>  
   );
 }
 export default Home;

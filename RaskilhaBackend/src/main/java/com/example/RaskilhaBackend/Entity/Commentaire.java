@@ -2,6 +2,8 @@ package com.example.RaskilhaBackend.Entity;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +18,7 @@ public class Commentaire {
 
     @ManyToOne
     @JoinColumn(name = "pub_id")
+    @JsonBackReference
     private PubEntity pub;
 
     // Getters et Setters
