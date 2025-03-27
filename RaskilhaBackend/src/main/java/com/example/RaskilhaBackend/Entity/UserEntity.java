@@ -1,6 +1,9 @@
 package com.example.RaskilhaBackend.Entity;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -30,5 +33,9 @@ public class UserEntity {
     private String tel;
     private String type;
     private long points = 0;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<PubEntity> publications;
 
 }

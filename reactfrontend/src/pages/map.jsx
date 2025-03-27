@@ -68,7 +68,7 @@ const Map = () => {
   const addMarker = async (position) => {
     const newMarker = {
       position,
-      description: "Nouvelle déchet ajoutée",
+      nom: "Nouvelle déchet ajoutée",
     };
   
     try {
