@@ -3,6 +3,10 @@ import Sidebar from "./sidebar";
 import MenuBar from "./menubar";
 import logo from "../Images/logo.png"
 import img from "../Images/icons8-waste-sorting-96.png"
+
+import axios from "axios";
+
+  
 const postsData = [
   {
     id: 1,
@@ -176,8 +180,20 @@ function PostCard({ post }) {
 export default function Publication() {
   const [filteredPosts, setFilteredPosts] = useState(postsData);
 
-  return (<>
-    
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/posts")
+      .then(response => {
+        setFilteredPosts(response.data); // Axios automatically parses JSON
+      })
+      .catch(error => {
+        console.error("Error fetching posts:", error);
+      });
+  }, []);
+
+  
+
+  return (
+  <>
    <div className="flex">
      
      <Sidebar/>
