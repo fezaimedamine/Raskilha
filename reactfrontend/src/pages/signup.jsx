@@ -5,6 +5,9 @@ import toast from "react-hot-toast";
 import collectorImage from "../Images/eboueur (2).png";
 import citizenImage from "../Images/citizen (2).png";
 import wasteManagementImage from "../Images/protecting the environment-pana.png";
+import loginanimation from '../Images/login.json'
+import Lottie from "lottie-react";
+import wasteManagementImage2 from "../Images/Volunteering-bro.png";
 
 const Signup = () => {
   const [step, setStep] = useState(1);
@@ -81,9 +84,9 @@ const Signup = () => {
     <div className="h-screen flex items-center justify-center bg-gradient-to-r from-green-50 to-green-50">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-11/12  flex flex-row items-center">
         {/* Left Side: Form */}
-        <div className="w-full md:w-1/2 flex flex-col gap-6">
+        <div className="w-full md:w-1/2 flex flex-col gap-10">
           <div>
-            <h2 className="text-3xl font-bold text-center text-green-800">Get Started Now</h2>
+            <h2 className="text-3xl font-bold text-center text-gray-800">Get Started Now</h2>
             <h2 className="text-base font-thin text-center text-gray-800">
               Welcome to Raskilha - Let's create your account.
             </h2>
@@ -93,162 +96,171 @@ const Signup = () => {
               <>
                 {/* First Name and Last Name */}
                 <div className="flex gap-4">
-                  <div className="flex-1 relative">
-                    <input
-                      type="text"
-                      name="firstName"
-                      id="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-                      placeholder=" "
-                      required
-                    />
-                    <label
-                      htmlFor="firstName"
-                      className="absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-                    >
-                      First Name
-                    </label>
-                  </div>
-                  <div className="flex-1 relative">
-                    <input
-                      type="text"
-                      name="lastName"
-                      id="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-                      placeholder=" "
-                      required
-                    />
-                    <label
-                      htmlFor="lastName"
-                      className="absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-                    >
-                      Last Name
-                    </label>
-                  </div>
-                </div>
+  <div className="flex-1 relative">
+    <input
+      type="text"
+      name="firstName"
+      id="firstName"
+      value={formData.firstName}
+      onChange={handleChange}
+      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+      placeholder=" "
+      required
+    />
+    <label
+      htmlFor="firstName"
+      className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+        ${formData.firstName ? "-top-3 text-sm text-green-500" : ""}`}
+    >
+      First Name
+    </label>
+  </div>
+  <div className="flex-1 relative">
+    <input
+      type="text"
+      name="lastName"
+      id="lastName"
+      value={formData.lastName}
+      onChange={handleChange}
+      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+      placeholder=" "
+      required
+    />
+    <label
+      htmlFor="lastName"
+      className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+        ${formData.lastName ? "-top-3 text-sm text-green-500" : ""}`}
+    >
+      Last Name
+    </label>
+  </div>
+</div>
 
-                {/* Username and Age */}
-                <div className="flex gap-4">
-                  <div className="flex-1 relative">
-                    <input
-                      type="text"
-                      name="username"
-                      id="username"
-                      value={formData.username}
-                      onChange={handleChange}
-                      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-                      placeholder=" "
-                      required
-                    />
-                    <label
-                      htmlFor="username"
-                      className="absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-                    >
-                      Username
-                    </label>
-                  </div>
-                  <div className="w-24 relative">
-                    <input
-                      type="number"
-                      name="age"
-                      id="age"
-                      value={formData.age}
-                      onChange={handleChange}
-                      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-                      placeholder=" "
-                      required
-                    />
-                    <label
-                      htmlFor="age"
-                      className="absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-                    >
-                      Age
-                    </label>
-                  </div>
-                </div>
+{/* Username and Age */}
+<div className="flex gap-4">
+  <div className="flex-1 relative">
+    <input
+      type="text"
+      name="username"
+      id="username"
+      value={formData.username}
+      onChange={handleChange}
+      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+      placeholder=" "
+      required
+    />
+    <label
+      htmlFor="username"
+      className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+        ${formData.username ? "-top-3 text-sm text-green-500" : ""}`}
+    >
+      Username
+    </label>
+  </div>
+  <div className="w-24 relative">
+    <input
+      type="number"
+      name="age"
+      id="age"
+      value={formData.age}
+      onChange={handleChange}
+      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+      placeholder=" "
+      required
+    />
+    <label
+      htmlFor="age"
+      className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+        ${formData.age ? "-top-3 text-sm text-green-500" : ""}`}
+    >
+      Age
+    </label>
+  </div>
+</div>
 
-                {/* Email */}
-                <div className="relative">
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-                    placeholder=" "
-                    required
-                  />
-                  <label
-                    htmlFor="email"
-                    className="absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-                  >
-                    Email
-                  </label>
-                </div>
+{/* Email */}
+<div className="relative">
+  <input
+    type="email"
+    name="email"
+    id="email"
+    value={formData.email}
+    onChange={handleChange}
+    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+    placeholder=" "
+    required
+  />
+  <label
+    htmlFor="email"
+    className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+      ${formData.email ? "-top-3 text-sm text-green-500" : ""}`}
+  >
+    Email
+  </label>
+</div>
 
-                {/* Password */}
-                <div className="relative">
-                  <input
-                    type={passwordVisible ? "text" : "password"}
-                    name="password"
-                    id="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer pr-10"
-                    placeholder=" "
-                    required
-                  />
-                  <label
-                    htmlFor="password"
-                    className="absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-                  >
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    onClick={togglePasswordVisibility}
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
-                  >
-                    {passwordVisible ? <MdVisibility className="w-5 h-5" /> : <MdVisibilityOff className="w-5 h-5" />}
-                  </button>
-                </div>
+{/* Password */}
+<div className="relative">
+  <input
+    type={passwordVisible ? "text" : "password"}
+    name="password"
+    id="password"
+    value={formData.password}
+    onChange={handleChange}
+    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer pr-10"
+    placeholder=" "
+    required
+  />
+  <label
+    htmlFor="password"
+    className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+      ${formData.password ? "-top-3 text-sm text-green-500" : ""}`}
+  >
+    Password
+  </label>
+  <button
+    type="button"
+    onClick={togglePasswordVisibility}
+    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+  >
+    {passwordVisible ? <MdVisibility className="w-5 h-5" /> : <MdVisibilityOff className="w-5 h-5" />}
+  </button>
+</div>
 
-                {/* Region Search */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="location"
-                    id="location"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-                    placeholder=" "
-                  />
-                  <label
-                    htmlFor="location"
-                    className="absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-                  >
-                    Region
-                  </label>
+{/* Region Search */}
+<div className="relative">
+  <input
+    type="text"
+    name="location"
+    id="location"
+    value={query}
+    onChange={(e) => setQuery(e.target.value)}
+    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+    placeholder=" "
+  />
+  <label
+    htmlFor="location"
+    className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+      ${query ? "-top-3 text-sm text-green-500" : ""}`}
+  >
+    Region
+  </label>
+
+
                   {suggestions.length > 0 && (
                     <ul className="border absolute z-10 bg-white mt-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
                       {suggestions.map((place, index) => (
@@ -256,7 +268,7 @@ const Signup = () => {
                           key={index}
                           onClick={() => {
                             setFormData({ ...formData, location: place.display_name });
-                            setQuery("");
+                            setQuery(place.display_name);
                             setSuggestions([]);
                           }}
                           className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
@@ -272,7 +284,7 @@ const Signup = () => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300"
+                  className="w-full bg-green-300 text-white p-2 rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300"
                 >
                   Next
                 </button>
@@ -322,8 +334,8 @@ const Signup = () => {
                     </button>
                     <button
                       type="submit"
-                      className={`w-38 bg-green-500 text-white p-2 px-4 rounded ${
-                        selectedRole ? "hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
+                      className={`w-38 bg-green-300 text-white p-2 px-4 rounded ${
+                        selectedRole ? "hover:bg-green-400" : "bg-gray-400 cursor-not-allowed"
                       } focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300`}
                       disabled={!selectedRole}
                     >
@@ -344,7 +356,8 @@ const Signup = () => {
 
 
         <div className="w-full md:w-1/2 flex items-center justify-center mt-8 md:mt-0">
-          <img src={wasteManagementImage} width={600} height={600} alt="Signup Illustration" />
+          <img src={wasteManagementImage2} width={600} height={600} alt="Signup Illustration" />
+        {/* <Lottie animationData={loginanimation} loop={true} className="w-3/4" />*/}
         </div>
       </div>
     </div>

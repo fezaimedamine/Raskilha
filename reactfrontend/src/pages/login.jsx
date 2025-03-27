@@ -4,6 +4,8 @@ import { IoIosLogIn } from "react-icons/io";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import toast from "react-hot-toast";
 import wasteManagementImage from "../Images/Volunteering-bro.png";
+import loginanimation from '../Images/login.json'
+import Lottie from "lottie-react";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -117,8 +119,9 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Use <img> instead of Next.js Image */}
-        <img src={wasteManagementImage} width={600} height={500} alt="Team Illustration" />
+       
+        {/* <img src={wasteManagementImage} width={600} height={500} alt="Team Illustration" />*/}
+        <Lottie animationData={loginanimation} loop={true} className="w-2/5 " />
       </div>
     </div>
   );
