@@ -6,6 +6,7 @@ import Sidebar from "./sidebar";
 import trash from "../Images/recycle-bin.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import Loading from "./loading";
 
 const customIcon = new L.Icon({
   iconUrl: markerIcon,
@@ -64,18 +65,36 @@ const Map = () => {
       );
     }
   }, []);
-  const addMarker = (position) => {
+  const addMarker = async (position) => {
     const newMarker = {
-      id: markers.length + 1,
       position,
-      description: `Nouvelle dechet ajoutée `,
+      nom: "Nouvelle déchet ajoutée",
     };
-    setMarkers([...markers, newMarker]);
+  
+    try {
+      const response = await fetch("http://localhost:8080/api/localisations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newMarker),
+      });
+  
+      /*if (!response.ok) {
+        throw new Error("Erreur lors de l'ajout du marqueur");
+      }*/
+  
+      const savedMarker = await response.json();
+      setMarkers((prevMarkers) => [...prevMarkers, savedMarker]);
+    } catch (error) {
+      console.error("Erreur:", error);
+    }
   };
   console.log(userLocation);
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar />
+      {!userLocation && <Loading/>}
+      {userLocation && <> <Sidebar /> 
 
       <div className="w-[calc(100vw-80px)] md:w-[calc(100vw-240px)] md:ml-64  ml-20 h-screen p-4">
         <MapContainer
@@ -106,6 +125,8 @@ const Map = () => {
           ))}
         </MapContainer>
       </div>
+      </>
+      }
     </div>
   );
 };
