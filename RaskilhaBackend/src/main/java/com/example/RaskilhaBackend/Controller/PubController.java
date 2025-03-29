@@ -22,8 +22,6 @@ public class PubController {
     public PubEntity getPubById(@PathVariable Long id) {
         return pubService.getPubById(id).orElseThrow(() -> new RuntimeException("Pub non trouvé"));
     }
-
-
     /*exemple : http://localhost:8081/api/pubs
      *  {
         "titre": "Nouvelle publication de test",

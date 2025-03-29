@@ -39,7 +39,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/raskilha/signup", "/auth/signup","/auth/register","/auth/**","api/**", "commentaires/**","/api/pubs/region/**","api/localisations/**").permitAll()
+                .requestMatchers("/auth/login", "/raskilha/signup", "/auth/signup","/auth/register","/auth/**","api/**", "commentaires/**","/api/pubs/region/**","api/localisations/**","api/localisations/proches").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )

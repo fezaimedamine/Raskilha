@@ -36,6 +36,6 @@ public class PubEntity {
     private UserEntity user;
 
     @OneToMany(mappedBy = "pub", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("pub-reference")
     private List<Commentaire> commentaires;
 }

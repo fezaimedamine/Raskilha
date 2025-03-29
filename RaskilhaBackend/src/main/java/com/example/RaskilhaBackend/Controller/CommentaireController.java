@@ -18,8 +18,8 @@ public class CommentaireController {
     /*exemple: http://localhost:8081/commentaires/ajouter
      * {
     "texte": "Superbe publication !",
-    "dateCreation": "2025-03-23T10:30:00",
-    "pub": { "id": 3 }
+    "pub": { "id": 3 },
+    "user": {"id": 3 }
     }
      */
     @PostMapping("/ajouter")
