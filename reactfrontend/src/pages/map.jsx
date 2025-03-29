@@ -67,12 +67,15 @@ const Map = () => {
   }, []);
   const addMarker = async (position) => {
     const newMarker = {
-      position,
+      
+      latitude: position[0], 
+      longitude: position[1], 
       nom: "Nouvelle déchet ajoutée",
     };
-  
+    
+    console.log(position[0],position[1])
     try {
-      const response = await fetch("http://localhost:8080/api/localisations", {
+      const response = await fetch("http://localhost:8081/api/localisations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +122,7 @@ const Map = () => {
 
           {/* Marqueurs des déchets signalés */}
           {markers.map((marker) => (
-            <Marker key={marker.id} position={marker.position} icon={trashIcon}>
+            <Marker key={marker.id} position={[marker.latitude,marker.longitude]} icon={trashIcon}>
               <Popup>{marker.description}</Popup>
             </Marker>
           ))}

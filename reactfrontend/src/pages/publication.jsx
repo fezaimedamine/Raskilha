@@ -5,6 +5,10 @@ import logo from "../Images/logo.png"
 import img from "../Images/icons8-waste-sorting-96.png"
 import { motion } from "framer-motion";
 
+
+import axios from "axios";
+
+  
 const postsData = [
   {
     id: 1,
@@ -166,7 +170,7 @@ function PostCard({ post }) {
 }
 
 export default function Publication() {
-  const [filteredPosts] = useState(postsData);
+  const [filteredPosts,setFilteredPosts] = useState("");
 
   const [mediaFile, setMediaFile] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
@@ -262,84 +266,24 @@ const [suggestions, setSuggestions] = useState([]);
   
       fetchLocations();
     }, [query]);
+   
+
+    useEffect(() => {
+      axios.get("http://localhost:8081/api/pubs")
+        .then(response => {
+          setFilteredPosts(response.data); // Axios automatically parses JSON
+        })
+        .catch(error => {
+          console.error("Error fetching posts:", error);
+        });
+    }, []);
 
   return (
     <>
-      <div className="flex">
-        <Sidebar/>
-        <div className="flex ml-24 items-center flex-col gap-9 mt-32 mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
-          <MenuBar/>
-          <div className="  w-80 md:w-1/2 mr-24 flex flex-col gap-4 items-center">
-            {/* Create Post Component */}
-            <div className="bg-white rounded-lg shadow p-4 mb-4 w-full">
-              {/* Create Post Header */}
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 overflow-hidden">
-                  <img 
-                    src="https://randomuser.me/api/portraits/men/1.jpg" 
-                    alt="User" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <button 
-                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 rounded-full py-2 px-4 text-gray-500 transition"
-                  onClick={() => setIsOpen(true)}
-                >
-                  What's on your mind?
-                </button>
-              </div>
-
-              {/* Divider */}
-              <hr className="my-2" />
-
-              {/* Post Options */}
-              <div className="flex justify-between">
-                <button 
-                  className="flex items-center justify-center flex-1 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
-                  onClick={() => {
-                    setIsOpen(true);
-                    
-                  }}
-                >
-                  <div className="w-6 h-6 text-green-500 mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  Photo
-                </button>
-
-                
-
-                <button 
-                  className="flex items-center justify-center flex-1 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
-                  onClick={() => {
-                    setIsOpen(true);
-                    
-                  }}
-                >
-                  <div className="w-6 h-6 text-blue-500 mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  Location
-                </button>
-              </div>
-
-              {/* Expanded Post Form */}
-             
-            </div>
-
-            {/* Posts List */}
-            {filteredPosts.length > 0 ? (
-              filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
-            ) : (
-              <p className="text-center text-gray-500">No posts found.</p>
-            )}
-
-{isOpen && (
+    <Sidebar/>
+    <MenuBar setFilteredPosts={setFilteredPosts}/>
+    
+    {isOpen && (
   <div
     className="fixed inset-0 bg-slate-700 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50"
     onClick={closeForm} // Close form when clicking outside
@@ -492,10 +436,105 @@ const [suggestions, setSuggestions] = useState([]);
     </motion.div>
   </div>
 )}
+        
+        <div className="flex ml-24 items-center flex-col gap-9 mt-32 mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
+          
+          <div className="  w-80 md:w-1/2 mr-24 flex flex-col gap-4 items-center">
+            {/* Create Post Component */}
+            <div className="bg-white rounded-lg shadow p-4 mb-4 w-full">
+              {/* Create Post Header */}
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 overflow-hidden">
+                  <img 
+                    src="https://randomuser.me/api/portraits/men/1.jpg" 
+                    alt="User" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <button 
+                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 rounded-full py-2 px-4 text-gray-500 transition"
+                  onClick={() => setIsOpen(true)}
+                >
+                  What's on your mind?
+                </button>
+              </div>
+
+              {/* Divider */}
+              <hr className="my-2" />
+
+              {/* Post Options */}
+              <div className="flex justify-between">
+                <button 
+                  className="flex items-center justify-center flex-1 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
+                  onClick={() => {
+                    setIsOpen(true);
+                    
+                  }}
+                >
+                  <div className="w-6 h-6 text-green-500 mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  Photo
+                </button>
+
+                
+
+                <button 
+                  className="flex items-center justify-center flex-1 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
+                  onClick={() => {
+                    setIsOpen(true);
+                    
+                  }}
+                >
+                  <div className="w-6 h-6 text-blue-500 mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  Location
+                </button>
+              </div>
+
+              {/* Expanded Post Form */}
+             
+            </div>
+
+            {/* Posts List */}
+            {filteredPosts.length > 0 ? (
+              filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
+            ) : (
+              <p className="text-center text-gray-500">No posts found.</p>
+            )}
 
           </div>
         </div>
+  
+
+  
+
+
+   {/*<div className="flex">
+     
+     <Sidebar/>
+     
+
+   <div className="flex ml-24 items-center flex-col gap-9 mt-16  mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
+   <MenuBar/>
+   
+        {filteredPosts.length > 0 ? (
+          filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
+        ) : (
+          <p className="text-center text-gray-500">No posts found.</p>
+        )}
+   
+   
+      
       </div>
-    </>
+      </div>*/}
+ 
+  </>
   );
 }

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoIosLogIn } from "react-icons/io";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import toast from "react-hot-toast";
-import wasteManagementImage from "../Images/Volunteering-bro.png";
 import loginanimation from '../Images/login.json'
 import Lottie from "lottie-react";
 const Login = () => {
@@ -30,7 +29,7 @@ const Login = () => {
 
       const data = await response.json();
       if (data.success) {
-        localStorage.setItem("userDetails", JSON.stringify(data.data)); // Save user details to localStorage
+        localStorage.setItem("userDetails", JSON.stringify(data.data)); 
         navigate("/map"); 
       } else {
         setError(data.message);
