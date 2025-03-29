@@ -72,7 +72,7 @@ const Map = () => {
     };
   
     try {
-      const response = await fetch("http://localhost:8080/api/localisations", {
+      const response = await fetch("http://localhost:8081/api/localisations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

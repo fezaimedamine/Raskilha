@@ -92,7 +92,7 @@ function MenuBar({setFilteredPosts}) {
 
 
     {/*MenuBar*/}
-    <div className=" bg-gray-50 fixed top-0 right-0  text-gray-800 flex justify-around items-center h-24 w-[calc(100vw-90px)] md:w-[calc(100vw-268px)]"
+    <div className=" bg-gray-50 fixed top-0 right-0  text-gray-800 flex justify-around items-center h-20 w-[calc(100vw-80px)] md:w-[calc(100vw-256px)] transition-all duration-75"
     >
        <div className="flex w-1/3 justify-between items-center gap-2 p-1 rounded-lg  bg-white  " >
         <input
