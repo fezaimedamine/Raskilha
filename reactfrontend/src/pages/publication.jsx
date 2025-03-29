@@ -362,7 +362,7 @@ const [suggestions, setSuggestions] = useState([]);
                         onChange={(e) => setQuery(e.target.value)}
                       />
                       {suggestions.length > 0 && (
-                    <ul className="border absolute z-10 bg-white mt-48 mr-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
+                    <ul className="border absolute z-10 bg-white mt-48 mr-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-11/12">
                       {suggestions.map((place, index) => (
                         <li
                           key={index}
