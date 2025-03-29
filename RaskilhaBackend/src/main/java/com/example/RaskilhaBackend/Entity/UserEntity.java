@@ -38,4 +38,8 @@ public class UserEntity {
     @JsonManagedReference
     private List<PubEntity> publications;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("user-reference")
+    private Commentaire commentaire;
+
 }

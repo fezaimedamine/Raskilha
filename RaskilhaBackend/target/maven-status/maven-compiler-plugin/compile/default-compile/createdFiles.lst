@@ -1,16 +1,4 @@
-com\example\RaskilhaBackend\Entity\LocalisationEntity.class
-com\example\RaskilhaBackend\Repository\LocalisationRepository.class
-com\example\RaskilhaBackend\Entity\Localisation.class
-com\example\RaskilhaBackend\Exception\GlobalExceptionHandler.class
-com\example\RaskilhaBackend\Service\CustomUserDetailsService.class
-com\example\RaskilhaBackend\Controller\AuthController.class
 com\example\RaskilhaBackend\DTO\compteDTO.class
-com\example\RaskilhaBackend\DTO\LoginResponse.class
-com\example\RaskilhaBackend\Entity\UserEntity.class
-com\example\RaskilhaBackend\Repository\UserRepository.class
-com\example\RaskilhaBackend\Controller\CommentaireController.class
-com\example\RaskilhaBackend\Security\filters\JwtRequestFilter.class
-com\example\RaskilhaBackend\Service\CommentaireService.class
 com\example\RaskilhaBackend\RaskilhaBackendApplication.class
 com\example\RaskilhaBackend\Service\PubService.class
 com\example\RaskilhaBackend\Repository\PubRepository.class

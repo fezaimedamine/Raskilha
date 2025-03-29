@@ -1,5 +1,7 @@
 package com.example.RaskilhaBackend.Security;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.example.RaskilhaBackend.Security.filters.JwtRequestFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 
 @Configuration
 public class SecurityConfig {
@@ -39,7 +40,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/raskilha/signup", "/auth/signup","/auth/register","/auth/**","api/**", "commentaires/**","/api/pubs/region/**","api/localisations/**").permitAll()
+                .requestMatchers("/auth/login", "/raskilha/signup", "/auth/signup","/auth/register","/auth/**","api/**", "commentaires/**","/api/pubs/region/**","api/localisations/**","api/localisations/proches").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
@@ -66,7 +67,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow frontend origin
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Include OPTIONS for preflight
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Access-Control-Allow-Origin"));
+
         configuration.setAllowCredentials(true); // Allow credentials if needed
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

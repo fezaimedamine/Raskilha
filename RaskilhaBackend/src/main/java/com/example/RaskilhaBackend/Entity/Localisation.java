@@ -7,8 +7,6 @@ public class Localisation {
 
     private String adresse;
     private String ville;
-    private String codePostal;
-    private String pays;
 
     // Getters et Setters
     public String getAdresse() {
@@ -25,21 +23,5 @@ public class Localisation {
 
     public void setVille(String ville) {
         this.ville = ville;
-    }
-
-    public String getCodePostal() {
-        return codePostal;
-    }
-
-    public void setCodePostal(String codePostal) {
-        this.codePostal = codePostal;
-    }
-
-    public String getPays() {
-        return pays;
-    }
-
-    public void setPays(String pays) {
-        this.pays = pays;
     }
 }

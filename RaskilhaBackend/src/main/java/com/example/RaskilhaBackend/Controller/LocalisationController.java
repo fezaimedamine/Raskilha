@@ -40,6 +40,13 @@ public class LocalisationController {
     public ResponseEntity<List<LocalisationEntity>> getLocalisationsLast24Hours() {
         return ResponseEntity.ok(localisationService.getLocalisationsLast24Hours());
     }
+    // retourner les localisations proches
+    @GetMapping("/proches")
+    public List<LocalisationEntity> getLocalisationsProches(@RequestParam double latitude,
+                                                            @RequestParam double longitude,
+                                                            @RequestParam double distanceMax) {
+        return localisationService.getLocalisationsProches(latitude, longitude, distanceMax);
+    }
 
     // Supprimer une localisation par ID
     @DeleteMapping("/{id}")

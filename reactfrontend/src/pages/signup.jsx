@@ -4,9 +4,7 @@ import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import toast from "react-hot-toast";
 import collectorImage from "../Images/eboueur (2).png";
 import citizenImage from "../Images/citizen (2).png";
-import wasteManagementImage from "../Images/protecting the environment-pana.png";
-import loginanimation from '../Images/login.json'
-import Lottie from "lottie-react";
+
 import wasteManagementImage2 from "../Images/Volunteering-bro.png";
 
 const Signup = () => {
@@ -357,7 +355,7 @@ const Signup = () => {
 
         <div className="w-full md:w-1/2 flex items-center justify-center mt-8 md:mt-0">
           <img src={wasteManagementImage2} width={600} height={600} alt="Signup Illustration" />
-        {/* <Lottie animationData={loginanimation} loop={true} className="w-3/4" />*/}
+
         </div>
       </div>
     </div>

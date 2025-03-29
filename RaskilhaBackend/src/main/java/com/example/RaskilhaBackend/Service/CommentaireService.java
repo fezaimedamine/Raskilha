@@ -5,6 +5,7 @@ import com.example.RaskilhaBackend.Repository.CommentaireRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,14 +17,13 @@ public class CommentaireService {
 
     // Ajouter un commentaire
     public Commentaire ajouterCommentaire(Commentaire commentaire) {
+        commentaire.setDateCreation(new Date());
         return commentaireRepository.save(commentaire);
     }
-
     // Récupérer tous les commentaires
     public List<Commentaire> getAllCommentaires() {
         return commentaireRepository.findAll();
     }
-
     // Modifier un commentaire
     public Commentaire modifierCommentaire(Long id, Commentaire nouveauCommentaire) {
         Optional<Commentaire> commentaireOptional = commentaireRepository.findById(id);
