@@ -18,8 +18,13 @@ public class Commentaire {
 
     @ManyToOne
     @JoinColumn(name = "pub_id")
-    @JsonBackReference
+    @JsonBackReference("pub-reference")
     private PubEntity pub;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference("user-reference")
+    private UserEntity user;
 
     // Getters et Setters
     public Long getId() {

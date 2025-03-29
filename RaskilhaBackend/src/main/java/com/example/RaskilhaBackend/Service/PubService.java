@@ -6,6 +6,8 @@ import com.example.RaskilhaBackend.Repository.PubRepository;
 import com.example.RaskilhaBackend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,7 @@ public class PubService {
     }
 
     public PubEntity createPub(PubEntity pub) {
+        pub.setDateHeure(new Date());
         return pubRepository.save(pub);
     }
 
