@@ -92,22 +92,22 @@ function MenuBar({setFilteredPosts}) {
 
 
     {/*MenuBar*/}
-    <div className=" bg-gray-50 fixed top-0 right-0  text-gray-800 flex justify-around items-center h-24 w-[calc(100vw-90px)] md:w-[calc(100vw-268px)]"
+    <div className=" bg-gray-50 fixed top-0 right-0  text-gray-800 flex justify-around items-center h-24 w-[calc(100vw-90px)] md:w-[calc(100vw-256px)]"
     >
-       <div className="flex w-1/3 justify-between items-center gap-2 p-1 rounded-lg  bg-white  " >
+       <div className="flex w-1/3 justify-between items-center gap-2 p-1 rounded-2xl h-10 bg-gray-700  " >
         <input
           type="text"
-          className="p-2 w-full  outline-none rounded-md"
+          className="p-2 w-full  outline-none rounded-full h-10 bg-gray-700 text-white"
           placeholder="Search... "
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           //focus:ring-green-300 focus:ring-2
-        /> <div className={`${search? "cursor-pointer font-thin w-8 text-center h-full" : "hidden"}` }onClick={handledeleteSearch}>✖</div>  <IoSearchOutline onClick={handleSearch} className="cursor-pointer w-9 h-5"/>
+        /> <div className={`${search? "cursor-pointer text-white font-thin w-8 text-center h-full" : "hidden"}` }onClick={handledeleteSearch}>✖</div>  <IoSearchOutline onClick={handleSearch} className="cursor-pointer text-white  w-9 h-5"/>
       </div>
     
         <select
           onChange={handleFilterChange}
-          className="bg-gray-700 text-white p-2 rounded-md"
+          className="bg-gray-700 text-white p-2 rounded-md shadow-md hover:bg-gray-800"
         >
           <option value="">Choose a region </option>
           <option value="/region/Tunis">Tunis </option>

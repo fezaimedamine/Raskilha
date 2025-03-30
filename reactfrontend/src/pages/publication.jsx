@@ -59,7 +59,7 @@ function PostCard({ post }) {
 
   return (
     <>
-      <div className="flex flex-col w-80 md:w-full  border-2 border-gray-300 rounded-lg cursor-pointer">
+      <div className="flex flex-col w-80 md:w-full  border-2 border-gray-300 shadow-lg rounded-lg cursor-pointer">
         <div className="p-4 flex flex-col gap-2 w-full hover:bg-gray-200" onClick={toggleExpand}>
           <div className="flex items-center gap-3">
             <img className="w-10 h-10 rounded-full" src={post.profile_image} alt="" />
@@ -452,7 +452,7 @@ const [suggestions, setSuggestions] = useState([]);
                   />
                 </div>
                 <button 
-                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 rounded-full py-2 px-4 text-gray-500 transition"
+                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 shadow-sm rounded-full py-2 px-4 text-gray-500 transition"
                   onClick={() => setIsOpen(true)}
                 >
                   What's on your mind?
