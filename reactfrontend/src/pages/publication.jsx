@@ -267,9 +267,9 @@ const [suggestions, setSuggestions] = useState([]);
                     
                       </div>
                       {suggestions.length > 0 && (
-                    <div className="border -mt-2 absolute right-1 bg-white  flex flex-col justify-start rounded-lg shadow-md max-h-32 overflow-y-auto w-11/12">
+                    <ul className="border absolute z-10 bg-white mt-48 mr-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
                       {suggestions.map((place, index) => (
-                        <div
+                        <li
                           key={index}
                           onClick={() => {
                             setFormData({ ...formData, location: place.display_name });
@@ -279,9 +279,9 @@ const [suggestions, setSuggestions] = useState([]);
                           className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
                         >
                           {place.display_name}
-                        </div>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   )}
                       </>
                   )}

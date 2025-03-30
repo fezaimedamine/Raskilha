@@ -107,10 +107,10 @@ const Signup = () => {
     />
     <label
       htmlFor="firstName"
-      className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+      className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
         peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
         peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-        ${formData.firstName ? "-top-3 text-sm text-green-500" : ""}`}
+        ${formData.firstName ? "-top-3 text-sm " : "top-2"}`}
     >
       First Name
     </label>
@@ -128,10 +128,10 @@ const Signup = () => {
     />
     <label
       htmlFor="lastName"
-      className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+      className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
         peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
         peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-        ${formData.lastName ? "-top-3 text-sm text-green-500" : ""}`}
+        ${formData.lastName ? "-top-3 text-sm " : "top-2"}`}
     >
       Last Name
     </label>
@@ -153,10 +153,10 @@ const Signup = () => {
     />
     <label
       htmlFor="username"
-      className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+      className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
         peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
         peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-        ${formData.username ? "-top-3 text-sm text-green-500" : ""}`}
+        ${formData.username ? "-top-3 text-sm " : "top-2"}`}
     >
       Username
     </label>
@@ -174,10 +174,10 @@ const Signup = () => {
     />
     <label
       htmlFor="age"
-      className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+      className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
         peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
         peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-        ${formData.age ? "-top-3 text-sm text-green-500" : ""}`}
+        ${formData.age ? "-top-3 text-sm " : "top-2"}`}
     >
       Age
     </label>
@@ -198,10 +198,10 @@ const Signup = () => {
   />
   <label
     htmlFor="email"
-    className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+    className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
       peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
       peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-      ${formData.email ? "-top-3 text-sm text-green-500" : ""}`}
+      ${formData.email ? "-top-3 text-sm " : "top-2"}`}
   >
     Email
   </label>
@@ -221,10 +221,10 @@ const Signup = () => {
   />
   <label
     htmlFor="password"
-    className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+    className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
       peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
       peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-      ${formData.password ? "-top-3 text-sm text-green-500" : ""}`}
+      ${formData.password ? "-top-3 text-sm " : "top-2"}`}
   >
     Password
   </label>
@@ -250,10 +250,10 @@ const Signup = () => {
   />
   <label
     htmlFor="location"
-    className={`absolute left-3 top-2 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+    className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
       peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
       peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-      ${query ? "-top-3 text-sm text-green-500" : ""}`}
+      ${query ? "-top-3 text-sm " : "top-2"}`}
   >
     Region
   </label>

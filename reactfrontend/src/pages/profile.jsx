@@ -1,198 +1,294 @@
-import React, { useState } from "react";
+import { useEffect } from "react";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { useState } from "react";
+import Sidebar from "./sidebar"
+import { motion } from "framer-motion";
+import PostCard from "./PostCard";
+import axios from "axios";
 
-const ProfileSettings = () => {
-  const [formData, setFormData] = useState({
+
+const ProfilePage = () => {
+  const [user, setUser] = useState({
+    name: "John Doe",
+    email: "john.doe@example.com",
+    avatar: "https://via.placeholder.com/100",
+  });
+    
+  const [publications, setPublications] = useState([])
+  useEffect(() => {
+    axios.get("http://localhost:8081/api/pubs")
+      .then(response => {
+        setPublications(response.data); // Axios automatically parses JSON
+      })
+      .catch(error => {
+        console.error("Error fetching posts:", error);
+      });
+  }, []);
+
+const [showForm,setShowForm]=useState(false)
+const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    username: "",
+    age: "",
     email: "",
     password: "",
-    profilePicture: null,
-  });
+    region: "",
+    adresse:""
+  }); 
+  const handleChange = (e) => {
+    console.log(formData)
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const navigate = useNavigate();
-
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "profilePicture") {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+  const handleUpdateProfile = () => {
+    alert("Update Profile clicked!");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("firstName", formData.firstName);
-      formDataToSend.append("lastName", formData.lastName);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("password", formData.password);
-      if (formData.profilePicture) {
-        formDataToSend.append("profilePicture", formData.profilePicture);
-      }
+  return (<>
+      <Sidebar/>
 
-      const response = await fetch("/api/profile", {
-        method: "PUT",
-        body: formDataToSend,
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        toast.success("Profile updated successfully!");
-        navigate("/dashboard"); // Redirect to the dashboard or profile page
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error("Error updating profile: " + error.message);
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-50 to-blue-50">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-11/12 max-w-2xl">
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-8">Profile Settings</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Profile Picture Upload */}
-          <div className="flex flex-col items-center">
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-green-100 flex items-center justify-center">
-              {formData.profilePicture ? (
-                <img
-                  src={URL.createObjectURL(formData.profilePicture)}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-4xl text-green-600">🌿</span> // Recycling-themed placeholder
-              )}
-            </div>
-            <label className="mt-4 cursor-pointer">
-              <input
-                type="file"
-                name="profilePicture"
-                accept="image/*"
-                onChange={handleChange}
-                className="hidden"
-              />
-              <span className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-300">
-                Upload Photo
-              </span>
-            </label>
-          </div>
-
-          {/* First Name */}
-          <div className="relative">
-            <input
-              type="text"
-              name="firstName"
-              id="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              className="w-full p-3 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              htmlFor="firstName"
-              className="absolute left-3 top-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-            >
-              First Name
-            </label>
-          </div>
-
-          {/* Last Name */}
-          <div className="relative">
-            <input
-              type="text"
-              name="lastName"
-              id="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              className="w-full p-3 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              htmlFor="lastName"
-              className="absolute left-3 top-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-            >
-              Last Name
-            </label>
-          </div>
-
-          {/* Email */}
-          <div className="relative">
-            <input
-              type="email"
-              name="email"
-              id="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-3 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              htmlFor="email"
-              className="absolute left-3 top-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-            >
-              Email
-            </label>
-          </div>
-
-          {/* Password */}
-          <div className="relative">
-            <input
-              type={passwordVisible ? "text" : "password"}
-              name="password"
-              id="password"
-              placeholder=" "
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full p-3 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer pr-10"
-            />
-            <label
-              htmlFor="password"
-              className="absolute left-3 top-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-                peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-                peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500"
-            >
-              Password
-            </label>
-            <button
-              type="button"
-              onClick={togglePasswordVisibility}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
-            >
-              {passwordVisible ? <MdVisibility className="w-5 h-5" /> : <MdVisibilityOff className="w-5 h-5" />}
-            </button>
-          </div>
-
-          {/* Save Changes Button */}
-          <button
-            type="submit"
-            className="w-full bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300"
-          >
-            Save Changes
-          </button>
-        </form>
+      <div className=" ml-24  w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
+<div className="max-w-xl mx-auto p-6 bg-white  rounded-lg">
+      {/* Profile Header */}
+      <div className="border-b-4 pb-8">
+      <div className="flex items-center mb-4">
+        <img src={user.image} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />
+        <div>
+          <h2 className="text-xl font-bold">profil{user.nom_profil}</h2>
+          <p className="text-gray-600">moedem{user.nom}</p>
+        </div>
       </div>
-    </div>
-  );
-};
+      
+      <button
+        onClick={()=>setShowForm(!showForm)}
+        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+      >
+        Update Profile
+      </button>
+      </div>
+      {/* Publications List */}
+      <h3 className="mt-6 text-lg font-semibold">Your Posts</h3>
+      
+        
+          {publications.length > 0 ? (
+            publications.map((post) => <PostCard key={post.id} post={post} />)
+          ) : (
+            <p className="text-center text-gray-500">You haven't posted yet.</p>
+          )
+        }
 
-export default ProfileSettings;
+    </div>
+    </div>
+
+
+    {showForm && <div
+    className="fixed inset-0 bg-slate-700 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50"
+    onClick={()=> setShowForm(false)} // Close form when clicking outside
+  >   
+    <motion.div
+      initial={{ opacity: 0, y: -30 }}
+      animate={{ opacity: 1, y: 10 }}
+      exit={{ opacity: 0, y: -30 }}
+      transition={{ duration: 0.4 }}
+      onClick={(e) => e.stopPropagation()}
+      className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-lg relative"
+    >
+      <div>
+            <h2 className="text-3xl font-bold text-center mb-5 text-gray-800">Update Your Profile </h2>
+            
+          </div>
+    <form className="flex flex-col gap-6" >
+                 
+                    
+                      {/* First Name and Last Name */}
+                      <div className="flex gap-4">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            name="firstName"
+            id="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+            placeholder=" "
+            required
+          />
+          <label
+            htmlFor="firstName"
+            className={`absolute left-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+              peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+              peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+              ${formData.firstName ? "-top-3 text-sm " : "top-2"}`}
+          >
+            First Name
+          </label>
+        </div>
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            name="lastName"
+            id="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+            placeholder=" "
+            required
+          />
+          <label
+            htmlFor="lastName"
+            className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+              peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+              peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+              ${formData.lastName ? "-top-3 text-sm " : "top-2"}`}
+          >
+            Last Name
+          </label>
+        </div>
+      </div>
+      
+      {/* Username and Age */}
+      <div className="flex gap-4">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            name="username"
+            id="username"
+            value={formData.username}
+            onChange={handleChange}
+            className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+            placeholder=" "
+            required
+          />
+          <label
+            htmlFor="username"
+            className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+              peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+              peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+              ${formData.username ? "-top-3 text-sm " : "top-2"}`}
+          >
+            Username
+          </label>
+        </div>
+        <div className="w-24 relative">
+          <input
+            type="number"
+            name="age"
+            id="age"
+            value={formData.age}
+            onChange={handleChange}
+            className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+            placeholder=" "
+            required
+          />
+          <label
+            htmlFor="age"
+            className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+              peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+              peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+              ${formData.age ? "-top-3 text-sm " : "top-2"}`}
+          >
+            Age
+          </label>
+        </div>
+      </div>
+      
+      {/* Email */}
+      <div className="relative">
+        <input
+          type="email"
+          name="email"
+          id="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+          placeholder=" "
+          required
+        />
+        <label
+          htmlFor="email"
+          className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+            peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+            peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+            ${formData.email ? "-top-3 text-sm " : "top-2"}`}
+        >
+          Email
+        </label>
+      </div>
+      
+      {/* Password */}
+      <div className="relative">
+        <input
+          type={passwordVisible ? "text" : "password"}
+          name="password"
+          id="password"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer pr-10"
+          placeholder=" "
+          required
+        />
+        <label
+          htmlFor="password"
+          className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+            peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+            peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+            ${formData.password ? "-top-3 text-sm " : "top-2"}`}
+        >
+          Password
+        </label>
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+        >
+          {passwordVisible ? <MdVisibility className="w-5 h-5" /> : <MdVisibilityOff className="w-5 h-5" />}
+        </button>
+      </div>
+      
+      {/* Region Search */}
+      <div className="relative">
+        <input
+          type="text"
+          name="region"
+          id="region"
+          value={formData.region}
+          onChange={handleChange}
+          className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+          placeholder=" "
+        />
+        <label
+          htmlFor="region"
+          className={`absolute left-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+            peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+            peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 
+            ${formData.region ? " -top-3 text-sm " : "top-2 "}`}
+        >
+          Region
+        </label>
+        <button
+                  type="submit"
+                  
+                  className="w-full mt-4 bg-green-300 text-white p-2 rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300"
+                >
+                  Update
+                </button>
+              
+            
+       </div>
+       </form>
+       
+        </motion.div>
+        </div>
+}
+       
+          
+        </>
+  )
+      };
+
+export default ProfilePage;
