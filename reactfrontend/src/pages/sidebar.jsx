@@ -8,7 +8,7 @@ const Sidebar = () => {
     <div className="h-screen fixed bottom-0 bg-gray-50 text-gray-800 flex flex-col items-center p-4 shadow-lg w-20 md:w-64 transition-all duration-300">
       {/* Logo (Masqué sur mobile) */}
       <div className="hidden md:flex items-center mb-10 mt-1">
-        <img src={logo} width={180} height={120} alt="logo" />
+        <img src={logo} width={160} alt="logo" />
       </div>
 
       {/* Navigation */}
