@@ -5,8 +5,10 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 public class Commentaire {
 
     @Id
@@ -21,7 +23,7 @@ public class Commentaire {
     @JsonBackReference("pub-reference")
     private PubEntity pub;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference("user-reference")
     private UserEntity user;

@@ -23,6 +23,8 @@ public class UserEntity {
     private String genre;
     private String region;
     private String adresse;
+    @Lob
+    private byte[] imageProfil;
     
     @Column(unique = true, nullable = false)
     private String email;
@@ -38,8 +40,9 @@ public class UserEntity {
     @JsonManagedReference
     private List<PubEntity> publications;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-reference")
-    private Commentaire commentaire;
+    private List<Commentaire> commentaires;
 
 }
