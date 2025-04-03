@@ -5,14 +5,14 @@ import logo from "../Images/logo.png";
 
 const Sidebar = () => {
   return (
-    <div className="h-screen fixed bottom-0 bg-gray-50 text-gray-800 flex flex-col items-center p-4 shadow-lg w-20 md:w-64 transition-all duration-300">
+    <div className="dark:bg-gray-800 dark:text-white h-screen fixed bottom-0 bg-gray-50 text-gray-800 flex flex-col items-center p-4 shadow-lg w-20 md:w-64 transition-all duration-300">
       {/* Logo (Masqué sur mobile) */}
       <div className="hidden md:flex items-center mb-10 mt-1">
         <img src={logo} width={160} alt="logo" />
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-4  items-center ">
+      <nav className="flex flex-col gap-4  items-center dark:bg-gray-800 dark:text-white">
         <SidebarLink to="/publication" icon={<FaHome />} label="Accueil" />
         <SidebarLink to="/map" icon={<FaMapMarkedAlt />} label="Map" />
         <SidebarLink to="/publication" icon={<FaRecycle />} label="Recyclage" />

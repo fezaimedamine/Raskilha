@@ -30,10 +30,7 @@ public class PubController {
         "localisation": {
             "adresse": "123 Rue de Test",
             "ville": "Paris",
-            "codePostal": "75001",
-            "pays": "France"
         },
-        "dateHeure": "2023-11-15T14:30:00",
         "etat": "ACTIVE",
         "type": "OFFRE",
         "user": {
