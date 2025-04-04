@@ -1,5 +1,6 @@
 package com.example.RaskilhaBackend.Service;
 
+import com.example.RaskilhaBackend.DTO.UserDTO;
 import com.example.RaskilhaBackend.Entity.UserEntity;
 import com.example.RaskilhaBackend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +24,22 @@ public class UserService {
 
     // Création d'un compte avec hachage du mot de passe
     public UserEntity createAccount(UserEntity user) {
-        Optional<UserEntity> existingUser = userRepository.findByEmail(user.getEmail());
-        if (existingUser != null) {
-            throw new RuntimeException("Email déjà utilisé !");
-        }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+        throw new RuntimeException("Le mot de passe ne peut pas être vide !");
     }
 
+    Optional<UserEntity> existingUser = userRepository.findByEmail(user.getEmail());
+    if (existingUser.isPresent()) {
+        throw new RuntimeException("Email déjà utilisé !");
+    }
+
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    return userRepository.save(user);
+}
+
+
     // Authentification avec vérification du mot de passe
-    public UserEntity authenticateUser(String email, String rawPassword) {
+    public UserDTO authenticateUser(String email, String rawPassword) {
     UserEntity user = userRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé !"));
     
@@ -41,7 +48,8 @@ public class UserService {
     if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
         throw new BadCredentialsException("Mot de passe incorrect !");
     }
-    return user;
+    UserDTO user1=new UserDTO(user);
+    return user1;
 }
 
     
