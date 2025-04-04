@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap,useMapEvents  } from "react-leaflet";
+import { GiBroom } from "react-icons/gi";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Sidebar from "./sidebar";
@@ -11,6 +12,7 @@ import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import DistanceSlider from "./DistanceSlider";
+import Swal from "sweetalert2";
 import IconButton from '@mui/material/IconButton';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 const customIcon = new L.Icon({
@@ -111,6 +113,38 @@ const Map = () => {
       console.error("Erreur:", error);
     }
   };
+  const deleteMarker = async (markerID) => {
+    const result = await Swal.fire({
+      title: "Confirm Collection! ",
+      text: "Are you sure you want to delete this collection point?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#30D6A7FF",
+      cancelButtonColor: "#454F4CFF",
+      confirmButtonText: "Confirm",
+      cancelButtonText: "Cancel",
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`http://localhost:8081/api/localisations/${markerID}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error("Erreur lors de la suppression du marqueur");
+        }
+  
+        Swal.fire("Supprimé !", "Le marqueur a été supprimé.", "success");
+        fetch_markers();
+      } catch (error) {
+        Swal.fire("Erreur", "Une erreur s'est produite : " + error.message, "error");
+      }
+    }
+  };
 
   const reverseGeocode = async (latitude, longitude) => {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
@@ -130,7 +164,6 @@ const Map = () => {
       return;
     }
     try {
-      console.log(distance)
       const response = await fetch(
         `http://localhost:8081/api/localisations/proches?latitude=${userLocation[0]}&longitude=${userLocation[1]}&distanceMax=${distance}`,
         {
@@ -147,6 +180,7 @@ const Map = () => {
   
       const markers = await response.json();
       setMarkers(markers);
+      console.log(markers)
     } catch (error) {
       console.error("Erreur:", error);
     }
@@ -230,7 +264,7 @@ const Map = () => {
   useEffect(() => {
     const fetchLocation = async () => {
       if (selectedmarker) {
-        const [lat, lon] = selectedmarker;
+        const [lat, lon] = [selectedmarker[1],selectedmarker[2]];
         const location = await reverseGeocode(lat, lon);
         setFormData((prevData) => ({ ...prevData, location }));
       }
@@ -277,15 +311,29 @@ const Map = () => {
                 {markers.map((marker) => (
                   <Marker key={marker.id} position={[marker.latitude, marker.longitude]} icon={trashIcon}>
                     <Popup>
-                      <button
+                      {/* 
+                    <button
                         onClick={() => {
                           setIsOpen(true);
-                          setSelectedMarker([marker.latitude, marker.longitude]);
+                          setSelectedMarker([marker.id,marker.latitude, marker.longitude]);
                         }}
                         className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
                       >
-                        <FaPlus size={24} color="green" />
+                       <FaPlus size={24} color="green" />
                         <span className="text-sm text-gray-700">Add Post</span>
+                        <GiBroom size={24} color="green" />
+                      </button>*/}
+                      <button
+                        onClick={() => {
+                          
+                          deleteMarker(marker.id);
+                          
+                        }}
+                        className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
+                      >
+                       {/* <FaPlus size={24} color="green" />
+                        <span className="text-sm text-gray-700">Add Post</span>*/}
+                        <GiBroom size={24} color="green" />
                       </button>
                     </Popup>
                   </Marker>
