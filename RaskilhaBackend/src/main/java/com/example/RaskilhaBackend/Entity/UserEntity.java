@@ -29,7 +29,7 @@ public class UserEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @JsonIgnore
+    //@JsonIgnore
     private String password;
     private String nomProfil;
     private String tel;
