@@ -13,6 +13,7 @@ import com.example.RaskilhaBackend.Service.UserService;
 import com.example.RaskilhaBackend.Security.utils.JwtUtil;
 import com.example.RaskilhaBackend.DTO.LoginRequest;
 import com.example.RaskilhaBackend.DTO.LoginResponse;
+import com.example.RaskilhaBackend.DTO.UserDTO;
 import com.example.RaskilhaBackend.Entity.UserEntity;
 
 @RestController
@@ -39,7 +40,7 @@ public class AuthController {
         logger.info("Tentative de connexion pour l'email : {}", loginRequest.getEmail());
 
         // Vérifier l'utilisateur et le mot de passe via UserService
-        UserEntity user = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
+        UserDTO user = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
 
         // Authentification via Spring Security
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), loginRequest.getPassword()));
