@@ -1,5 +1,6 @@
 package com.example.RaskilhaBackend.Controller;
 
+import com.example.RaskilhaBackend.DTO.CommentaireDTO;
 import com.example.RaskilhaBackend.Entity.Commentaire;
 import com.example.RaskilhaBackend.Service.CommentaireService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +46,9 @@ public class CommentaireController {
     public String supprimerCommentaire(@PathVariable Long id) {
         commentaireService.supprimerCommentaire(id);
         return "Commentaire supprimé avec succès.";
+    }
+    @GetMapping("pub/{id}")
+    public List<CommentaireDTO> getCommentairesParPubs(@PathVariable Long id){
+        return commentaireService.getCommentairesParPublication(id);
     }
 }

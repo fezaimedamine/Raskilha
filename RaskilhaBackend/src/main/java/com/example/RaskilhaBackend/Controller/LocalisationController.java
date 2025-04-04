@@ -41,6 +41,7 @@ public class LocalisationController {
         return ResponseEntity.ok(localisationService.getLocalisationsLast24Hours());
     }
     // retourner les localisations proches
+    
     @GetMapping("/proches")
     public List<LocalisationEntity> getLocalisationsProches(@RequestParam double latitude,
                                                             @RequestParam double longitude,

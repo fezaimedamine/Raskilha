@@ -10,7 +10,9 @@ import Loading from "./loading";
 import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
-
+import DistanceSlider from "./DistanceSlider";
+import IconButton from '@mui/material/IconButton';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 const customIcon = new L.Icon({
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
@@ -54,7 +56,19 @@ const Map = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [selectedmarker, setSelectedMarker] = useState(null);
+  const [mediaFile, setMediaFile] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [distance, setDistance] = useState(10); 
 
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [errors, setErrors] = useState({});
+    const [formData, setFormData] = useState({
+      title: "",
+      description: "",
+      image: null,
+      location: "",
+    });
   useEffect(() => {
     if (navigator.geolocation) {
       
@@ -111,20 +125,24 @@ const Map = () => {
     }
   };
   const fetch_markers = async () => {
-
-  
-
+    if (!userLocation) {
+      console.log("La localisation utilisateur est indisponible.");
+      return;
+    }
     try {
-      const response = await fetch("http://localhost:8081/api/localisations", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        
-      });
+      console.log(distance)
+      const response = await fetch(
+        `http://localhost:8081/api/localisations/proches?latitude=${userLocation[0]}&longitude=${userLocation[1]}&distanceMax=${distance}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
   
       if (!response.ok) {
-        throw new Error("Erreur lors de fetch du marqueur");
+        throw new Error("Erreur lors de la récupération des marqueurs");
       }
   
       const markers = await response.json();
@@ -133,25 +151,17 @@ const Map = () => {
       console.error("Erreur:", error);
     }
   };
+  
   useEffect(
     ()=>{
-      fetch_markers();
-    },[]
+      console.log(distance)
+      if (userLocation) {
+        fetch_markers();
+      }
+    },[userLocation,distance]
   );
 
-   const [mediaFile, setMediaFile] = useState(null);
-    const [mediaPreview, setMediaPreview] = useState(null);
-  
-
-  
-    const [isOpen, setIsOpen] = useState(false);
-    const [errors, setErrors] = useState({});
-      const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        image: null,
-        location: "",
-      }); 
+    
     const validateForm = () => {
       let newErrors = {};
     
@@ -230,6 +240,10 @@ const Map = () => {
       fetchLocation();
     }
   }, [selectedmarker]);
+  const handleDistanceChange = (newDistance) => {
+    setDistance(newDistance);
+    console.log(distance);
+  };
   return (
     <div className="flex h-screen bg-gray-50">
     {!userLocation && <Loading />}
@@ -237,174 +251,180 @@ const Map = () => {
       <>
         <Sidebar />
   
-        <div className="w-[calc(100vw-80px)] md:w-[calc(100vw-240px)] md:ml-64 ml-20 h-screen p-4">
-          <MapContainer
-            center={userLocation || [48.8566, 2.3522]}
-            zoom={5}
-            className="h-full w-full rounded-lg shadow-lg relative z-0" // Ensure relative positioning for stacking
-          >
-            {userLocation && <ZoomEffect userLocation={userLocation} />}
-            <ClickHandler onMapClick={addMarker} />
-  
-            {/* Tile Layer */}
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            />
-  
-            {/* User Location Marker */}
-            {userLocation && (
-              <Marker position={userLocation} icon={customIcon}>
-                <Popup>Vous êtes ici !</Popup>
-              </Marker>
-            )}
-  
-            {/* Trash Markers */}
-            {markers.map((marker) => (
-              <Marker key={marker.id} position={[marker.latitude, marker.longitude]} icon={trashIcon}>
-                <Popup>
-                  <button
-                    onClick={() => {
-                      setIsOpen(true);
-                      setSelectedMarker([marker.latitude, marker.longitude])
-                    }}
-                    className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
-                  >
-                    <FaPlus size={24} color="green" />
-                    <span className="text-sm text-gray-700">Add Post</span>
-                  </button>
-                </Popup>
-              </Marker>
-            ))}
-          </MapContainer>
-  
-          {/* Form Popup */}
-          {isOpen && (
-            <div
-              className="fixed inset-0 bg-slate-700 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50"
-              onClick={closeForm} // Close form when clicking outside
-            >
-              <motion.div
-                initial={{ opacity: 0, y: -30 }}
-                animate={{ opacity: 1, y: 30 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.4 }}
-                onClick={(e) => e.stopPropagation()}
-                className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-lg relative"
+        <div className="flex flex-col items-center justify-around w-[calc(100vw-80px)] md:w-[calc(100vw-240px)] md:ml-64 ml-20 h-screen p-4">
+              <MapContainer
+                center={userLocation || [48.8566, 2.3522]}
+                zoom={5}
+                className="h-[550px] w-11/12 rounded-lg shadow-lg relative z-0"
               >
-                <button
-                  className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full"
-                  onClick={closeForm}
-                >
-                  ✖
-                </button>
-  
-                <div className="flex items-center mb-4">
-                  {/* Placeholder for profile picture */}
-                  <div className="w-10 h-10 rounded-full bg-gray-300 mr-4"></div>
-                  <h2 className="text-xl font-semibold">Create a Post</h2>
-                </div>
-  
-                <form onSubmit={handleSubmit}>
-                  {/* Post content */}
-                  <div className="mt-4 pt-4 border-t">
-                    <input
-                      type="text"
-                      placeholder="Set Post title "
-                      className="w-full mb-4 border-none outline-none focus:ring-0 text-xl placeholder-gray-500"
-                      value={formData.title}
-                      onChange={handleChange}
-                    />
-  
-                    <textarea
-                      className="w-full border-t p-4 focus:ring-0 outline-none resize-none text-lg placeholder-gray-500"
-                      rows="3"
-                      placeholder="What's on your mind?"
-                      value={formData.description}
-                      onChange={handleChange}
-                    />
-                    {/*location */}
-                    <div className="flex items-center my-2 p-2 bg-gray-100 rounded-lg">
-                      <svg className="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <input
-                        type="text"
-                        className="flex-1 bg-transparent border-none focus:ring-0"
-                        readOnly
-                        value={formData.location}
-                        
-                      />
-                      
-                      {formData.location && (
-                        <button 
-                          className="text-gray-500 hover:text-gray-700"
-                          onClick={() => setFormData({ ...formData, location: "" })}
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                    {/* Media Preview */}
-                    {mediaPreview && (
-                      <div className="relative my-2">
-                        <img
-                          src={mediaPreview}
-                          alt="Preview"
-                          className="rounded-lg w-full max-h-60 object-contain"
-                        />
-                        <button
-                          className="absolute top-2 right-2 bg-gray-800 bg-opacity-75 text-white rounded-full p-1 hover:bg-opacity-100"
-                          onClick={() => {
-                            setMediaPreview(null);
-                            setMediaFile(null);
-                          }}
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
-                      </div>
-                    )}
-  
-                    {/* Action Buttons */}
-                    <div className="flex justify-between items-center mt-4">
-                      <div className="flex space-x-2">
-                        <button
-                          className="p-2 rounded-full hover:bg-gray-100"
-                          onClick={() => document.getElementById('media-upload').click()}
-                        >
-                          <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          <input
-                            id="media-upload"
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleFileChange}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-  
-                  {/* Submit Button */}
-                  <button
-                    
-                    type="submit"
-                    className="w-full mt-8 bg-green-400 text-white p-3 rounded-md hover:bg-green-500 transition"
+                {userLocation && <ZoomEffect userLocation={userLocation} />}
+                <ClickHandler onMapClick={addMarker} />
+                
+                {/* Tile Layer */}
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                />
+
+                {/* User Location Marker */}
+                {userLocation && (
+                  <Marker position={userLocation} icon={customIcon}>
+                    <Popup>Vous êtes ici !</Popup>
+                  </Marker>
+                )}
+
+                {/* Trash Markers */}
+                {markers.map((marker) => (
+                  <Marker key={marker.id} position={[marker.latitude, marker.longitude]} icon={trashIcon}>
+                    <Popup>
+                      <button
+                        onClick={() => {
+                          setIsOpen(true);
+                          setSelectedMarker([marker.latitude, marker.longitude]);
+                        }}
+                        className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
+                      >
+                        <FaPlus size={24} color="green" />
+                        <span className="text-sm text-gray-700">Add Post</span>
+                      </button>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
+                <DistanceSlider
+                  value={distance}
+                  onChange={handleDistanceChange}
+                  valueLabelDisplay="on"
+                  valueLabelFormat={(distance) => `${distance} km`}
+                />
+
+                {/* Form Popup */}
+                {isOpen && (
+                  <div
+                    className="fixed inset-0 bg-slate-700 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50"
+                    onClick={closeForm} // Close form when clicking outside
                   >
-                    Post
-                  </button>
-                </form>
-              </motion.div>
-            </div>
-          )}
-        </div>
+                    <motion.div
+                      initial={{ opacity: 0, y: -30 }}
+                      animate={{ opacity: 1, y: 30 }}
+                      exit={{ opacity: 0, y: -30 }}
+                      transition={{ duration: 0.4 }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-lg relative"
+                    >
+                      <button
+                        className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full"
+                        onClick={closeForm}
+                      >
+                        ✖
+                      </button>
+
+                      <div className="flex items-center mb-4">
+                        {/* Placeholder for profile picture */}
+                        <div className="w-10 h-10 rounded-full bg-gray-300 mr-4"></div>
+                        <h2 className="text-xl font-semibold">Create a Post</h2>
+                      </div>
+
+                      <form onSubmit={handleSubmit}>
+                        {/* Post content */}
+                        <div className="mt-4 pt-4 border-t">
+                          <input
+                            type="text"
+                            placeholder="Set Post title "
+                            className="w-full mb-4 border-none outline-none focus:ring-0 text-xl placeholder-gray-500"
+                            value={formData.title}
+                            onChange={handleChange}
+                          />
+
+                          <textarea
+                            className="w-full border-t p-4 focus:ring-0 outline-none resize-none text-lg placeholder-gray-500"
+                            rows="3"
+                            placeholder="What's on your mind?"
+                            value={formData.description}
+                            onChange={handleChange}
+                          />
+                          {/*location */}
+                          <div className="flex items-center my-2 p-2 bg-gray-100 rounded-lg">
+                            <svg className="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <input
+                              type="text"
+                              className="flex-1 bg-transparent border-none focus:ring-0"
+                              readOnly
+                              value={formData.location}
+                            />
+                            
+                            {formData.location && (
+                              <button 
+                                className="text-gray-500 hover:text-gray-700"
+                                onClick={() => setFormData({ ...formData, location: "" })}
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Media Preview */}
+                          {mediaPreview && (
+                            <div className="relative my-2">
+                              <img
+                                src={mediaPreview}
+                                alt="Preview"
+                                className="rounded-lg w-full max-h-60 object-contain"
+                              />
+                              <button
+                                className="absolute top-2 right-2 bg-gray-800 bg-opacity-75 text-white rounded-full p-1 hover:bg-opacity-100"
+                                onClick={() => {
+                                  setMediaPreview(null);
+                                  setMediaFile(null);
+                                }}
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Action Buttons */}
+                          <div className="flex justify-between items-center mt-4">
+                            <div className="flex space-x-2">
+                              <button
+                                className="p-2 rounded-full hover:bg-gray-100"
+                                onClick={() => document.getElementById('media-upload').click()}
+                              >
+                                <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <input
+                                  id="media-upload"
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleFileChange}
+                                />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                          type="submit"
+                          className="w-full mt-8 bg-green-400 text-white p-3 rounded-md hover:bg-green-500 transition"
+                        >
+                          Post
+                        </button>
+                      </form>
+                    </motion.div>
+                  </div>
+                )}
+              </div>
+
       </>
     )}
   </div>
