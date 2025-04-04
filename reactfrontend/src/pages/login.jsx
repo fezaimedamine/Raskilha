@@ -19,22 +19,22 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch("http://localhost:8081/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email:email, password:password }),
       });
 
       const data = await response.json();
-      if (data.success) {
-        localStorage.setItem("userDetails", JSON.stringify(data.data)); 
-        navigate("/map"); 
-      } else {
-        setError(data.message);
-      }
+      if (data) {
+        console.log(data)
+        localStorage.setItem("userDetails", JSON.stringify(data)); 
+        navigate("/publication"); 
+      } 
     } catch (error) {
+      console.log(error)
       setError("Error during login: " + error.message);
     }
   };
@@ -47,7 +47,6 @@ const Login = () => {
       closeOnClick: true,
     });
   };
-
   useEffect(() => {
     if (error) {
       showError();
