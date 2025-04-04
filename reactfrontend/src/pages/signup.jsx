@@ -7,17 +7,24 @@ import citizenImage from "../Images/citizen (2).png";
 
 import wasteManagementImage2 from "../Images/Volunteering-bro.png";
 
+
 const Signup = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    username: "",
+    nom: "",
+    prenom: "",
+    nomProfil: "",
     age: "",
+    imageProfil:null,
+    genre:"Male",
     email: "",
-    rawPassword: "test",
-    location: "",
+    tel:"",
+    password: "",
+    adresse: "",
   });
+  const[error,setError]=useState(null)
+  const[errors,setErrors]=useState([])
+  
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState("");
@@ -27,21 +34,88 @@ const Signup = () => {
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
   };
-
+  const validateForm = (formData) => {
+    let newErrors = {};
+  
+    Object.keys(formData).forEach((key) => {
+      newErrors[key] = validateField(key, formData[key]);
+    });
+  
+    setErrors(newErrors);
+  
+    // Check if there are no errors
+    return Object.values(newErrors).every((err) => err === "");
+  };
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file ) {
+      if(file.type.startsWith("image/")){
+        
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        
+        reader.onloadend = () => {setFormData({ ...formData, imageProfil: reader.result.split(",")[1] })}; // Convert to Base64
+        //setMediaPreview(URL.createObjectURL(file));
+        
+      }else{
+        
+        setError("File must be a file type")
+      }
+    }
+
+};
+  const validateField = (name, value) => {
+    let errorMessage = "";
+
+    switch (name) {
+      case "nom":
+      case "prenom":
+      case "nomProfil":
+      case "adresse":
+        if (!value.trim()) errorMessage = "This field is required";
+        break;
+
+      case "age":
+        if (!value) errorMessage = "Age is required";
+        else if (value <=0 ) errorMessage = "Wrong age";
+        break;
+
+      case "email":
+        if (!/^\S+@\S+\.\S+$/.test(value)) errorMessage = "Invalid Email ";
+        break;
+
+      case "tel":
+        if (!/^[0-9]{8}$/.test(value)) errorMessage = "Phone number must be 8 numbers";
+        break;
+
+      case "password":
+        if (value.length < 6) errorMessage = "Password must have at least 6 caracters";
+        break;
+
+      default:
+        break;
+    }
+
+    return errorMessage;
+  };
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const{name,value}=e.target
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: validateField(name, value) });
   };
 
   const handleNext = () => {
-    setStep((prev) => prev + 1);
+    if (validateForm(formData)){
+      setStep(2);
+    }
   };
 
   const handlePrev = () => {
-    setStep((prev) => prev - 1);
+    setStep(1);
   };
 
   useEffect(() => {
@@ -65,28 +139,55 @@ const Signup = () => {
       const response = await fetch("http://localhost:8081/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, role: selectedRole}),
+        body: JSON.stringify({ ...formData, type: selectedRole}),
       });
-      const data = await response.text();
-     
+      const responseData = await response.text();
+      if (responseData.includes("Email déjà utilisé !")) {
+        throw new Error("Email déjà utilisé !");
+      }
+      console.log("success")
+     toast.success("utilisateur enregistré avec succès",{
+      closeOnClick: true,
+      autoClose: 3000,
+    })
+     navigate("/Login")
     } catch (error) {
       console.error(error)
-      toast.error("Error during signup: " + error.message);
+      toast.error("Error during signup: " + error.message,{
+        closeOnClick: true,
+        autoClose: 3000,
+      });
+      
     }
   };
+
+  const showError = () => {
+    toast.error(error, {
+      position: "top-center",
+      autoClose: 1000,
+      hideProgressBar: true,
+      closeOnClick: true,
+    });
+  };
+  useEffect(() => {
+    if (error) {
+      showError();
+      setError(null);
+    }
+  }, [error]);
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-r from-green-50 to-green-50">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-11/12  flex flex-row items-center">
         {/* Left Side: Form */}
-        <div className="w-full md:w-1/2 flex flex-col gap-10">
+        <div className="w-full md:w-1/2 flex flex-col gap-7">
           <div>
             <h2 className="text-3xl font-bold text-center text-gray-800">Get Started Now</h2>
             <h2 className="text-base font-thin text-center text-gray-800">
               Welcome to Raskilha - Let's create your account.
             </h2>
           </div>
-          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-7" onSubmit={handleSubmit}>
             {step === 1 && (
               <>
                 {/* First Name and Last Name */}
@@ -94,44 +195,47 @@ const Signup = () => {
   <div className="flex-1 relative">
     <input
       type="text"
-      name="firstName"
-      id="firstName"
-      value={formData.firstName}
+      name="nom"
+      id="nom"
+      value={formData.nom}
       onChange={handleChange}
-      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+      className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.nom ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
       placeholder=" "
       required
     />
     <label
-      htmlFor="firstName"
-      className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-        ${formData.firstName ? "-top-3 text-sm " : "top-2"}`}
+      htmlFor="nom"
+      className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+        peer-focus:-top-3 peer-focus:text-sm  ${errors.nom ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+        ${formData.nom ? "-top-3 text-sm " : "top-2"}`}
     >
-      First Name
+      FirstName
     </label>
+    {errors.nom && <p className="text-red-500 text-xs fixed ml-2" >{errors.nom}</p>}
   </div>
   <div className="flex-1 relative">
     <input
       type="text"
-      name="lastName"
-      id="lastName"
-      value={formData.lastName}
+      name="prenom"
+      id="prenom"
+      value={formData.prenom}
       onChange={handleChange}
-      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+      className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.prenom ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+      
       placeholder=" "
       required
     />
     <label
-      htmlFor="lastName"
-      className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-        ${formData.lastName ? "-top-3 text-sm " : "top-2"}`}
+      htmlFor="prenom"
+      className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+        peer-focus:-top-3 peer-focus:text-sm  ${errors.prenom ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+        ${formData.prenom ? "-top-3 text-sm " : "top-2"}`}
     >
-      Last Name
+      LastName
     </label>
+    {errors.prenom && <p className="text-red-500 text-xs fixed ml-2" >{errors.prenom}</p>}
   </div>
 </div>
 
@@ -140,23 +244,24 @@ const Signup = () => {
   <div className="flex-1 relative">
     <input
       type="text"
-      name="username"
-      id="username"
-      value={formData.username}
+      name="nomProfil"
+      id="nomProfil"
+      value={formData.nomProfil}
       onChange={handleChange}
-      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+      className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.nomProfil ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
       placeholder=" "
       required
     />
     <label
-      htmlFor="username"
-      className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-        ${formData.username ? "-top-3 text-sm " : "top-2"}`}
+      htmlFor="nomProfil"
+      className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+        peer-focus:-top-3 peer-focus:text-sm  ${errors.nomProfil ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+        ${formData.nomProfil ? "-top-3 text-sm " : "top-2"}`}
     >
-      Username
+      UserName
     </label>
+    {errors.nomProfil && <p className="text-red-500 text-xs fixed ml-2" >{errors.nomProfil}</p>}
   </div>
   <div className="w-24 relative">
     <input
@@ -165,20 +270,39 @@ const Signup = () => {
       id="age"
       value={formData.age}
       onChange={handleChange}
-      className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+      className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.age ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
       placeholder=" "
       required
     />
     <label
       htmlFor="age"
-      className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-        peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+      className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+        peer-focus:-top-3 peer-focus:text-sm  ${errors.age ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
         ${formData.age ? "-top-3 text-sm " : "top-2"}`}
     >
       Age
     </label>
+    {errors.age && <p className="text-red-500 text-xs fixed ml-2" >{errors.age}</p>}
   </div>
+</div>
+{/*Gender */}
+<div className="relative">
+<select className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer" id="genre" name="genre"  onChange={handleChange}>
+        
+        <option value="Male" selected>Homme</option>
+        <option value="Female">Femme</option>
+        <option value="Other">Autre</option>
+      </select>
+  <label
+    htmlFor="genre"
+    className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+      ${formData.genre ? "-top-3 text-sm " : "top-2"}`}
+  >
+    Gender
+  </label>
 </div>
 
 {/* Email */}
@@ -189,19 +313,20 @@ const Signup = () => {
     id="email"
     value={formData.email}
     onChange={handleChange}
-    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.email ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
     placeholder=" "
     required
   />
   <label
     htmlFor="email"
-    className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+      peer-focus:-top-3 peer-focus:text-sm  ${errors.email ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
       ${formData.email ? "-top-3 text-sm " : "top-2"}`}
   >
     Email
   </label>
+  {errors.email && <p className="text-red-500 text-xs fixed ml-2" >{errors.email}</p>}
 </div>
 
 {/* Password */}
@@ -212,19 +337,20 @@ const Signup = () => {
     id="password"
     value={formData.password}
     onChange={handleChange}
-    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer pr-10"
+    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.password ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
     placeholder=" "
     required
   />
   <label
     htmlFor="password"
-    className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+      peer-focus:-top-3 peer-focus:text-sm  ${errors.password ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
       ${formData.password ? "-top-3 text-sm " : "top-2"}`}
   >
     Password
   </label>
+  {errors.password && <p className="text-red-500 text-xs fixed ml-2" >{errors.password}</p>}
   <button
     type="button"
     onClick={togglePasswordVisibility}
@@ -234,26 +360,55 @@ const Signup = () => {
   </button>
 </div>
 
+{/* Tel */}
+<div className="relative">
+  <input
+    type="tel"
+    name="tel"
+    id="tel"
+    value={formData.tel}
+    onChange={handleChange}
+    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.tel ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+    placeholder=" "
+    required
+  />
+  <label
+    htmlFor="tel"
+    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+      peer-focus:-top-3 peer-focus:text-sm  ${errors.tel ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+      ${formData.tel ? "-top-3 text-sm " : "top-2"}`}
+  >
+    Phone
+  </label>
+  {errors.tel && <p className="text-red-500 text-xs fixed ml-2" >{errors.tel}</p>}
+</div>
+
 {/* Region Search */}
 <div className="relative">
   <input
     type="text"
-    name="location"
-    id="location"
+    name="adresse"
+    id="adresse"
     value={query}
-    onChange={(e) => setQuery(e.target.value)}
-    className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
+    onChange={(e) => {setQuery(e.target.value);
+                      setFormData( {...formData, adresse: "" });
+                      
+                      setErrors({ ...errors, adresse: " You must choose from the suggestions"})
+                    }}
+    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.adresse ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
     placeholder=" "
   />
   <label
-    htmlFor="location"
-    className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+    htmlFor="adresse"
+    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+      peer-focus:-top-3 peer-focus:text-sm  ${errors.adresse ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
       ${query ? "-top-3 text-sm " : "top-2"}`}
   >
     Region
   </label>
+  {errors.adresse  && <p className="text-red-500 text-xs fixed ml-2" >{errors.adresse}</p>}
 
 
                   {suggestions.length > 0 && (
@@ -262,7 +417,8 @@ const Signup = () => {
                         <li
                           key={index}
                           onClick={() => {
-                            setFormData({ ...formData, location: place.display_name });
+                            setFormData({ ...formData, adresse: place.display_name });
+                            setErrors({...errors,adresse:""})
                             setQuery(place.display_name);
                             setSuggestions([]);
                           }}
@@ -287,8 +443,22 @@ const Signup = () => {
             )}
 
             {step === 2 && (
-              <>
-                <div className="flex flex-col gap-6">
+              <>{/* Image Upload Section */}
+              <div className="">
+                <label htmlFor="image-upload" className="block text-gray-700 font-semibold">
+                  Upload Your Profile Image:
+                </label>
+                <input
+                  
+                  type="file"
+                  id="image-upload"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="   p-1  border border-gray-300 rounded"
+                />
+              </div>
+                <div className="flex flex-col gap-4">
                   <h1 className="text-gray-700 text-center">Choose your role:</h1>
                   <div className="flex flex-col md:flex-row justify-around gap-6">
                     {/* Collector Role */}

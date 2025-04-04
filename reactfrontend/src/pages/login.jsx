@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import loginanimation from '../Images/login.json'
 import Lottie from "lottie-react";
 const Login = () => {
+  //const { userDetails, setUserDetails } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -15,6 +16,12 @@ const Login = () => {
   const changeVisible = () => {
     setPasswordVisible((prev) => !prev);
   };
+
+ /* useEffect(() => {
+    if (userDetails) {
+      navigate("/publication");
+    }
+  }, [userDetails]);*/
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,25 +39,21 @@ const Login = () => {
 
       if (contentType && contentType.includes("application/json")) {
         responseData = await response.json(); // Parse JSON response
+        //setUserDetails(responseData);
+          localStorage.setItem('userDetails', JSON.stringify(responseData));
+          navigate('/publication');
+
       } else {
         responseData = await response.text(); // Read as text
-      }
-      if (!response.ok) {
-        if (typeof responseData === "string") {
-          if (responseData.includes("Utilisateur non trouvé")) {
-            throw new Error("Utilisateur non trouvé !");
-          }
-          if (responseData.includes("Mot de passe incorrect")) {
-            throw new Error("Mot de passe incorrect !");
-          }
-          throw new Error(responseData || "Une erreur est survenue !");
-        } else {
-          throw new Error("Une erreur inconnue est survenue.");
+        if (responseData.includes("Utilisateur non trouvé")) {
+          throw new Error("Wrong Email !");
         }
-      }
+        if (responseData.includes("Mot de passe incorrect")) {
+          throw new Error("Wrong Password !");
+        }
+      }   
     } catch (error) {
-      console.log(error)
-      setError("Error during login: " + error.message);
+      setError("Error during login:" + error.message);
     }
   };
 
