@@ -78,7 +78,7 @@ function MenuBar({ setFilteredPosts }) {
           <IoSearchOutline onClick={handleSearch} className="cursor-pointer text-white w-9 h-5" />
         </div>
 
-        {/* Filtre par région */}
+        {/* Filtre par région 
         <select
           onChange={handleFilterChange}
           className="bg-gray-700 dark:bg-gray-600 text-white p-2 rounded-md shadow-md hover:bg-gray-800 dark:hover:bg-gray-700"
@@ -88,7 +88,7 @@ function MenuBar({ setFilteredPosts }) {
           <option value="/region/Paris">Paris</option>
           <option value="/region/ville">Ville</option>
         </select>
-
+            */}
         {/* Mode sombre */}
         <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-md shadow-md bg-gray-700 dark:bg-gray-600 text-white">
           {darkMode ? "☀️ Mode Clair" : "🌙 Mode Sombre"}

@@ -75,8 +75,8 @@ function PostCard({ post }) {
   
     return (
       <>
-        <div className="flex flex-col w-80 md:w-full mt-5 mb-5 border-2 border-gray-300 rounded-lg cursor-pointer">
-          <div className="p-4 flex flex-col gap-2 w-full hover:bg-gray-200" onClick={toggleExpand}>
+        <div className="flex flex-col w-80 md:w-full mt-5 mb-5 bg-white border-2 border-gray-300 rounded-lg cursor-pointer">
+          <div className="p-4 flex flex-col gap-2 w-full hover:bg-gray-100" onClick={toggleExpand}>
             <div className="flex items-center gap-3">
             {post.user?.image && <img className="w-10 h-10 rounded-full object-contain" src={post.user.image}/*src=`data:image/jpeg;base64,${post.user.image}`*/ alt="profile image" />}
               <div>
@@ -95,12 +95,12 @@ function PostCard({ post }) {
             />
           </div>
            
-          <div className="flex h-auto justify-around bg-gray-300">
-            <button onClick={toggleExpand} className="w-1/3 py-2 rounded-md text-sm hover:bg-gray-400">
+          <div className="flex h-auto justify-around border-t-2  border-t-gray-300">
+            <button onClick={toggleExpand} className="w-1/2 py-2 rounded-md text-sm hover:bg-gray-200">
               Comment
             </button>
          
-            <button className="w-1/3 rounded-md text-sm hover:bg-gray-400">
+            <button className="w-1/2 rounded-md text-sm hover:bg-gray-200">
               Share
             </button>
           </div>

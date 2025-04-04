@@ -56,7 +56,7 @@ const publication=[{
 ]
 export default function Publication() {
   
-  const [filteredPosts,setFilteredPosts] = useState(publication);
+  const [filteredPosts, setFilteredPosts] = useState([]);
  
   const [mediaPreview, setMediaPreview] = useState(null);
 
@@ -173,7 +173,7 @@ const [suggestions, setSuggestions] = useState([]);
   
       const fetchLocations = async () => {
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${query}`
+          `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
         );
         const data = await response.json();
         setSuggestions(data);
@@ -182,21 +182,78 @@ const [suggestions, setSuggestions] = useState([]);
       fetchLocations();
     }, [query]);
    
-
+    const [page, setPage] = useState(0); // Start at the first page
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const POSTS_PER_PAGE = 2;
     useEffect(() => {
-      axios.get("http://localhost:8081/api/pubs")
-        .then(response => {
-          setFilteredPosts(response.data); // Axios automatically parses JSON
-        })
-        .catch(error => {
-          console.error("Error fetching posts:", error);
-        });
-    }, []);
-
+      const fetchPosts = async () => {
+        if (loading || !hasMore) return;
+        setLoading(true);
+    
+        try {
+          const response = await axios.get('http://localhost:8081/api/pubs', {
+            params: {
+              page: page,
+              size: POSTS_PER_PAGE,
+            },
+          });
+    
+          const posts = response.data.content;
+    
+          if (posts.length < POSTS_PER_PAGE) {
+            setHasMore(false);
+          }
+          
+          if (page === 0) {
+            setFilteredPosts(posts); // Replace on first load
+          } else {
+            // Append only new posts
+            setFilteredPosts((prevPosts) => {
+              const newPosts = posts.filter(
+                post => !prevPosts.some(p => p.id === post.id)
+              );
+              console.log(newPosts)
+              return [...prevPosts, ...newPosts];
+            });
+          }
+    
+        } catch (error) {
+          console.error('Error fetching posts:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      fetchPosts();
+    }, [page]);
+    
+   
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const clientHeight = window.innerHeight;
+      const scrollHeight = document.documentElement.scrollHeight;
+    
+      const bottom = scrollTop + clientHeight >= scrollHeight - 50;
+    
+      if (bottom && !loading && hasMore) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    };
+    
+    useEffect(() => {
+      // Listen for the scroll event
+      window.addEventListener('scroll', handleScroll);
+  
+      // Cleanup the event listener when the component is unmounted
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }, [loading, hasMore]);
   return (
     <>
     <Sidebar/>
-    <MenuBar setFilteredPosts={setFilteredPosts}/>
+    <MenuBar />
     
     
     {isOpen && (
@@ -245,19 +302,8 @@ const [suggestions, setSuggestions] = useState([]);
                     value={formData.description}
                     onChange={handleChange}
                   />
-<label for="city">Choose a city:</label>
-<select   required
-          onChange={(e)=>{setFormData({...formData,region:e.target.value})}}
-          className="bg-gray-300 ml-2 text-black p-2 rounded-md"
-          name="region"
-          value={formData.region}
-          
-        >
-          <option selected value="">Choose a region </option>
-          <option value="Tunis">Tunis </option>
-          <option value="Sfax">Sfax</option>
-          <option value="Ville">Ville</option>
-        </select>
+
+
 
  
  
@@ -301,7 +347,10 @@ const [suggestions, setSuggestions] = useState([]);
                       {query && (
                         <button 
                           className="text-gray-500 hover:text-gray-700"
-                          onClick={() => {setFormData({ ...formData, location: "" } ) ;setQuery("")}}
+                          onClick={() => {
+                            setFormData({ ...formData, location: "" } ) ;
+                            setQuery("");
+                          }}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -311,22 +360,30 @@ const [suggestions, setSuggestions] = useState([]);
                     
                       </div>
                       {suggestions.length > 0 && (
-                    <ul className="border absolute z-10 bg-white mt-48 mr-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
-                      {suggestions.map((place, index) => (
-                        <li
-                          key={index}
-                          onClick={() => {
-                            setFormData({ ...formData, location: place.display_name });
-                            setQuery(place.display_name);
-                            setSuggestions([]);
-                          }}
-                          className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
-                        >
-                          {place.display_name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                          <ul className="border absolute z-10 bg-white mr-2 rounded-lg shadow-md max-h-40 overflow-y-auto">
+                            {suggestions.map((place, index) => {
+                              // Extract region data properly
+                              const { city, town, village, municipality, county, state, state_district  } = place.address || {};
+                              const cityName = city || town || village || municipality || county || state || state_district  || "Unknown City";
+
+                              return (
+                                <li
+                                  key={index}
+                                  onClick={() => {
+                                    setFormData({ ...formData, location: cityName }); // Send only the region
+                                   
+                                    setQuery(place.display_name); 
+                                    setSuggestions([]);
+                                  }}
+                                  className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
+                                >
+                                  {place.display_name}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+
                       </>
                   )}
 
@@ -443,6 +500,11 @@ const [suggestions, setSuggestions] = useState([]);
             </div>
 
             {/* Posts List */}
+            {loading && (
+              <div className="text-center my-4 text-gray-500">
+                Loading more posts...
+              </div>
+            )}
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
             ) : (
