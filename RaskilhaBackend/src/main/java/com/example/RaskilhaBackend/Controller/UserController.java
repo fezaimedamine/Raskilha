@@ -27,5 +27,12 @@ public ResponseEntity<String> registerUser(@RequestBody UserEntity user) {
     } catch (RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserProfileDTO> getCurrentUser() {
+        Long userId = 1 /*((CustomUserDetails) userDetails).getId()*/;
+        UserProfileDTO profile = userService.getCurrentUserProfile(userId);
+        return ResponseEntity.ok(profile);
+    }
 }
 }

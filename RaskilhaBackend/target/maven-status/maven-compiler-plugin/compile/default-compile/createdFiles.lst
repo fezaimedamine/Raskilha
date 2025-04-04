@@ -5,6 +5,7 @@ com\example\RaskilhaBackend\Exception\GlobalExceptionHandler.class
 com\example\RaskilhaBackend\Service\CustomUserDetailsService.class
 com\example\RaskilhaBackend\Controller\AuthController.class
 com\example\RaskilhaBackend\DTO\compteDTO.class
+com\example\RaskilhaBackend\DTO\CommentaireDTO.class
 com\example\RaskilhaBackend\DTO\LoginResponse.class
 com\example\RaskilhaBackend\Entity\UserEntity.class
 com\example\RaskilhaBackend\Repository\UserRepository.class

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useState } from "react";
+import { useRef } from "react";
 import Sidebar from "./sidebar"
 import { motion } from "framer-motion";
 import PostCard from "./PostCard";
@@ -8,12 +9,22 @@ import axios from "axios";
 
 
 const ProfilePage = () => {
-  const [user, setUser] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "https://via.placeholder.com/100",
-  });
-    
+  const [user, setUser] = useState([])
+  
+useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/raskilha/me");
+      setUser(response.data);
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    } finally {
+
+    }
+  };
+
+  fetchUser();
+}, []);
   const [publications, setPublications] = useState([])
   useEffect(() => {
     axios.get("http://localhost:8081/api/pubs")
@@ -24,6 +35,12 @@ const ProfilePage = () => {
         console.error("Error fetching posts:", error);
       });
   }, []);
+  
+  const [preview, setPreview] = useState('');
+  const fileInputRef = useRef(null);
+  const triggerFileSelect = () => {
+    fileInputRef.current.click();
+  };
 
 const [showForm,setShowForm]=useState(false)
 const [formData, setFormData] = useState({
@@ -34,11 +51,39 @@ const [formData, setFormData] = useState({
     email: "",
     password: "",
     region: "",
-    adresse:""
+    adresse:"",
+    image:null
   }); 
   const handleChange = (e) => {
     console.log(formData)
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.match('image.*')) {
+        alert('Please select an image file (jpeg, png, etc.)');
+        return;
+      }
+      
+      if (file.size > 40 * 1024 * 1024) {
+        alert('Image size should be less than 2MB');
+        return;
+      }
+
+      setFormData({
+        ...formData,
+        profileImage: file
+      });
+
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
   const [passwordVisible, setPasswordVisible] = useState(false);
   const togglePasswordVisibility = () => {
@@ -150,6 +195,53 @@ const [formData, setFormData] = useState({
           </label>
         </div>
       </div>
+      <div className="flex-1 relative">
+          
+          <input
+            type="file"
+            name="profile image"
+            id="profile image"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+            required
+          />
+          <label
+          htmlFor="profile image"
+          className={` left-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+            peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+            peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+            `}
+            >Profile Image</label>
+          
+          <div className="image-upload-area">
+            {preview ? (
+              <div className="image-preview-container">
+                <img 
+                  src={preview} 
+                  alt="Profile preview" 
+                  className="profile-preview"
+                />
+                <button 
+                  type="button" 
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  onClick={triggerFileSelect}
+                >
+                  Change Image
+                </button>
+              </div>
+            ) : (
+              <button 
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                onClick={triggerFileSelect}
+              >
+                <span>+</span>
+                Click to upload profile image
+              </button>
+            )}
+          </div>
+        </div>
       
       {/* Username and Age */}
       <div className="flex gap-4">

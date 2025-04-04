@@ -42,8 +42,14 @@ public class UserService {
         throw new BadCredentialsException("Mot de passe incorrect !");
     }
     return user;
-}
-
+    }
+    
+    public UserProfileDTO getCurrentUserProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        
+        return mapToProfileDTO(user);
+    }
     
 
     // Mise à jour des informations utilisateur
