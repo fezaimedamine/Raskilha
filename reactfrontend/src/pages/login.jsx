@@ -27,12 +27,27 @@ const Login = () => {
         body: JSON.stringify({ email:email, password:password }),
       });
 
-      const data = await response.json();
-      if (data) {
-        console.log(data)
-        localStorage.setItem("userDetails", JSON.stringify(data)); 
-        navigate("/publication"); 
-      } 
+      const contentType = response.headers.get("Content-Type");
+      let responseData;
+
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json(); // Parse JSON response
+      } else {
+        responseData = await response.text(); // Read as text
+      }
+      if (!response.ok) {
+        if (typeof responseData === "string") {
+          if (responseData.includes("Utilisateur non trouvé")) {
+            throw new Error("Utilisateur non trouvé !");
+          }
+          if (responseData.includes("Mot de passe incorrect")) {
+            throw new Error("Mot de passe incorrect !");
+          }
+          throw new Error(responseData || "Une erreur est survenue !");
+        } else {
+          throw new Error("Une erreur inconnue est survenue.");
+        }
+      }
     } catch (error) {
       console.log(error)
       setError("Error during login: " + error.message);

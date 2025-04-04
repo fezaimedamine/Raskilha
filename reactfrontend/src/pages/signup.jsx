@@ -15,12 +15,12 @@ const Signup = () => {
     username: "",
     age: "",
     email: "",
-    password: "",
+    rawPassword: "test",
     location: "",
   });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedRole, setSelectedRole] = useState("");
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
@@ -61,19 +61,16 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/api/auth/signup", {
+  
+      const response = await fetch("http://localhost:8081/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, role: selectedRole }),
+        body: JSON.stringify({ ...formData, role: selectedRole}),
       });
-      const data = await response.json();
-      if (data.success) {
-        toast.success("Signup successful!");
-        navigate("/login");
-      } else {
-        toast.error(data.message);
-      }
+      const data = await response.text();
+     
     } catch (error) {
+      console.error(error)
       toast.error("Error during signup: " + error.message);
     }
   };

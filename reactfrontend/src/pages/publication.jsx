@@ -392,7 +392,7 @@ const [suggestions, setSuggestions] = useState([]);
                   />
                 </div>
                 <button 
-                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 shadow-sm rounded-full py-2 px-4 text-gray-500 transition"
+                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 rounded-full py-2 px-4 text-gray-500 transition"
                   onClick={() => setIsOpen(true)}
                 >
                   What's on your mind?
