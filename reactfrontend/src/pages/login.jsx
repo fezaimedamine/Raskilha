@@ -137,7 +137,7 @@ const Login = () => {
 
        
         {/* <img src={wasteManagementImage} width={600} height={500} alt="Team Illustration" />*/}
-        <Lottie animationData={loginanimation} loop={true} className="w-2/5 " />
+        <Lottie animationData={loginanimation} loop={true} className="hidden md:block md:w-2/5 " />
       </div>
     </div>
   );
