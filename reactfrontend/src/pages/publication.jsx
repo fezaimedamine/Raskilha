@@ -93,7 +93,10 @@ export default function Publication() {
     console.log(formData.title)
 
 };
-
+ const [selectedImage, setSelectedImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file ) {
@@ -157,7 +160,7 @@ const handleSubmit = async(e) => {
       location: "",
       region:""
     })
-  
+    
 };
 
 const closeForm = () =>{
@@ -185,7 +188,7 @@ const [suggestions, setSuggestions] = useState([]);
     const [page, setPage] = useState(0); // Start at the first page
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const POSTS_PER_PAGE = 2;
+    const POSTS_PER_PAGE = 10;
     useEffect(() => {
       const fetchPosts = async () => {
         if (loading || !hasMore) return;
@@ -238,6 +241,7 @@ const [suggestions, setSuggestions] = useState([]);
     
       if (bottom && !loading && hasMore) {
         setPage((prevPage) => prevPage + 1);
+        console.log(page)
       }
     };
     
