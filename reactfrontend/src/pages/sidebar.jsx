@@ -1,17 +1,18 @@
-import React from "react";
+import React,{useContext} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaMapMarkedAlt, FaRecycle, FaUserCircle, FaHome } from "react-icons/fa";
 import logo from "../Images/logo.png";
 import { TbLogout2 } from "react-icons/tb";
-
+import { UserContext } from "./UserContext";
  
 
 
 const Sidebar = () => {
+  const { setUserDetails } = useContext(UserContext);
   const navigate = useNavigate();
   const handleLogout = () => {
     
-    //setUserDetails(null);
+    setUserDetails(null);
     localStorage.removeItem('userDetails'); 
     navigate('/'); 
   };

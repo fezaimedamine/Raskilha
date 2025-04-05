@@ -47,7 +47,7 @@ public class CommentaireController {
         commentaireService.supprimerCommentaire(id);
         return "Commentaire supprimé avec succès.";
     }
-    @GetMapping("pub/{id}")
+    @GetMapping("/pub/{id}")
     public List<CommentaireDTO> getCommentairesParPubs(@PathVariable Long id){
         return commentaireService.getCommentairesParPublication(id);
     }
