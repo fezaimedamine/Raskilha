@@ -9,10 +9,54 @@ import axios from "axios";
 import PostCard from "./PostCard";
 
 
+const publication=[{
+  "titre": "Journée de nettoyage du parc",
+  "description": "Venez nombreux participer au nettoyage du parc municipal ce dimanche matin !",
+  "image": "https://img.freepik.com/photos-premium/espace-vert-entoure-detritus-dechets-dans-ville-animee_124507-135242.jpg",
+  "dateHeure": "2025-03-01 00:50:27.000000",
+  "commentaires": [
+    {
+      "user":{
+        "image":"https://th.bing.com/th/id/OIP.iEdku3hRrPYvMlM5RGxoMQHaHa?rs=1&pid=ImgDetMain",   
+        "nom_profil": "Mohamed"
+      },
+      "texte": "Super initiative ! Je viendrai avec mes amis."
+      
+    },
+    {
+      "user":{
+        "image":"https://th.bing.com/th/id/OIP.hFFhSrdDv5JpgAXUlZzyWgHaLH?rs=1&pid=ImgDetMain",
+        "nom_profil": "Sarra"
+      },
+      "texte":"great work ! continue"
+    }
+  ],
+    "user" :{
+      "nom_profil": "Youssef 123",
+      "image": "https://img.freepik.com/premium-photo/vector-avatar-profile-icon_837074-8917.jpg"
 
+    }
+
+    
+  },
+  {
+    "titre": "Journée de nettoyage du parc",
+    "description": "Venez nombreux participer au nettoyage du parc municipal ce dimanche matin !",
+    "image": "https://blog.moderngov.com/hs-fs/hubfs/11-1.jpg?width=960&height=638&name=11-1.jpg",
+    "dateHeure": "2025-02-05T09:00:00",
+   
+    "commentaires": [
+      {
+        "user": "SarahK",
+        "message": "Super initiative ! Je viendrai avec mes amis."
+      }
+    ]
+  
+  }
+]
 export default function Publication() {
   
-  const [filteredPosts,setFilteredPosts] = useState("");
+  const [filteredPosts,setFilteredPosts] = useState(publication);
  
   const [mediaPreview, setMediaPreview] = useState(null);
 
@@ -333,9 +377,9 @@ const [suggestions, setSuggestions] = useState([]);
   </div>
 )}
         
-        <div className="flex ml-24 items-center flex-col gap-9 mt-32 mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
+        <div className="flex ml-24 items-center flex-col  mt-28 mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
           
-          <div className="  w-80 md:w-1/2 mr-24 flex flex-col gap-4 items-center">
+          <div className="  w-80 md:w-1/2 mr-24 flex flex-col  items-center">
             {/* Create Post Component */}
             <div className="bg-white rounded-lg shadow p-4 mb-4 w-full">
               {/* Create Post Header */}
@@ -348,7 +392,7 @@ const [suggestions, setSuggestions] = useState([]);
                   />
                 </div>
                 <button 
-                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 shadow-sm rounded-full py-2 px-4 text-gray-500 transition"
+                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 rounded-full py-2 px-4 text-gray-500 transition"
                   onClick={() => setIsOpen(true)}
                 >
                   What's on your mind?

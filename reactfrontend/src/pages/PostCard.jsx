@@ -78,9 +78,9 @@ function PostCard({ post }) {
         <div className="flex flex-col w-80 md:w-full mt-5 mb-5 border-2 border-gray-300 rounded-lg cursor-pointer">
           <div className="p-4 flex flex-col gap-2 w-full hover:bg-gray-200" onClick={toggleExpand}>
             <div className="flex items-center gap-3">
-            <img className="w-10 h-10 rounded-full" /*src=`data:image/jpeg;base64,${post.user.image}`*/ alt="" />
+            {post.user?.image && <img className="w-10 h-10 rounded-full object-contain" src={post.user.image}/*src=`data:image/jpeg;base64,${post.user.image}`*/ alt="profile image" />}
               <div>
-                <div className="text-base font-medium">{/*post.user.nom_profil*/}</div>
+              {post.user?.nom_profil && <div className="text-base font-medium">{post.user.nom_profil}</div>}
                 <div className="text-xs text-gray-500">{getTimeAgo(post.dateHeure)}</div>
               </div>
             </div>
@@ -88,7 +88,8 @@ function PostCard({ post }) {
             <p className="text-md font-semibold text-gray-800">{post.titre}</p>
            
             <img 
-              src={`data:image/jpeg;base64,${post.image}`}
+              /*src={`data:image/jpeg;base64,${post.image}`}*/
+              src={post.image}
               alt="Post content"
               className="w-full max-h-80 object-contain rounded-lg border-gray-300"
             />
@@ -124,10 +125,10 @@ function PostCard({ post }) {
               {/* Post Content */}
               <div className="flex flex-col gap-2 justify-center overflow-y-auto max-h-[100vh]">  
                 <div className="flex items-center gap-3">
-                <img className="w-10 h-10 rounded-full" /*src=`data:image/jpeg;base64,${post.user.image}`*/ alt="" />
+                {post.user?.image &&<img className="w-10 h-10 rounded-full" src={post.user.image} /*src=`data:image/jpeg;base64,${post.user.image}`*/ alt="" />}
                   <div>
-                    <div className="text-md font-medium">{/*post.user.nom_profil*/}</div>
-                    <div className="text-xs text-gray-500">{post.dateHeure}</div>
+                   {post.user?.nom_profil && <div className="text-md font-medium">{post.user.nom_profil}</div>}
+                    <div className="text-xs text-gray-500">{getTimeAgo(post.dateHeure)}</div>
                   </div>
                 </div>
   
@@ -135,7 +136,8 @@ function PostCard({ post }) {
                 <p className="text-gray-700">{post.description}</p>
                 <div className="flex justify-center bg-inherit">  
                   <img 
-                    src={`data:image/jpeg;base64,${post.image}`}
+                    src={post.image}
+                    /*src={`data:image/jpeg;base64,${post.image}`}*/
                     alt="Post content"
                     className="w-4/6 bg-inherit max-h-80 object-contain rounded-lg border-gray-300"
                   />
@@ -148,9 +150,9 @@ function PostCard({ post }) {
                     {comments ? (
                       comments.map((comment) => (
                         <div key={comment.id} className="flex items-center gap-3">
-                  <img className="w-8 h-8 object-contain rounded-full" /*src={comment.user.image}*/ alt="image" />
+                  <img className="w-8 h-8 object-contain rounded-full" src={comment.user.image} alt="image" />
                   <div className="bg-gray-100 py-1 px-2 rounded">
-                    <div className="text-md font-medium">eeee{/*comment.user.nom_profil*/}</div>
+                    <div className="text-md font-medium">{comment.user.nom_profil}</div>
                     <div className="text-sm text-gray-700  ">{comment.texte}</div>
                   </div>
                 </div>

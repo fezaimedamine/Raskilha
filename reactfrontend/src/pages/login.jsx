@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import loginanimation from '../Images/login.json'
 import Lottie from "lottie-react";
 const Login = () => {
+  //const { userDetails, setUserDetails } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -16,26 +17,43 @@ const Login = () => {
     setPasswordVisible((prev) => !prev);
   };
 
+ /* useEffect(() => {
+    if (userDetails) {
+      navigate("/publication");
+    }
+  }, [userDetails]);*/
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch("http://localhost:8081/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email:email, password:password }),
       });
 
-      const data = await response.json();
-      if (data.success) {
-        localStorage.setItem("userDetails", JSON.stringify(data.data)); 
-        navigate("/map"); 
+      const contentType = response.headers.get("Content-Type");
+      let responseData;
+
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json(); // Parse JSON response
+        //setUserDetails(responseData);
+          localStorage.setItem('userDetails', JSON.stringify(responseData));
+          navigate('/publication');
+
       } else {
-        setError(data.message);
-      }
+        responseData = await response.text(); // Read as text
+        if (responseData.includes("Utilisateur non trouvé")) {
+          throw new Error("Wrong Email !");
+        }
+        if (responseData.includes("Mot de passe incorrect")) {
+          throw new Error("Wrong Password !");
+        }
+      }   
     } catch (error) {
-      setError("Error during login: " + error.message);
+      setError("Error during login:" + error.message);
     }
   };
 
@@ -47,7 +65,6 @@ const Login = () => {
       closeOnClick: true,
     });
   };
-
   useEffect(() => {
     if (error) {
       showError();

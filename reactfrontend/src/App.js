@@ -7,9 +7,12 @@ import Home from "./pages/home";
 import Map  from "./pages/map";
 import SocialHomePage from "./pages/acceuil";
 import Publication from "./pages/publication";
+import  { Toaster } from 'react-hot-toast';
 function App() {
   return (
+    
     <Router>
+      <Toaster />
       <Routes>
   
         <Route path="/" element={<Home />} />

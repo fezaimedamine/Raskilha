@@ -28,10 +28,14 @@ public ResponseEntity<String> registerUser(@RequestBody UserEntity user) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }
-    @GetMapping("/me")
-    public UserEntity getCurrentUser() {
-        Long userId = 1; /*((CustomUserDetails) userDetails).getId()*/
-        UserEntity profile = userService.getCurrentUserProfile(userId);
-        return ResponseEntity.ok(profile);
+@PostMapping("/update")
+public ResponseEntity<String> changeUser(@RequestBody UserEntity user) {
+    try {
+        userService.updateUser(user);
+        return ResponseEntity.ok("User updated successfully!");
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+}
+    
 }

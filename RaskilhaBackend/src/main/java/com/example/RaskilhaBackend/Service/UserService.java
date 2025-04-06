@@ -56,15 +56,6 @@ public class UserService {
 
     
     
-    public Optional<UserEntity> getCurrentUserProfile(Long userId) {
-        
-        return userRepository.findById(userId)
-                .orElseThrow(() ->new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, 
-                    "User not found" 
-                ));;
-    }
-    
 
     // Mise à jour des informations utilisateur
     public UserEntity updateUser(Long id, UserEntity updatedUser) {

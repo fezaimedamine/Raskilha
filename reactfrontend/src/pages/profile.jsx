@@ -14,8 +14,7 @@ const ProfilePage = () => {
 useEffect(() => {
   const fetchUser = async () => {
     try {
-      const response = await axios.get("http://localhost:8081/raskilha/me");
-      setUser(response.data);
+      setUser(JSON.parse(localStorage.getItem('userDetails')).user);
     } catch (err) {
       console.error("Error fetching user:", err);
     } finally {
@@ -53,7 +52,28 @@ const [formData, setFormData] = useState({
     region: "",
     adresse:"",
     image:null
-  }); 
+  })
+  useEffect(() => {
+  const fillForm = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('userDetails')).user;
+      setFormData({
+        firstName: user.nom,
+        lastName: user.prenom,
+        username: user.nomProfil,
+        age: user.age,
+        email: user.email,
+        region: user.region,
+        adresse:user.adresse,
+        image:null
+      });
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    } finally {
+
+    }
+  };fillForm();
+}, []); 
   const handleChange = (e) => {
     console.log(formData)
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -93,6 +113,19 @@ const [formData, setFormData] = useState({
   const handleUpdateProfile = () => {
     alert("Update Profile clicked!");
   };
+  const handleSubmit = async() =>{
+    try {
+      const response = await fetch("http://localhost:8081/raskilha/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user:user }),
+      });
+    }catch (error) {
+      console.error("Error during update:" + error.message);
+    }
+  };
 
   return (<>
       <Sidebar/>
@@ -104,8 +137,8 @@ const [formData, setFormData] = useState({
       <div className="flex items-center mb-4">
         <img src={user.image} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />
         <div>
-          <h2 className="text-xl font-bold">profil{user.nom_profil}</h2>
-          <p className="text-gray-600">moedem{user.nom}</p>
+          <h2 className="text-xl font-bold">profil</h2>
+          <p className="text-gray-600">{user.nomProfil}</p>
         </div>
       </div>
       
@@ -147,7 +180,7 @@ const [formData, setFormData] = useState({
             <h2 className="text-3xl font-bold text-center mb-5 text-gray-800">Update Your Profile </h2>
             
           </div>
-    <form className="flex flex-col gap-6" >
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6" >
                  
                     
                       {/* First Name and Last Name */}
@@ -157,7 +190,7 @@ const [formData, setFormData] = useState({
             type="text"
             name="firstName"
             id="firstName"
-            value={formData.firstName}
+            value= {formData.firstName}
             onChange={handleChange}
             className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
             placeholder=" "
