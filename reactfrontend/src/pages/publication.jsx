@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useContext } from "react";
 import Sidebar from "./sidebar";
 import MenuBar from "./menubar";
 
@@ -7,56 +7,13 @@ import { motion } from "framer-motion";
 
 import axios from "axios";
 import PostCard from "./PostCard";
+import { UserContext } from "./UserContext";
 
-
-const publication=[{
-  "titre": "Journée de nettoyage du parc",
-  "description": "Venez nombreux participer au nettoyage du parc municipal ce dimanche matin !",
-  "image": "https://img.freepik.com/photos-premium/espace-vert-entoure-detritus-dechets-dans-ville-animee_124507-135242.jpg",
-  "dateHeure": "2025-03-01 00:50:27.000000",
-  "commentaires": [
-    {
-      "user":{
-        "image":"https://th.bing.com/th/id/OIP.iEdku3hRrPYvMlM5RGxoMQHaHa?rs=1&pid=ImgDetMain",   
-        "nom_profil": "Mohamed"
-      },
-      "texte": "Super initiative ! Je viendrai avec mes amis."
-      
-    },
-    {
-      "user":{
-        "image":"https://th.bing.com/th/id/OIP.hFFhSrdDv5JpgAXUlZzyWgHaLH?rs=1&pid=ImgDetMain",
-        "nom_profil": "Sarra"
-      },
-      "texte":"great work ! continue"
-    }
-  ],
-    "user" :{
-      "nom_profil": "Youssef 123",
-      "image": "https://img.freepik.com/premium-photo/vector-avatar-profile-icon_837074-8917.jpg"
-
-    }
-
-    
-  },
-  {
-    "titre": "Journée de nettoyage du parc",
-    "description": "Venez nombreux participer au nettoyage du parc municipal ce dimanche matin !",
-    "image": "https://blog.moderngov.com/hs-fs/hubfs/11-1.jpg?width=960&height=638&name=11-1.jpg",
-    "dateHeure": "2025-02-05T09:00:00",
-   
-    "commentaires": [
-      {
-        "user": "SarahK",
-        "message": "Super initiative ! Je viendrai avec mes amis."
-      }
-    ]
-  
-  }
-]
+ 
 export default function Publication() {
-  
-  const [filteredPosts,setFilteredPosts] = useState(publication);
+  const { userDetails, setUserDetails } = useContext(UserContext);
+
+  const [filteredPosts, setFilteredPosts] = useState([]);
  
   const [mediaPreview, setMediaPreview] = useState(null);
 
@@ -93,7 +50,10 @@ export default function Publication() {
     console.log(formData.title)
 
 };
-
+ const [selectedImage, setSelectedImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file ) {
@@ -101,7 +61,7 @@ export default function Publication() {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         
-        reader.onloadend = () => {setFormData({ ...formData, image: reader.result.split(",")[1] });console.log(reader.result)}; // Convert to Base64
+        reader.onloadend = () => {setFormData({ ...formData, image: reader.result.split(",")[1] })}; // Convert to Base64
         setMediaPreview(URL.createObjectURL(file));
       }else{
         setErrors({image:"File must be a file type"})
@@ -143,7 +103,7 @@ const handleSubmit = async(e) => {
         });
   
         const data = await response.json();
-        
+        fetchPosts()
       }catch (error) {
         console.log("Error during login: " + error);
       }
@@ -157,7 +117,7 @@ const handleSubmit = async(e) => {
       location: "",
       region:""
     })
-  
+    
 };
 
 const closeForm = () =>{
@@ -168,35 +128,98 @@ const closeForm = () =>{
 const [query, setQuery] = useState("");
 const [suggestions, setSuggestions] = useState([]);
 
+//try
+const fetchLocations = async () => {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
+  );
+  const data = await response.json();
+  setSuggestions(data);
+};
    useEffect(() => {
       if (query.length < 3) return;
   
-      const fetchLocations = async () => {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${query}`
-        );
-        const data = await response.json();
-        setSuggestions(data);
-      };
-  
+
       fetchLocations();
     }, [query]);
-   
+  /////// thhgfhhg
+  
+  
 
-    useEffect(() => {
-      axios.get("http://localhost:8081/api/pubs")
-        .then(response => {
-          setFilteredPosts(response.data); // Axios automatically parses JSON
-        })
-        .catch(error => {
-          console.error("Error fetching posts:", error);
+    const [page, setPage] = useState(0); // Start at the first page
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const POSTS_PER_PAGE = 10;
+    const fetchPosts = async () => {
+      if (loading || !hasMore) return;
+      setLoading(true);
+  
+      try {
+        const response = await axios.get('http://localhost:8081/api/pubs', {
+          params: {
+            page: page,
+            size: POSTS_PER_PAGE,
+          },
         });
-    }, []);
-
+  
+        const posts = response.data.content;
+  
+        if (posts.length < POSTS_PER_PAGE) {
+          setHasMore(false);
+        }
+        
+        if (page === 0) {
+          setFilteredPosts(posts); // Replace on first load
+        } else {
+          // Append only new posts
+          setFilteredPosts((prevPosts) => {
+            const newPosts = posts.filter(
+              post => !prevPosts.some(p => p.id === post.id)
+            );
+            console.log(newPosts)
+            return [...prevPosts, ...newPosts];
+          });
+        }
+  
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    useEffect(() => {
+      
+    
+      fetchPosts();
+    }, [page]);
+    
+   
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const clientHeight = window.innerHeight;
+      const scrollHeight = document.documentElement.scrollHeight;
+    
+      const bottom = scrollTop + clientHeight >= scrollHeight - 50;
+    
+      if (bottom && !loading && hasMore) {
+        setPage((prevPage) => prevPage + 1);
+        console.log(page)
+      }
+    };
+    
+    useEffect(() => {
+      // Listen for the scroll event
+      window.addEventListener('scroll', handleScroll);
+  
+      // Cleanup the event listener when the component is unmounted
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }, [loading, hasMore]);
   return (
     <>
     <Sidebar/>
-    <MenuBar setFilteredPosts={setFilteredPosts}/>
+    <MenuBar />
     
     
     {isOpen && (
@@ -245,19 +268,8 @@ const [suggestions, setSuggestions] = useState([]);
                     value={formData.description}
                     onChange={handleChange}
                   />
-<label for="city">Choose a city:</label>
-<select   required
-          onChange={(e)=>{setFormData({...formData,region:e.target.value})}}
-          className="bg-gray-300 ml-2 text-black p-2 rounded-md"
-          name="region"
-          value={formData.region}
-          
-        >
-          <option selected value="">Choose a region </option>
-          <option value="Tunis">Tunis </option>
-          <option value="Sfax">Sfax</option>
-          <option value="Ville">Ville</option>
-        </select>
+
+
 
  
  
@@ -301,7 +313,10 @@ const [suggestions, setSuggestions] = useState([]);
                       {query && (
                         <button 
                           className="text-gray-500 hover:text-gray-700"
-                          onClick={() => {setFormData({ ...formData, location: "" } ) ;setQuery("")}}
+                          onClick={() => {
+                            setFormData({ ...formData, location: "" } ) ;
+                            setQuery("");
+                          }}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -311,22 +326,30 @@ const [suggestions, setSuggestions] = useState([]);
                     
                       </div>
                       {suggestions.length > 0 && (
-                    <ul className="border absolute z-10 bg-white mt-48 mr-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
-                      {suggestions.map((place, index) => (
-                        <li
-                          key={index}
-                          onClick={() => {
-                            setFormData({ ...formData, location: place.display_name });
-                            setQuery(place.display_name);
-                            setSuggestions([]);
-                          }}
-                          className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
-                        >
-                          {place.display_name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                          <ul className="border absolute z-10 bg-white mr-2 rounded-lg shadow-md max-h-40 overflow-y-auto">
+                            {suggestions.map((place, index) => {
+                              // Extract region data properly
+                              const { city, town, village, municipality, county, state, state_district  } = place.address || {};
+                              const cityName = city || town || village || municipality || county || state || state_district  || "Unknown City";
+
+                              return (
+                                <li
+                                  key={index}
+                                  onClick={() => {
+                                    setFormData({ ...formData, location: cityName }); // Send only the region
+                                   
+                                    setQuery(place.display_name); 
+                                    setSuggestions([]);
+                                  }}
+                                  className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
+                                >
+                                  {place.display_name}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+
                       </>
                   )}
 
@@ -443,6 +466,11 @@ const [suggestions, setSuggestions] = useState([]);
             </div>
 
             {/* Posts List */}
+            {loading && (
+              <div className="text-center my-4 text-gray-500">
+                Loading more posts...
+              </div>
+            )}
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
             ) : (

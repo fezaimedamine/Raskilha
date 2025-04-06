@@ -1,15 +1,18 @@
 package com.example.RaskilhaBackend.Service;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.example.RaskilhaBackend.Entity.PubEntity;
 import com.example.RaskilhaBackend.Entity.UserEntity;
 import com.example.RaskilhaBackend.Repository.PubRepository;
 import com.example.RaskilhaBackend.Repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PubService {
@@ -20,8 +23,8 @@ public class PubService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<PubEntity> getAllPubs() {
-        return pubRepository.findAll();
+    public Page<PubEntity> getAllPubs(Pageable pageable) {
+        return pubRepository.findAll(pageable); // Uses pagination from the repository
     }
 
     public Optional<PubEntity> getPubById(Long id) {

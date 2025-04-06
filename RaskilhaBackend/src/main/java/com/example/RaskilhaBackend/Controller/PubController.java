@@ -3,6 +3,8 @@ import com.example.RaskilhaBackend.Entity.PubEntity;
 import com.example.RaskilhaBackend.Service.PubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -14,8 +16,8 @@ public class PubController {
     private PubService pubService;
 
     @GetMapping
-    public List<PubEntity> getAllPubs() {
-        return pubService.getAllPubs();
+    public Page<PubEntity> getAllPubs(Pageable pageable) {
+        return pubService.getAllPubs(pageable);
     }
 
     @GetMapping("/{id}")

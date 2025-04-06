@@ -22,6 +22,21 @@ const Signup = () => {
     password: "",
     adresse: "",
   });
+  const [formData1, setFormData1] = useState({
+    nom: "",
+    prenom: "",
+    nomProfil: "",
+    age: "",
+    genre:"Male",
+    email: "",
+    password: "",
+  });
+  const [formData2, setFormData2] = useState({
+  
+    imageProfil:null,
+    tel:"",
+    adresse: "",
+  });
   const[error,setError]=useState(null)
   const[errors,setErrors]=useState([])
   
@@ -30,7 +45,9 @@ const Signup = () => {
   const [selectedRole, setSelectedRole] = useState("");
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
   };
@@ -43,31 +60,21 @@ const Signup = () => {
   
     setErrors(newErrors);
   
-    // Check if there are no errors
+    // Return if there are no errors
     return Object.values(newErrors).every((err) => err === "");
   };
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
 
-  const handleImageChange = (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file ) {
-      if(file.type.startsWith("image/")){
-        
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        
-        reader.onloadend = () => {setFormData({ ...formData, imageProfil: reader.result.split(",")[1] })}; // Convert to Base64
-        //setMediaPreview(URL.createObjectURL(file));
-        
-      }else{
-        
-        setError("File must be a file type")
-      }
+    if (file) {
+      setSelectedImage(file);
+      setPreview(URL.createObjectURL(file)); // Create a local preview of the image
+      setFormData2({ ...formData2, imageProfil: file });
     }
-
-};
+  };
   const validateField = (name, value) => {
     let errorMessage = "";
 
@@ -103,14 +110,27 @@ const Signup = () => {
     return errorMessage;
   };
   const handleChange = (e) => {
-    const{name,value}=e.target
-    setFormData({ ...formData, [name]: value });
-    setErrors({ ...errors, [name]: validateField(name, value) });
+    const { name, value } = e.target;
+    
+    if (step === 1) {
+      setFormData1({ ...formData1, [name]: value });
+      console.log(step,value)
+      setErrors({ ...errors, [name]: validateField(name, value) });
+    } else if (step === 2) {
+      setFormData2({ ...formData2, [name]: value });
+      setErrors({ ...errors, [name]: validateField(name, value) });
+    }
   };
+  
 
   const handleNext = () => {
-    if (validateForm(formData)){
-      setStep(2);
+    const currentFormData = step === 1 ? formData1 : step === 2 ? formData2 : formData;
+    
+    // Check if current step is valid before moving to the next step
+    const isValid = validateForm(currentFormData);
+    
+    if (isValid) {
+      setStep(step + 1);  // Proceed to the next step
     }
   };
 
@@ -134,32 +154,44 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
   
+    // Combine both formData1 and formData2
+    const finalData = {
+      ...formData1,
+      ...formData2,
+      type: selectedRole, // If you need to add role information
+    };
+  console.log(finalData)
+    try {
       const response = await fetch("http://localhost:8081/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, type: selectedRole}),
+        body: JSON.stringify(finalData), // Send the complete data
       });
+  
       const responseData = await response.text();
+  
       if (responseData.includes("Email déjà utilisé !")) {
         throw new Error("Email déjà utilisé !");
       }
-      console.log("success")
-     toast.success("utilisateur enregistré avec succès",{
-      closeOnClick: true,
-      autoClose: 3000,
-    })
-     navigate("/Login")
-    } catch (error) {
-      console.error(error)
-      toast.error("Error during signup: " + error.message,{
+  
+      // If the response is successful, navigate or show success message
+      console.log("success");
+      toast.success("Utilisateur enregistré avec succès", {
         closeOnClick: true,
         autoClose: 3000,
       });
-      
+  
+      navigate("/Login");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error during signup: " + error.message, {
+        closeOnClick: true,
+        autoClose: 3000,
+      });
     }
   };
+  
 
   const showError = () => {
     toast.error(error, {
@@ -180,7 +212,7 @@ const Signup = () => {
     <div className="h-screen flex items-center justify-center bg-gradient-to-r from-green-50 to-green-50">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-11/12  flex flex-row items-center">
         {/* Left Side: Form */}
-        <div className="w-full md:w-1/2 flex flex-col gap-7">
+        <div className="sm:w-full md:w-1/2 flex flex-col gap-7">
           <div>
             <h2 className="text-3xl font-bold text-center text-gray-800">Get Started Now</h2>
             <h2 className="text-base font-thin text-center text-gray-800">
@@ -190,249 +222,286 @@ const Signup = () => {
           <form className="flex flex-col gap-7" onSubmit={handleSubmit}>
             {step === 1 && (
               <>
-                {/* First Name and Last Name */}
-                <div className="flex gap-4">
-  <div className="flex-1 relative">
-    <input
-      type="text"
-      name="nom"
-      id="nom"
-      value={formData.nom}
-      onChange={handleChange}
-      className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.nom ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
-      placeholder=" "
-      required
-    />
-    <label
-      htmlFor="nom"
-      className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
-        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
-        peer-focus:-top-3 peer-focus:text-sm  ${errors.nom ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
-        ${formData.nom ? "-top-3 text-sm " : "top-2"}`}
-    >
-      FirstName
-    </label>
-    {errors.nom && <p className="text-red-500 text-xs fixed ml-2" >{errors.nom}</p>}
-  </div>
-  <div className="flex-1 relative">
-    <input
-      type="text"
-      name="prenom"
-      id="prenom"
-      value={formData.prenom}
-      onChange={handleChange}
-      className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.prenom ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
-      
-      placeholder=" "
-      required
-    />
-    <label
-      htmlFor="prenom"
-      className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
-        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
-        peer-focus:-top-3 peer-focus:text-sm  ${errors.prenom ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
-        ${formData.prenom ? "-top-3 text-sm " : "top-2"}`}
-    >
-      LastName
-    </label>
-    {errors.prenom && <p className="text-red-500 text-xs fixed ml-2" >{errors.prenom}</p>}
-  </div>
-</div>
+                          {/* First Name and Last Name */}
+                          <div className="flex gap-4">
+                            <div className="flex-1 relative">
+                              <input
+                                type="text"
+                                name="nom"
+                                id="nom"
+                                value={formData1.nom}
+                                onChange={handleChange}
+                                className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.nom ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+                                placeholder=" "
+                                required
+                              />
+                              <label
+                                htmlFor="nom"
+                                className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+                                  peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+                                  peer-focus:-top-3 peer-focus:text-sm  ${errors.nom ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+                                  ${formData1.nom ? "-top-3 text-sm " : "top-2"}`}
+                              >
+                                FirstName
+                              </label>
+                              {errors.nom && <p className="text-red-500 text-xs fixed ml-2" >{errors.nom}</p>}
+                            </div>
+                            <div className="flex-1 relative">
+                              <input
+                                type="text"
+                                name="prenom"
+                                id="prenom"
+                                value={formData1.prenom}
+                                onChange={handleChange}
+                                className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.prenom ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+                                
+                                placeholder=" "
+                                required
+                              />
+                              <label
+                                htmlFor="prenom"
+                                className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+                                  peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+                                  peer-focus:-top-3 peer-focus:text-sm  ${errors.prenom ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+                                  ${formData1.prenom ? "-top-3 text-sm " : "top-2"}`}
+                              >
+                                LastName
+                              </label>
+                              {errors.prenom && <p className="text-red-500 text-xs fixed ml-2" >{errors.prenom}</p>}
+                            </div>
+                          </div>
 
-{/* Username and Age */}
-<div className="flex gap-4">
-  <div className="flex-1 relative">
-    <input
-      type="text"
-      name="nomProfil"
-      id="nomProfil"
-      value={formData.nomProfil}
-      onChange={handleChange}
-      className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.nomProfil ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
-      placeholder=" "
-      required
-    />
-    <label
-      htmlFor="nomProfil"
-      className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
-        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
-        peer-focus:-top-3 peer-focus:text-sm  ${errors.nomProfil ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
-        ${formData.nomProfil ? "-top-3 text-sm " : "top-2"}`}
-    >
-      UserName
-    </label>
-    {errors.nomProfil && <p className="text-red-500 text-xs fixed ml-2" >{errors.nomProfil}</p>}
-  </div>
-  <div className="w-24 relative">
-    <input
-      type="number"
-      name="age"
-      id="age"
-      value={formData.age}
-      onChange={handleChange}
-      className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.age ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
-      placeholder=" "
-      required
-    />
-    <label
-      htmlFor="age"
-      className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
-        peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
-        peer-focus:-top-3 peer-focus:text-sm  ${errors.age ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
-        ${formData.age ? "-top-3 text-sm " : "top-2"}`}
-    >
-      Age
-    </label>
-    {errors.age && <p className="text-red-500 text-xs fixed ml-2" >{errors.age}</p>}
-  </div>
-</div>
-{/*Gender */}
-<div className="relative">
-<select className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer" id="genre" name="genre"  onChange={handleChange}>
-        
-        <option value="Male" selected>Homme</option>
-        <option value="Female">Femme</option>
-        <option value="Other">Autre</option>
-      </select>
-  <label
-    htmlFor="genre"
-    className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-      peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-      ${formData.genre ? "-top-3 text-sm " : "top-2"}`}
-  >
-    Gender
-  </label>
-</div>
+                          {/* Username and Age */}
+                          <div className="flex gap-4">
+                            <div className="flex-1 relative">
+                              <input
+                                type="text"
+                                name="nomProfil"
+                                id="nomProfil"
+                                value={formData1.nomProfil}
+                                onChange={handleChange}
+                                className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.nomProfil ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+                                placeholder=" "
+                                required
+                              />
+                              <label
+                                htmlFor="nomProfil"
+                                className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+                                  peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+                                  peer-focus:-top-3 peer-focus:text-sm  ${errors.nomProfil ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+                                  ${formData1.nomProfil ? "-top-3 text-sm " : "top-2"}`}
+                              >
+                                UserName
+                              </label>
+                              {errors.nomProfil && <p className="text-red-500 text-xs fixed ml-2" >{errors.nomProfil}</p>}
+                            </div>
+                            <div className="w-24 relative">
+                              <input
+                                type="number"
+                                name="age"
+                                id="age"
+                                value={formData1.age}
+                                onChange={handleChange}
+                                className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.age ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+                                placeholder=" "
+                                required
+                              />
+                              <label
+                                htmlFor="age"
+                                className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+                                  peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+                                  peer-focus:-top-3 peer-focus:text-sm  ${errors.age ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+                                  ${formData1.age ? "-top-3 text-sm " : "top-2"}`}
+                              >
+                                Age
+                              </label>
+                              {errors.age && <p className="text-red-500 text-xs fixed ml-2" >{errors.age}</p>}
+                            </div>
+                          </div>
+                          {/*Gender */}
+                          <div className="relative">
+                          <select className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer" id="genre" name="genre"  onChange={handleChange}>
+                                  
+                                  <option value="Male" selected>Homme</option>
+                                  <option value="Female">Femme</option>
+                                  <option value="Other">Autre</option>
+                                </select>
+                            <label
+                              htmlFor="genre"
+                              className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+                                peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+                                peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+                                ${formData1.genre ? "-top-3 text-sm " : "top-2"}`}
+                            >
+                              Gender
+                            </label>
+                          </div>
 
-{/* Email */}
-<div className="relative">
-  <input
-    type="email"
-    name="email"
-    id="email"
-    value={formData.email}
-    onChange={handleChange}
-    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.email ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
-    placeholder=" "
-    required
-  />
-  <label
-    htmlFor="email"
-    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
-      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
-      peer-focus:-top-3 peer-focus:text-sm  ${errors.email ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
-      ${formData.email ? "-top-3 text-sm " : "top-2"}`}
-  >
-    Email
-  </label>
-  {errors.email && <p className="text-red-500 text-xs fixed ml-2" >{errors.email}</p>}
-</div>
+                          {/* Email */}
+                          <div className="relative">
+                            <input
+                              type="email"
+                              name="email"
+                              id="email"
+                              value={formData1.email}
+                              onChange={handleChange}
+                              className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.email ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+                              placeholder=" "
+                              required
+                            />
+                            <label
+                              htmlFor="email"
+                              className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+                                peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+                                peer-focus:-top-3 peer-focus:text-sm  ${errors.email ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+                                ${formData1.email ? "-top-3 text-sm " : "top-2"}`}
+                            >
+                              Email
+                            </label>
+                            {errors.email && <p className="text-red-500 text-xs fixed ml-2" >{errors.email}</p>}
+                          </div>
 
-{/* Password */}
-<div className="relative">
-  <input
-    type={passwordVisible ? "text" : "password"}
-    name="password"
-    id="password"
-    value={formData.password}
-    onChange={handleChange}
-    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.password ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
-    placeholder=" "
-    required
-  />
-  <label
-    htmlFor="password"
-    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
-      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
-      peer-focus:-top-3 peer-focus:text-sm  ${errors.password ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
-      ${formData.password ? "-top-3 text-sm " : "top-2"}`}
-  >
-    Password
-  </label>
-  {errors.password && <p className="text-red-500 text-xs fixed ml-2" >{errors.password}</p>}
-  <button
-    type="button"
-    onClick={togglePasswordVisibility}
-    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
-  >
-    {passwordVisible ? <MdVisibility className="w-5 h-5" /> : <MdVisibilityOff className="w-5 h-5" />}
-  </button>
-</div>
+                          {/* Password */}
+                          <div className="relative">
+                            <input
+                              type={passwordVisible ? "text" : "password"}
+                              name="password"
+                              id="password"
+                              value={formData1.password}
+                              onChange={handleChange}
+                              className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.password ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+                              placeholder=" "
+                              required
+                            />
+                            <label
+                              htmlFor="password"
+                              className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+                                peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+                                peer-focus:-top-3 peer-focus:text-sm  ${errors.password ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+                                ${formData1.password ? "-top-3 text-sm " : "top-2"}`}
+                            >
+                              Password
+                            </label>
+                            {errors.password && <p className="text-red-500 text-xs fixed ml-2" >{errors.password}</p>}
+                            <button
+                              type="button"
+                              onClick={togglePasswordVisibility}
+                              className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                            >
+                              {passwordVisible ? <MdVisibility className="w-5 h-5" /> : <MdVisibilityOff className="w-5 h-5" />}
+                            </button>
+                          </div>
 
-{/* Tel */}
-<div className="relative">
-  <input
-    type="tel"
-    name="tel"
-    id="tel"
-    value={formData.tel}
-    onChange={handleChange}
-    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.tel ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
-    placeholder=" "
-    required
-  />
-  <label
-    htmlFor="tel"
-    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
-      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
-      peer-focus:-top-3 peer-focus:text-sm  ${errors.tel ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
-      ${formData.tel ? "-top-3 text-sm " : "top-2"}`}
-  >
-    Phone
-  </label>
-  {errors.tel && <p className="text-red-500 text-xs fixed ml-2" >{errors.tel}</p>}
-</div>
+    
+                            {/* Next Button */}
+                            <button
+                              type="button"
+                              onClick={handleNext}
+                              className="w-full bg-green-300 text-white p-2 rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300"
+                            >
+                              Next
+                            </button>
+              </>
+            )}
 
-{/* Region Search */}
-<div className="relative">
-  <input
-    type="text"
-    name="adresse"
-    id="adresse"
-    value={query}
-    onChange={(e) => {setQuery(e.target.value);
-                      setFormData( {...formData, adresse: "" });
-                      
-                      setErrors({ ...errors, adresse: " You must choose from the suggestions"})
-                    }}
-    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.adresse ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
-    placeholder=" "
-  />
-  <label
-    htmlFor="adresse"
-    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
-      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
-      peer-focus:-top-3 peer-focus:text-sm  ${errors.adresse ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
-      ${query ? "-top-3 text-sm " : "top-2"}`}
-  >
-    Region
-  </label>
-  {errors.adresse  && <p className="text-red-500 text-xs fixed ml-2" >{errors.adresse}</p>}
+            {step === 2 && (
+              <>
+              {/* Image Upload Section */}
+              <div className="mb-4 flex flex-col items-center justify-center">
+                <label htmlFor="imageProfil" className="block text-sm font-semibold">Profile Picture</label>
+                <input 
+                  type="file" 
+                  id="imageProfil"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="mt-2"
+                />
+                {preview && (
+                  <div className="mt-4">
+                    <img 
+                      src={preview} 
+                      alt="Profile Preview" 
+                      className="w-24 h-24 object-cover rounded-full"
+                    />
+                  </div>
+                )}
+              </div>
+              {/* Tel */}
+              <div className="relative">
+                            <input
+                              type="tel"
+                              name="tel"
+                              id="tel"
+                              value={formData2.tel}
+                              onChange={handleChange}
+                              className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.tel ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+                              placeholder=" "
+                              required
+                            />
+                            <label
+                              htmlFor="tel"
+                              className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+                                peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+                                peer-focus:-top-3 peer-focus:text-sm  ${errors.tel ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+                                ${formData2.tel ? "-top-3 text-sm " : "top-2"}`}
+                            >
+                              Phone
+                            </label>
+                            {errors.tel && <p className="text-red-500 text-xs fixed ml-2" >{errors.tel}</p>}
+                          </div>
+
+                {/* Region Search */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="adresse"
+                    id="adresse"
+                    value={query}
+                    onChange={(e) => {setQuery(e.target.value);
+                                      setFormData2( {...formData2, adresse: "" });
+                                      
+                                      setErrors({ ...errors, adresse: " You must choose from the suggestions"})
+                                    }}
+                    className={`w-full p-2 border-2 rounded-lg text-gray-700   focus:outline-none focus:ring-2  transition duration-300 peer ${errors.adresse ? " focus:border-red-200 focus:ring-red-200 border-red-300 " : "focus:border-green-200 border-gray-300 focus:ring-green-200"}`}
+                    placeholder=" "
+                  />
+                  <label
+                    htmlFor="adresse"
+                    className={`absolute left-3   bg-white px-1 transition-all duration-300 pointer-events-none
+                      peer-placeholder-shown:top-2 peer-placeholder-shown:text-base 
+                      peer-focus:-top-3 peer-focus:text-sm  ${errors.adresse ? "peer-focus:text-red-500 text-red-500 peer-placeholder-shown:text-red-500" : "peer-focus:text-green-500 peer-placeholder-shown:text-gray-500 text-gray-500"}
+                      ${query ? "-top-3 text-sm " : "top-2"}`}
+                  >
+                    Region
+                  </label>
+                  {errors.adresse  && <p className="text-red-500 text-xs fixed ml-2" >{errors.adresse}</p>}
 
 
-                  {suggestions.length > 0 && (
-                    <ul className="border absolute z-10 bg-white mt-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
-                      {suggestions.map((place, index) => (
-                        <li
-                          key={index}
-                          onClick={() => {
-                            setFormData({ ...formData, adresse: place.display_name });
-                            setErrors({...errors,adresse:""})
-                            setQuery(place.display_name);
-                            setSuggestions([]);
-                          }}
-                          className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
-                        >
-                          {place.display_name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                                  {suggestions.length > 0 && (
+                                    <ul className="border absolute z-10 bg-white mt-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
+                                      {suggestions.map((place, index) => (
+                                        <li
+                                          key={index}
+                                          onClick={() => {
+                                            setFormData2({ ...formData2, adresse: place.display_name });
+                                            setErrors({...errors,adresse:""})
+                                            setQuery(place.display_name);
+                                            setSuggestions([]);
+                                          }}
+                                          className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
+                                        >
+                                          {place.display_name}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
                 </div>
 
-                {/* Next Button */}
-                <button
+              
+
+
+              {/* Next Button */}
+              <button
                   type="button"
                   onClick={handleNext}
                   className="w-full bg-green-300 text-white p-2 rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300"
@@ -441,29 +510,14 @@ const Signup = () => {
                 </button>
               </>
             )}
-
-            {step === 2 && (
-              <>{/* Image Upload Section */}
-              <div className="">
-                <label htmlFor="image-upload" className="block text-gray-700 font-semibold">
-                  Upload Your Profile Image:
-                </label>
-                <input
-                  
-                  type="file"
-                  id="image-upload"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="   p-1  border border-gray-300 rounded"
-                />
-              </div>
+            {step === 3 && (
+              <>
                 <div className="flex flex-col gap-4">
                   <h1 className="text-gray-700 text-center">Choose your role:</h1>
-                  <div className="flex flex-col md:flex-row justify-around gap-6">
+                  <div className="flex flex-row justify-around gap-6">
                     {/* Collector Role */}
                     <div
-                      className={`cursor-pointer flex flex-col items-center p-4 rounded-xl border-2 ${
+                      className={`cursor-pointer flex flex-col items-center w-1/2 p-4 rounded-xl border-2 ${
                         selectedRole === "collector"
                           ? "border-green-500 bg-green-50"
                           : "border-gray-300 hover:border-green-300 hover:bg-green-50"
@@ -476,7 +530,7 @@ const Signup = () => {
 
                     {/* Citizen Role */}
                     <div
-                      className={`cursor-pointer flex flex-col items-center p-4 rounded-xl border-2 ${
+                      className={`cursor-pointer flex flex-col items-center p-4 w-1/2 rounded-xl border-2 ${
                         selectedRole === "citizen"
                           ? "border-green-500 bg-green-50"
                           : "border-gray-300 hover:border-green-300 hover:bg-green-50"
@@ -520,7 +574,7 @@ const Signup = () => {
         </div>
 
 
-        <div className="w-full md:w-1/2 flex items-center justify-center mt-8 md:mt-0">
+        <div className=" hidden  md:w-1/2 md:flex items-center justify-center mt-8 md:mt-0">
           <img src={wasteManagementImage2} width={600} height={600} alt="Signup Illustration" />
 
         </div>
