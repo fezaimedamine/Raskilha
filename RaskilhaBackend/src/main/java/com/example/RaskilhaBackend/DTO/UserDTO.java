@@ -1,9 +1,8 @@
 package com.example.RaskilhaBackend.DTO;
 
-import java.util.Base64;
-
 import com.example.RaskilhaBackend.Entity.UserEntity;
 
+import jakarta.persistence.Lob;
 import lombok.Data;
 
 @Data
@@ -19,10 +18,11 @@ public class UserDTO {
     private String nomProfil;
     private String tel;
     private String type;
-    private long points; // Ajout du champ points
-    private String imageProfil; // Change this to String for Base64 representation
-   
-    // Constructor that takes a UserEntity and initializes the fields of the DTO
+
+    @Lob
+    private byte[] imageProfil;
+
+    // Constructeur qui prend un UserEntity et initialise les champs du DTO
     public UserDTO(UserEntity user) {
         this.user_id=user.getId();
         this.nom = user.getNom();
@@ -35,11 +35,6 @@ public class UserDTO {
         this.nomProfil = user.getNomProfil();
         this.tel = user.getTel();
         this.type = user.getType();
-        this.points = user.getPoints();
-        
-        // Convert the byte[] image to Base64 string for frontend use
-        if (user.getImageProfil() != null) {
-            this.imageProfil = Base64.getEncoder().encodeToString(user.getImageProfil());
-        }
+        this.imageProfil=user.getImageProfil();
     }
 }
