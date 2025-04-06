@@ -41,6 +41,7 @@ useEffect(() => {
 
       if (contentType && contentType.includes("application/json")) {
         responseData = await response.json(); // Parse JSON response
+        console.log("API Response Data:", responseData); 
         setUserDetails(responseData);
           localStorage.setItem('userDetails', JSON.stringify(responseData));
           navigate('/publication');

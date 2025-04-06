@@ -1,15 +1,16 @@
 package com.example.RaskilhaBackend.Service;
+import java.util.Base64;
+import java.util.Optional;
 
-import com.example.RaskilhaBackend.DTO.UserDTO;
-import com.example.RaskilhaBackend.Entity.UserEntity;
-import com.example.RaskilhaBackend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.example.RaskilhaBackend.DTO.UserDTO;
+import com.example.RaskilhaBackend.Entity.UserEntity;
+import com.example.RaskilhaBackend.Repository.UserRepository;
 
 @Service
 public class UserService {
@@ -35,6 +36,10 @@ public class UserService {
     if (existingUser.isPresent()) {
         throw new RuntimeException("Email déjà utilisé !");
     }
+   // If an image is present, decode it from Base64 and save it as byte[]
+if (user.getImageProfil() != null && user.getImageProfil().length > 0) {
+    user.setImageProfil(Base64.getDecoder().decode(user.getImageProfil()));
+}
 
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     return userRepository.save(user);
@@ -74,7 +79,7 @@ public class UserService {
             existingUser.setNomProfil(updatedUser.getNomProfil());
             existingUser.setType(updatedUser.getType());
             existingUser.setPoints(updatedUser.getPoints());
-
+            existingUser.setImageProfil(Base64.getDecoder().decode(updatedUser.getImageProfil()));
             return userRepository.save(existingUser);
         } else {
             throw new RuntimeException("Utilisateur non trouvé avec l'ID : " + id);
