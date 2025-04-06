@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class UserDTO {
+    private long user_id;
     private String nom;
     private String prenom;
     private int age;
@@ -18,6 +19,7 @@ public class UserDTO {
 
     // Constructeur qui prend un UserEntity et initialise les champs du DTO
     public UserDTO(UserEntity user) {
+        this.user_id=user.getId();
         this.nom = user.getNom();
         this.prenom = user.getPrenom();
         this.age = user.getAge();

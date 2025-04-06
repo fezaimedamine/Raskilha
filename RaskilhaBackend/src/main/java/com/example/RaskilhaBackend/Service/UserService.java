@@ -21,6 +21,9 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+    public Optional<UserEntity> getUser(long id){
+        return userRepository.findById(id);
+    }
 
     // Création d'un compte avec hachage du mot de passe
     public UserEntity createAccount(UserEntity user) {

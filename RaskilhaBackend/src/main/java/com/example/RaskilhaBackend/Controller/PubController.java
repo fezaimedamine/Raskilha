@@ -1,11 +1,14 @@
 package com.example.RaskilhaBackend.Controller;
+import com.example.RaskilhaBackend.DTO.PubDTO;
 import com.example.RaskilhaBackend.Entity.PubEntity;
 import com.example.RaskilhaBackend.Service.PubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
+
 
 import java.util.List;
 
@@ -16,10 +19,16 @@ public class PubController {
     @Autowired
     private PubService pubService;
 
-    @GetMapping
-    public Page<PubEntity> getAllPubs(Pageable pageable) {
-        return pubService.getAllPubs(pageable);
+    @GetMapping("/user/{id}")
+    public List<PubEntity> getPubByUserId(@PathVariable long id){
+        return pubService.findPubByUserId(id);
     }
+
+    @GetMapping()
+    public Page<PubDTO> getAllPubs(@PageableDefault(size = 10, sort = "dateHeure", direction = Sort.Direction.DESC) Pageable pageable) {
+        return pubService.getAllPubs(pageable);
+}
+
 
     @GetMapping("/{id}")
     public PubEntity getPubById(@PathVariable Long id) {
