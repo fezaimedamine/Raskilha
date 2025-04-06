@@ -1,6 +1,9 @@
 package com.example.RaskilhaBackend.DTO;
 
+import java.util.Base64;
+
 import com.example.RaskilhaBackend.Entity.UserEntity;
+
 import lombok.Data;
 
 @Data
@@ -15,8 +18,10 @@ public class UserDTO {
     private String nomProfil;
     private String tel;
     private String type;
-
-    // Constructeur qui prend un UserEntity et initialise les champs du DTO
+    private long points; // Ajout du champ points
+    private String imageProfil; // Change this to String for Base64 representation
+   
+    // Constructor that takes a UserEntity and initializes the fields of the DTO
     public UserDTO(UserEntity user) {
         this.nom = user.getNom();
         this.prenom = user.getPrenom();
@@ -28,5 +33,11 @@ public class UserDTO {
         this.nomProfil = user.getNomProfil();
         this.tel = user.getTel();
         this.type = user.getType();
+        this.points = user.getPoints();
+        
+        // Convert the byte[] image to Base64 string for frontend use
+        if (user.getImageProfil() != null) {
+            this.imageProfil = Base64.getEncoder().encodeToString(user.getImageProfil());
+        }
     }
 }

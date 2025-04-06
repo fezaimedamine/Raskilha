@@ -16,6 +16,7 @@ import Swal from "sweetalert2";
 import IconButton from '@mui/material/IconButton';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { UserContext } from "./UserContext";
+import { useNavigate } from "react-router-dom";
 
 
 const customIcon = new L.Icon({
@@ -65,6 +66,7 @@ const Map = () => {
   const [mediaFile, setMediaFile] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [distance, setDistance] = useState(10); 
+  const navigate = useNavigate(); 
 
 
   const [isOpen, setIsOpen] = useState(false);
@@ -81,7 +83,7 @@ const Map = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation([position.coords.latitude, position.coords.longitude]);
-          console.log(userLocation);
+
         },
         (error) => {
           console.error("Erreur de géolocalisation :", error);
@@ -89,6 +91,13 @@ const Map = () => {
       );
     }
   }, []);
+  useEffect(() => {
+    if (!userDetails) {
+      navigate("/login")
+    }
+  }, [userDetails]);
+
+
   const addMarker = async (position) => {
     const newMarker = {
       
@@ -315,30 +324,32 @@ const Map = () => {
                 {markers.map((marker) => (
                   <Marker key={marker.id} position={[marker.latitude, marker.longitude]} icon={trashIcon}>
                     <Popup>
-                      {/* 
-                    <button
-                        onClick={() => {
-                          setIsOpen(true);
-                          setSelectedMarker([marker.id,marker.latitude, marker.longitude]);
-                        }}
-                        className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
-                      >
-                       <FaPlus size={24} color="green" />
-                        <span className="text-sm text-gray-700">Add Post</span>
-                        <GiBroom size={24} color="green" />
-                      </button>*/}
-                      <button
-                        onClick={() => {
+                      {userDetails?.user?.type==="citizen"&&
+                        <button
+                            onClick={() => {
+                              setIsOpen(true);
+                              setSelectedMarker([marker.id,marker.latitude, marker.longitude]);
+                            }}
+                            className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
+                          >
+                          <FaPlus size={24} color="green" />
+                            <span className="text-sm text-gray-700">Add Post</span>
                           
-                          deleteMarker(marker.id);
+                          </button>
+                      }
+                      {userDetails?.user?.type==="collector" &&
+                          <button
+                            onClick={() => {
+                              
+                              deleteMarker(marker.id);
+                              
+                            }}
+                            className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
+                          >
                           
-                        }}
-                        className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
-                      >
-                       {/* <FaPlus size={24} color="green" />
-                        <span className="text-sm text-gray-700">Add Post</span>*/}
-                        <GiBroom size={24} color="green" />
-                      </button>
+                            <GiBroom size={24} color="green" />
+                          </button>
+                      }
                     </Popup>
                   </Marker>
                 ))}
