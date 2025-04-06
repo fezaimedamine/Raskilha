@@ -5,7 +5,16 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 
@@ -29,7 +38,6 @@ public class UserEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @JsonIgnore
     private String password;
     private String nomProfil;
     private String tel;
@@ -43,7 +51,13 @@ public class UserEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-reference")
     private Commentaire commentaire;
+    public long getPoints() {
+        return points;
+    }
 
+    public void setPoints(long points) {
+        this.points = points;
+    }
 }
 
 

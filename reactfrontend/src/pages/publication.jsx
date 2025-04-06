@@ -3,15 +3,18 @@ import Sidebar from "./sidebar";
 import MenuBar from "./menubar";
 
 import { motion } from "framer-motion";
+import Rpoint from "../Images/P.png"
 import toast from "react-hot-toast";
 
 import axios from "axios";
 import PostCard from "./PostCard";
 import { UserContext } from "./UserContext";
+import { useNavigate } from "react-router-dom";
 
  
 export default function Publication() {
   const { userDetails, setUserDetails } = useContext(UserContext);
+  const navigate = useNavigate(); 
 
   const [filteredPosts, setFilteredPosts] = useState([]);
  
@@ -30,6 +33,12 @@ export default function Publication() {
       location: "",
       region:""
     }); 
+    useEffect(() => {
+      if (!userDetails) {
+        navigate("/login")
+      }
+    }, [userDetails]);
+    console.log(userDetails)
   const validateForm = () => {
     
     // Title validation
@@ -419,9 +428,9 @@ const fetchLocations = async () => {
   </div>
 )}
         
-        <div className="flex ml-24 items-center flex-col  mt-28 mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
+        <div className="flex ml-30    mt-28 mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
           
-          <div className="  w-80 md:w-1/2 mr-24 flex flex-col  items-center">
+          <div className="  w-80 md:w-1/2 ml-40 mt-4 flex flex-col  items-center">
             {/* Create Post Component */}
             <div className="bg-white rounded-lg shadow p-4 mb-4 w-full">
               {/* Create Post Header */}
@@ -496,6 +505,13 @@ const fetchLocations = async () => {
               <p className="text-center text-gray-500">No posts found.</p>
             )}
 
+          </div>
+          <div className=" h-36 fixed top-32 right-10 w-24 md:w-1/6 border-2 border-gray-200  rounded-md shadow-sm bg-white flex justify-around   items-center">
+            <span className="text-lg font-semibold">You have :</span>
+          <div className="flex items-center gap-3" >
+            <img src={Rpoint} alt="pointlogo" className="h-12 w-12"/>
+            <span className="text-lg text-green-500">{userDetails?.user?.points}</span>
+            </div>
           </div>
         </div>
   

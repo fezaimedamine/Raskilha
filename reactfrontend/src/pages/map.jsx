@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap,useMapEvents  } from "react-leaflet";
 import { GiBroom } from "react-icons/gi";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import L, { point } from "leaflet";
 import Sidebar from "./sidebar";
 import trash from "../Images/recycle-bin.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -16,6 +16,7 @@ import Swal from "sweetalert2";
 import IconButton from '@mui/material/IconButton';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { UserContext } from "./UserContext";
+import { useNavigate } from "react-router-dom";
 
 
 const customIcon = new L.Icon({
@@ -58,13 +59,14 @@ const ZoomEffect = ({ userLocation }) => {
 };
 
 const Map = () => {
-  const{userDetails}=useContext(UserContext)
+  const{userDetails, setUserDetails}=useContext(UserContext)
   const [userLocation, setUserLocation] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [selectedmarker, setSelectedMarker] = useState(null);
   const [mediaFile, setMediaFile] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [distance, setDistance] = useState(10); 
+  const navigate = useNavigate(); 
 
 
   const [isOpen, setIsOpen] = useState(false);
@@ -81,7 +83,7 @@ const Map = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation([position.coords.latitude, position.coords.longitude]);
-          console.log(userLocation);
+
         },
         (error) => {
           console.error("Erreur de géolocalisation :", error);
@@ -89,6 +91,9 @@ const Map = () => {
       );
     }
   }, []);
+
+
+
   const addMarker = async (position) => {
     const newMarker = {
       
@@ -113,6 +118,22 @@ const Map = () => {
   
       const savedMarker = await response.json();
       setMarkers((prevMarkers) => [...prevMarkers, savedMarker]);
+      await fetch(`http://localhost:8081/api/users/${userDetails.user.id}/points`, {
+        method: "POST", // or PUT
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pointsToAdd: 10 }) // you can choose the amount
+      });
+  
+      // ✅ Optional: show a toast
+      Swal.fire({
+        icon: "success",
+        title: "Thank you!",
+        text: "You've earned 10 points!",
+        timer: 2000,
+        showConfirmButton: false
+      });
     } catch (error) {
       console.error("Erreur:", error);
     }
@@ -141,8 +162,30 @@ const Map = () => {
         if (!response.ok) {
           throw new Error("Erreur lors de la suppression du marqueur");
         }
-  
+        
         Swal.fire("Supprimé !", "Le marqueur a été supprimé.", "success");
+        const response2  = await fetch(`http://localhost:8081/api/users/${userDetails.user.user_id}/points`, {
+          method: "PUT", // Use PUT instead of POST
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pointsToAdd: 10 }) // You can choose the amount
+        });
+        const updatedUser=await response2.json();
+        console.log(updatedUser)
+        // ✅ Optional: show a toast
+        Swal.fire({
+          icon: "success",
+          title: "Thank you!",
+          text: "You've earned 10 points!",
+          timer: 2000,
+          showConfirmButton: false
+        });
+        setUserDetails((prevDetails) => ({
+          ...prevDetails,   // Spread the previous details
+          points: updatedUser.points // Update the points
+        }));
+        console.log(userDetails.user.points)
         fetch_markers();
       } catch (error) {
         Swal.fire("Erreur", "Une erreur s'est produite : " + error.message, "error");
@@ -282,6 +325,12 @@ const Map = () => {
     setDistance(newDistance);
     console.log(distance);
   };
+  useEffect(() => {
+    if (!userDetails) {
+      navigate("/login")
+    }
+    console.log(userDetails?.user)
+  }, [userDetails]);
   return (
     <div className="flex h-screen bg-gray-50">
     {!userLocation && <Loading />}
@@ -315,30 +364,32 @@ const Map = () => {
                 {markers.map((marker) => (
                   <Marker key={marker.id} position={[marker.latitude, marker.longitude]} icon={trashIcon}>
                     <Popup>
-                      {/* 
-                    <button
-                        onClick={() => {
-                          setIsOpen(true);
-                          setSelectedMarker([marker.id,marker.latitude, marker.longitude]);
-                        }}
-                        className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
-                      >
-                       <FaPlus size={24} color="green" />
-                        <span className="text-sm text-gray-700">Add Post</span>
-                        <GiBroom size={24} color="green" />
-                      </button>*/}
-                      <button
-                        onClick={() => {
+                      {userDetails?.user?.type==="citizen"&&
+                        <button
+                            onClick={() => {
+                              setIsOpen(true);
+                              setSelectedMarker([marker.id,marker.latitude, marker.longitude]);
+                            }}
+                            className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
+                          >
+                          <FaPlus size={24} color="green" />
+                            <span className="text-sm text-gray-700">Add Post</span>
                           
-                          deleteMarker(marker.id);
+                          </button>
+                      }
+                      {userDetails?.user?.type==="collector" &&
+                          <button
+                            onClick={() => {
+                              
+                              deleteMarker(marker.id);
+                              
+                            }}
+                            className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
+                          >
                           
-                        }}
-                        className="flex items-center justify-center gap-2 bg-transparent border-none cursor-pointer hover:bg-green-50 px-4 py-2 rounded-lg"
-                      >
-                       {/* <FaPlus size={24} color="green" />
-                        <span className="text-sm text-gray-700">Add Post</span>*/}
-                        <GiBroom size={24} color="green" />
-                      </button>
+                            <GiBroom size={24} color="green" />
+                          </button>
+                      }
                     </Popup>
                   </Marker>
                 ))}
