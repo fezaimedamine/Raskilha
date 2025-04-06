@@ -2,6 +2,7 @@ import React from "react";
 import { MdGroups, MdCode, MdEco, MdLocationOn } from "react-icons/md";
 import logo from "../Images/logo.png";
 import aboutIllustration from "../Images/protecting the environment-bro.png";
+import { Link } from 'react-router-dom';
 
 const AboutUs = () => {
   return (
@@ -12,10 +13,10 @@ const AboutUs = () => {
           <img src={logo} width={200} height={200} alt="logo" /> 
         </div>
         <ul className="flex items-center gap-10">
-          <li>Home</li>
-          <li className="font-bold text-green-300">About Us</li>
-          <li>Services</li>
-          <li>Contact</li>
+          <li><Link to="/">Home</Link></li>
+          <li className="font-bold text-green-300"><Link to="/aboutus">About Us</Link></li>
+          <li><Link to="/contactus">Contact</Link></li>
+          
         </ul>
         <button className="bg-green-300 px-5 text-white py-2 rounded-2xl shadow-md hover:bg-green-400">
           Join Us

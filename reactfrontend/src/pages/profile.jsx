@@ -6,6 +6,9 @@ import Sidebar from "./sidebar"
 import { motion } from "framer-motion";
 import PostCard from "./PostCard";
 import axios from "axios";
+import userpng from "../Images/user.png";
+import { FaCamera } from "react-icons/fa";
+
 
 
 const ProfilePage = () => {
@@ -88,7 +91,7 @@ const [formData, setFormData] = useState({
       }
       
       if (file.size > 40 * 1024 * 1024) {
-        alert('Image size should be less than 2MB');
+        alert('Image size should be less than 40MB');
         return;
       }
 
@@ -100,7 +103,7 @@ const [formData, setFormData] = useState({
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result);
+        setPreview(URL.createObjectURL(file));
       };
       reader.readAsDataURL(file);
     }
@@ -228,53 +231,36 @@ const [formData, setFormData] = useState({
           </label>
         </div>
       </div>
-      <div className="flex-1 relative">
-          
-          <input
-            type="file"
-            name="profile image"
-            id="profile image"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-            accept="image/*"
-            style={{ display: 'none' }}
-            required
-          />
-          <label
-          htmlFor="profile image"
-          className={` left-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-            peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-            peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-            `}
-            >Profile Image</label>
-          
-          <div className="image-upload-area">
-            {preview ? (
-              <div className="image-preview-container">
-                <img 
-                  src={preview} 
-                  alt="Profile preview" 
-                  className="profile-preview"
-                />
-                <button 
-                  type="button" 
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                  onClick={triggerFileSelect}
-                >
-                  Change Image
-                </button>
-              </div>
-            ) : (
-              <button 
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                onClick={triggerFileSelect}
-              >
-                <span>+</span>
-                Click to upload profile image
-              </button>
-            )}
-          </div>
-        </div>
+      <div className="flex items-center justify-center mb-7">
+                        <div className="relative w-44 h-44 flex flex-col gap-3">
+                         
+                          <label htmlFor="profileImage" className="cursor-pointer">
+                            <img
+                              src={
+                                preview ||
+                                userpng // Default avatar
+                              }
+                              alt="Profile"
+                              className="w-44 h-44 rounded-full object-cover border-4 border-white shadow-md"
+                            />
+                            
+                            <div className="absolute bottom-0 right-0 bg-gray-800 p-2 rounded-full border-2 border-white hover:bg-gray-700 transition-all">
+                              <FaCamera className="text-white text-sm" />
+                            </div>
+                            
+                          </label>
+                          <h1 className="font-sans text-zinc-800 font-semibold text-center">Add a profile photo</h1>
+                          
+                          <input
+                            type="file"
+                            id="profileImage"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="hidden"
+                          />
+                        </div>
+                    </div>
+      
       
       {/* Username and Age */}
       <div className="flex gap-4">
