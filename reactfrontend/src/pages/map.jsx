@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap,useMapEvents  } from "react-leaflet";
 import { GiBroom } from "react-icons/gi";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import L, { point } from "leaflet";
 import Sidebar from "./sidebar";
 import trash from "../Images/recycle-bin.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -59,7 +59,7 @@ const ZoomEffect = ({ userLocation }) => {
 };
 
 const Map = () => {
-  const{userDetails}=useContext(UserContext)
+  const{userDetails, setUserDetails}=useContext(UserContext)
   const [userLocation, setUserLocation] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [selectedmarker, setSelectedMarker] = useState(null);
@@ -91,11 +91,7 @@ const Map = () => {
       );
     }
   }, []);
-  useEffect(() => {
-    if (!userDetails) {
-      navigate("/login")
-    }
-  }, [userDetails]);
+
 
 
   const addMarker = async (position) => {
@@ -122,6 +118,22 @@ const Map = () => {
   
       const savedMarker = await response.json();
       setMarkers((prevMarkers) => [...prevMarkers, savedMarker]);
+      await fetch(`http://localhost:8081/api/users/${userDetails.user.id}/points`, {
+        method: "POST", // or PUT
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pointsToAdd: 10 }) // you can choose the amount
+      });
+  
+      // ✅ Optional: show a toast
+      Swal.fire({
+        icon: "success",
+        title: "Thank you!",
+        text: "You've earned 10 points!",
+        timer: 2000,
+        showConfirmButton: false
+      });
     } catch (error) {
       console.error("Erreur:", error);
     }
@@ -150,8 +162,30 @@ const Map = () => {
         if (!response.ok) {
           throw new Error("Erreur lors de la suppression du marqueur");
         }
-  
+        
         Swal.fire("Supprimé !", "Le marqueur a été supprimé.", "success");
+        const response2  = await fetch(`http://localhost:8081/api/users/${userDetails.user.user_id}/points`, {
+          method: "PUT", // Use PUT instead of POST
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pointsToAdd: 10 }) // You can choose the amount
+        });
+        const updatedUser=await response2.json();
+        console.log(updatedUser)
+        // ✅ Optional: show a toast
+        Swal.fire({
+          icon: "success",
+          title: "Thank you!",
+          text: "You've earned 10 points!",
+          timer: 2000,
+          showConfirmButton: false
+        });
+        setUserDetails((prevDetails) => ({
+          ...prevDetails,   // Spread the previous details
+          points: updatedUser.points // Update the points
+        }));
+        console.log(userDetails.user.points)
         fetch_markers();
       } catch (error) {
         Swal.fire("Erreur", "Une erreur s'est produite : " + error.message, "error");
@@ -291,6 +325,12 @@ const Map = () => {
     setDistance(newDistance);
     console.log(distance);
   };
+  useEffect(() => {
+    if (!userDetails) {
+      navigate("/login")
+    }
+    console.log(userDetails?.user)
+  }, [userDetails]);
   return (
     <div className="flex h-screen bg-gray-50">
     {!userLocation && <Loading />}

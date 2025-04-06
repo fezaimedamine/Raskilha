@@ -1,6 +1,7 @@
 package com.example.RaskilhaBackend.Controller;
 
 import java.util.Optional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,4 +85,5 @@ public class AuthController {
     public Optional<UserEntity> getUser(@PathVariable long id){
         return userService.getUser(id);
     }
+    
 }

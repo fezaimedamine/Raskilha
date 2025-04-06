@@ -37,7 +37,7 @@ export default function Publication() {
         navigate("/login")
       }
     }, [userDetails]);
-    console.log(userDetails?.user?.imageProfil)
+    console.log(userDetails)
   const validateForm = () => {
     let newErrors = {};
     console.log(formData.title)

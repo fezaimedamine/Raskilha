@@ -23,6 +23,7 @@ public class LocalisationController {
     "longitude": 3.294351
         }
      */
+    
     @PostMapping
     public ResponseEntity<LocalisationEntity> ajouterLocalisation(@RequestBody LocalisationEntity localisation) {
         LocalisationEntity saved = localisationService.ajouterLocalisation(localisation);

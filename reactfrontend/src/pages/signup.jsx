@@ -145,19 +145,19 @@ const Signup = () => {
     setStep(1);
   };
 
-  useEffect(() => {
-    if (query.length < 3) return;
-
-    const fetchLocations = async () => {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${query}`
-      );
-      const data = await response.json();
-      setSuggestions(data);
-    };
-
-    fetchLocations();
-  }, [query]);
+  const fetchLocations = async () => {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
+    );
+    const data = await response.json();
+    setSuggestions(data);
+  };
+     useEffect(() => {
+        if (query.length < 3) return;
+    
+  
+        fetchLocations();
+      }, [query]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -494,24 +494,30 @@ const Signup = () => {
                   {errors.adresse  && <p className="text-red-500 text-xs fixed ml-2" >{errors.adresse}</p>}
 
 
-                                  {suggestions.length > 0 && (
-                                    <ul className="border absolute z-10 bg-white mt-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
-                                      {suggestions.map((place, index) => (
+                  {suggestions.length > 0 && (
+                                  <ul className="border absolute z-10 bg-white mt-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
+                                    {suggestions.map((place, index) => {
+                                      console.log(place)
+                                      const { city, town, village, municipality, county, state, state_district } = place.address || {};
+                                      const cityName = city || town || village || municipality || county || state || state_district || "Unknown City";
+                                      
+                                      return (
                                         <li
                                           key={index}
                                           onClick={() => {
-                                            setFormData2({ ...formData2, adresse: place.display_name });
-                                            setErrors({...errors,adresse:""})
-                                            setQuery(place.display_name);
+                                            setFormData2({ ...formData2, adresse: cityName });
+                                            setErrors({...errors, adresse: ""});
+                                            setQuery(cityName);
                                             setSuggestions([]);
                                           }}
                                           className="p-3 cursor-pointer text-gray-700 hover:bg-green-100"
                                         >
                                           {place.display_name}
                                         </li>
-                                      ))}
-                                    </ul>
-                                  )}
+                                      );
+                                    })}
+                                  </ul>
+                                )}
                 </div>
 
               
