@@ -9,6 +9,10 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(
+uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"user_id"})
+})
 public class Commentaire {
 
     @Id

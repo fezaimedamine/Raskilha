@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.RaskilhaBackend.DTO.PubDTO;
 import com.example.RaskilhaBackend.Entity.PubEntity;
 import com.example.RaskilhaBackend.Entity.UserEntity;
 import com.example.RaskilhaBackend.Repository.PubRepository;
@@ -23,9 +24,15 @@ public class PubService {
     @Autowired
     private UserRepository userRepository;
 
-    public Page<PubEntity> getAllPubs(Pageable pageable) {
-        return pubRepository.findAll(pageable); // Uses pagination from the repository
+    public List<PubEntity> findPubByUserId(long user_id){
+        return pubRepository.findByUserId(user_id);
     }
+
+    public Page<PubDTO> getAllPubs(Pageable pageable) {
+        Page<PubEntity> pubEntities = pubRepository.findAll(pageable);
+        return pubEntities.map(PubDTO::new);
+    }
+    
 
     public Optional<PubEntity> getPubById(Long id) {
         return pubRepository.findById(id);
@@ -33,6 +40,15 @@ public class PubService {
 
     public PubEntity createPub(PubEntity pub) {
         pub.setDateHeure(new Date());
+        Optional<UserEntity> optionalUser = userRepository.findById(pub.getUser().getId());
+        if (optionalUser.isPresent()) {
+            UserEntity existingUser = optionalUser.get();
+            existingUser.setPoints(existingUser.getPoints()+1);
+            UserEntity user=userRepository.save(existingUser);
+        } else {
+            throw new RuntimeException("Utilisateur non trouvé avec l'ID : " + pub.getUser().getId());
+        }
+        
         return pubRepository.save(pub);
     }
 

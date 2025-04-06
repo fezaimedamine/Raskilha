@@ -29,7 +29,7 @@ public class UserEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
-    //@JsonIgnore
+    @JsonIgnore
     private String password;
     private String nomProfil;
     private String tel;
@@ -40,9 +40,11 @@ public class UserEntity {
     @JsonManagedReference
     private List<PubEntity> publications;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-reference")
-    private List<Commentaire> commentaires;
+    private Commentaire commentaire;
 
 }
+
+
+

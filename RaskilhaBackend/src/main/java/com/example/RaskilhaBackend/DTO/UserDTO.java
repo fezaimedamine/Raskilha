@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class UserDTO {
+    private long user_id;
     private String nom;
     private String prenom;
     private int age;
@@ -23,6 +24,7 @@ public class UserDTO {
    
     // Constructor that takes a UserEntity and initializes the fields of the DTO
     public UserDTO(UserEntity user) {
+        this.user_id=user.getId();
         this.nom = user.getNom();
         this.prenom = user.getPrenom();
         this.age = user.getAge();
