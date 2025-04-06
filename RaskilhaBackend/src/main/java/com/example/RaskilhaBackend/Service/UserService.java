@@ -58,7 +58,8 @@ public class UserService {
     
 
     // Mise à jour des informations utilisateur
-    public UserEntity updateUser(Long id, UserEntity updatedUser) {
+    public UserEntity updateUser( UserEntity updatedUser) {
+        Long id;
         Optional<UserEntity> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             UserEntity existingUser = optionalUser.get();

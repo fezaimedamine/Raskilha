@@ -31,7 +31,7 @@ public ResponseEntity<String> registerUser(@RequestBody UserEntity user) {
 @PostMapping("/update")
 public ResponseEntity<String> changeUser(@RequestBody UserEntity user) {
     try {
-        userService.updateUser(1,user);
+        userService.updateUser(user);
         return ResponseEntity.ok("User updated successfully!");
     } catch (RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
