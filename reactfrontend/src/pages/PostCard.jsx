@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext  } from "react";
 import dayjs from "dayjs";
-
-//comment refresh + image de user and id 
+import {UserContext} from "./UserContext";
+ 
 
 
 function PostCard({ post }) {
+  const { userDetails } = useContext(UserContext);
     const [isExpanded, setIsExpanded] = useState(false);
-    const comments= post.commentaires;
+    const [comments,setComments]= useState([]);
     const [newComment, setNewComment] = useState("");
   
     const getTimeAgo = (date) => {
@@ -60,47 +61,69 @@ function PostCard({ post }) {
                      id: post.id 
                     },
                   user:{
-                    id:1
+                    id: 13 //userDetails.id
                   }
                 
               }),
             }); const data = await response.json();
        if(data){
+        console.log(data)
+        fetchComments(post.id)
           setNewComment("")
         }
           }catch (error) {
             console.log("Error during login: " + error);
           }
     };
+    useEffect(() => {
+
   
+
+      fetchComments(post.id);
+    }, []);
+    const fetchComments = async (pubId) => {
+      try {
+        const response = await fetch(`http://localhost:8081/commentaires/pub/${pubId}`); // replace with your real API
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+       setComments(data)
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
+        return [];
+      }
+    };
+
     return (
       <>
-        <div className="flex flex-col w-80 md:w-full mt-5 mb-5 bg-white border-2 border-gray-300 rounded-lg cursor-pointer">
-          <div className="p-4 flex flex-col gap-2 w-full hover:bg-gray-100" onClick={toggleExpand}>
+        <div className="flex flex-col w-80 md:w-full mt-5 mb-5 bg-white border-2 border-gray-300 dark:border-gray-800 dark:rounded-lg rounded-lg cursor-pointer">
+          <div className="p-4 flex flex-col gap-2 w-full dark:bg-gray-800 dark:text-white hover:bg-gray-100" onClick={toggleExpand}>
             <div className="flex items-center gap-3">
-            {post.user?.image && <img className="w-10 h-10 rounded-full object-contain" src={post.user.image}/*src=`data:image/jpeg;base64,${post.user.image}`*/ alt="profile image" />}
+            {post.user?.image && <img className="w-10 h-10 rounded-full object-contain"  src={`data:${post.user.imageType};base64,${post.user.image}`}
+ alt="profile image" />}
               <div>
               {post.user?.nom_profil && <div className="text-base font-medium">{post.user.nom_profil}</div>}
                 <div className="text-xs text-gray-500">{getTimeAgo(post.dateHeure)}</div>
               </div>
             </div>
   
-            <p className="text-md font-semibold text-gray-800">{post.titre}</p>
+            <p className="text-md font-semibold text-gray-800 dark:text-white">{post.titre}</p>
            
             <img 
-              /*src={`data:image/jpeg;base64,${post.image}`}*/
-              src={post.image}
+              src={`data:image/jpeg;base64,${post.image}`}
+           
               alt="Post content"
               className="w-full max-h-80 object-contain rounded-lg border-gray-300"
             />
           </div>
            
-          <div className="flex h-auto justify-around border-t-2  border-t-gray-300">
-            <button onClick={toggleExpand} className="w-1/2 py-2 rounded-md text-sm hover:bg-gray-200">
+          <div className="flex h-auto justify-around border-t-2 dark:bg-gray-800 border-t-gray-300">
+            <button onClick={toggleExpand} className="w-1/2 py-2 rounded-md text-sm dark:text-white dark:hover:bg-gray-900 hover:bg-gray-200">
               Comment
             </button>
          
-            <button className="w-1/2 rounded-md text-sm hover:bg-gray-200">
+            <button className="w-1/2 rounded-md text-sm dark:text-white hover:bg-gray-200 dark:hover:bg-gray-900">
               Share
             </button>
           </div>
@@ -125,7 +148,7 @@ function PostCard({ post }) {
               {/* Post Content */}
               <div className="flex flex-col gap-2 justify-center overflow-y-auto max-h-[100vh]">  
                 <div className="flex items-center gap-3">
-                {post.user?.image &&<img className="w-10 h-10 rounded-full" src={post.user.image} /*src=`data:image/jpeg;base64,${post.user.image}`*/ alt="" />}
+                {post.user?.image &&<img className="w-10 h-10 rounded-full"  src={`data:image/jpeg;base64,${post.user.image}`} alt="" />}
                   <div>
                    {post.user?.nom_profil && <div className="text-md font-medium">{post.user.nom_profil}</div>}
                     <div className="text-xs text-gray-500">{getTimeAgo(post.dateHeure)}</div>
@@ -136,8 +159,8 @@ function PostCard({ post }) {
                 <p className="text-gray-700">{post.description}</p>
                 <div className="flex justify-center bg-inherit">  
                   <img 
-                    src={post.image}
-                    /*src={`data:image/jpeg;base64,${post.image}`}*/
+                    
+                    src={`data:image/jpeg;base64,${post.image}`}
                     alt="Post content"
                     className="w-4/6 bg-inherit max-h-80 object-contain rounded-lg border-gray-300"
                   />
@@ -150,9 +173,9 @@ function PostCard({ post }) {
                     {comments ? (
                       comments.map((comment) => (
                         <div key={comment.id} className="flex items-center gap-3">
-                  <img className="w-8 h-8 object-contain rounded-full" src={comment.user.image} alt="image" />
+                  <img className="w-8 h-8 object-contain rounded-full" src={`data:image/jpeg;base64,${comment.imageProfil}`} alt="image" />
                   <div className="bg-gray-100 py-1 px-2 rounded">
-                    <div className="text-md font-medium">{comment.user.nom_profil}</div>
+                    <div className="text-base font-medium">{comment.profilName}</div>
                     <div className="text-sm text-gray-700  ">{comment.texte}</div>
                   </div>
                 </div>

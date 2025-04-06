@@ -28,4 +28,14 @@ public ResponseEntity<String> registerUser(@RequestBody UserEntity user) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }
+@PostMapping("/update")
+public ResponseEntity<String> changeUser(@RequestBody UserEntity user) {
+    try {
+        userService.updateUser(user);
+        return ResponseEntity.ok("User updated successfully!");
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+}
+    
 }

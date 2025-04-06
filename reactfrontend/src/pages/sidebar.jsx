@@ -1,9 +1,22 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { FaTree, FaMapMarkedAlt, FaRecycle, FaUserCircle, FaHome } from "react-icons/fa";
+import React,{useContext} from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaMapMarkedAlt, FaRecycle, FaUserCircle, FaHome } from "react-icons/fa";
 import logo from "../Images/logo.png";
+import { TbLogout2 } from "react-icons/tb";
+import { UserContext } from "./UserContext";
+ 
+
 
 const Sidebar = () => {
+  const { setUserDetails } = useContext(UserContext);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    
+    setUserDetails(null);
+    localStorage.removeItem('userDetails'); 
+    navigate('/'); 
+  };
+  
   return (
     <div className="dark:bg-gray-800 dark:text-white h-screen fixed bottom-0 bg-gray-50 text-gray-800 flex flex-col items-center p-4 shadow-lg w-20 md:w-64 transition-all duration-300">
       {/* Logo (Masqué sur mobile) */}
@@ -17,6 +30,13 @@ const Sidebar = () => {
         <SidebarLink to="/map" icon={<FaMapMarkedAlt />} label="Map" />
         <SidebarLink to="/publication" icon={<FaRecycle />} label="Recyclage" />
         <SidebarLink to="/profile" icon={<FaUserCircle />} label="Profil" />
+      
+      <div className="flex items-center gap-3 p-3 rounded-lg transition-all duration-300 w-36 absolute  bottom-8
+       hover:bg-green-400 hover:scale-105  justify-center md:justify-start cursor-pointer" 
+              onClick={handleLogout}>
+                <span><TbLogout2 className='text-2xl'/></span> 
+                <span className="hidden md:inline text-lg">Logout</span>
+        </div>
       </nav>
     </div>
   );

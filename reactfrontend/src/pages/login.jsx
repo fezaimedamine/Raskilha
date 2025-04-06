@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useContext } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
 import { IoIosLogIn } from "react-icons/io";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import toast from "react-hot-toast";
 import loginanimation from '../Images/login.json'
 import Lottie from "lottie-react";
+import { UserContext } from "./UserContext";
+
 const Login = () => {
-  //const { userDetails, setUserDetails } = useContext(UserContext);
+  const { userDetails, setUserDetails } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -17,11 +19,11 @@ const Login = () => {
     setPasswordVisible((prev) => !prev);
   };
 
- /* useEffect(() => {
+useEffect(() => {
     if (userDetails) {
       navigate("/publication");
     }
-  }, [userDetails]);*/
+  }, [userDetails]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +41,7 @@ const Login = () => {
 
       if (contentType && contentType.includes("application/json")) {
         responseData = await response.json(); // Parse JSON response
-        //setUserDetails(responseData);
+        setUserDetails(responseData);
           localStorage.setItem('userDetails', JSON.stringify(responseData));
           navigate('/publication');
 
@@ -137,7 +139,7 @@ const Login = () => {
 
        
         {/* <img src={wasteManagementImage} width={600} height={500} alt="Team Illustration" />*/}
-        <Lottie animationData={loginanimation} loop={true} className="w-2/5 " />
+        <Lottie animationData={loginanimation} loop={true} className="hidden md:block md:w-2/5 " />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap,useMapEvents  } from "react-leaflet";
 import { GiBroom } from "react-icons/gi";
 import "leaflet/dist/leaflet.css";
@@ -15,6 +15,9 @@ import DistanceSlider from "./DistanceSlider";
 import Swal from "sweetalert2";
 import IconButton from '@mui/material/IconButton';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import { UserContext } from "./UserContext";
+
+
 const customIcon = new L.Icon({
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
@@ -55,6 +58,7 @@ const ZoomEffect = ({ userLocation }) => {
 };
 
 const Map = () => {
+  const{userDetails}=useContext(UserContext)
   const [userLocation, setUserLocation] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [selectedmarker, setSelectedMarker] = useState(null);

@@ -5,13 +5,18 @@ import Signup from "./pages/signup";
 import ProfileSettings from "./pages/profile";
 import Home from "./pages/home";
 import Map  from "./pages/map";
-import SocialHomePage from "./pages/acceuil";
+import Aboutus  from "./pages/aboutus";
+import Contactus  from "./pages/contactus";
+
 import Publication from "./pages/publication";
 import  { Toaster } from 'react-hot-toast';
+import { UserProvider } from './pages/UserContext'; 
+
 function App() {
   return (
-    
+    <UserProvider> 
     <Router>
+     
       <Toaster />
       <Routes>
   
@@ -20,11 +25,13 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<ProfileSettings />} />
         <Route path="/map" element={<Map />} />
-        <Route path="/home" element={<SocialHomePage />} />
         <Route path="/publication" element={<Publication />} />
+        <Route path="/aboutus" element={<Aboutus />} />
+        <Route path="/contactus" element={<Contactus />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
+    </UserProvider> 
   );
 }
 

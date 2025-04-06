@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useState } from "react";
+import { useRef } from "react";
 import Sidebar from "./sidebar"
 import { motion } from "framer-motion";
 import PostCard from "./PostCard";
@@ -8,12 +9,21 @@ import axios from "axios";
 
 
 const ProfilePage = () => {
-  const [user, setUser] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "https://via.placeholder.com/100",
-  });
-    
+  const [user, setUser] = useState([])
+  
+useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      setUser(JSON.parse(localStorage.getItem('userDetails')).user);
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    } finally {
+
+    }
+  };
+
+  fetchUser();
+}, []);
   const [publications, setPublications] = useState([])
   useEffect(() => {
     axios.get("http://localhost:8081/api/pubs")
@@ -24,6 +34,12 @@ const ProfilePage = () => {
         console.error("Error fetching posts:", error);
       });
   }, []);
+  
+  const [preview, setPreview] = useState('');
+  const fileInputRef = useRef(null);
+  const triggerFileSelect = () => {
+    fileInputRef.current.click();
+  };
 
 const [showForm,setShowForm]=useState(false)
 const [formData, setFormData] = useState({
@@ -34,11 +50,60 @@ const [formData, setFormData] = useState({
     email: "",
     password: "",
     region: "",
-    adresse:""
-  }); 
+    adresse:"",
+    image:null
+  })
+  useEffect(() => {
+  const fillForm = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('userDetails')).user;
+      setFormData({
+        firstName: user.nom,
+        lastName: user.prenom,
+        username: user.nomProfil,
+        age: user.age,
+        email: user.email,
+        region: user.region,
+        adresse:user.adresse,
+        image:null
+      });
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    } finally {
+
+    }
+  };fillForm();
+}, []); 
   const handleChange = (e) => {
     console.log(formData)
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.match('image.*')) {
+        alert('Please select an image file (jpeg, png, etc.)');
+        return;
+      }
+      
+      if (file.size > 40 * 1024 * 1024) {
+        alert('Image size should be less than 2MB');
+        return;
+      }
+
+      setFormData({
+        ...formData,
+        profileImage: file
+      });
+
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
   const [passwordVisible, setPasswordVisible] = useState(false);
   const togglePasswordVisibility = () => {
@@ -47,6 +112,19 @@ const [formData, setFormData] = useState({
 
   const handleUpdateProfile = () => {
     alert("Update Profile clicked!");
+  };
+  const handleSubmit = async() =>{
+    try {
+      const response = await fetch("http://localhost:8081/raskilha/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user:user }),
+      });
+    }catch (error) {
+      console.error("Error during update:" + error.message);
+    }
   };
 
   return (<>
@@ -59,8 +137,8 @@ const [formData, setFormData] = useState({
       <div className="flex items-center mb-4">
         <img src={user.image} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />
         <div>
-          <h2 className="text-xl font-bold">profil{user.nom_profil}</h2>
-          <p className="text-gray-600">moedem{user.nom}</p>
+          <h2 className="text-xl font-bold">profil</h2>
+          <p className="text-gray-600">{user.nomProfil}</p>
         </div>
       </div>
       
@@ -102,7 +180,7 @@ const [formData, setFormData] = useState({
             <h2 className="text-3xl font-bold text-center mb-5 text-gray-800">Update Your Profile </h2>
             
           </div>
-    <form className="flex flex-col gap-6" >
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6" >
                  
                     
                       {/* First Name and Last Name */}
@@ -112,7 +190,7 @@ const [formData, setFormData] = useState({
             type="text"
             name="firstName"
             id="firstName"
-            value={formData.firstName}
+            value= {formData.firstName}
             onChange={handleChange}
             className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
             placeholder=" "
@@ -150,6 +228,53 @@ const [formData, setFormData] = useState({
           </label>
         </div>
       </div>
+      <div className="flex-1 relative">
+          
+          <input
+            type="file"
+            name="profile image"
+            id="profile image"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+            required
+          />
+          <label
+          htmlFor="profile image"
+          className={` left-3 text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
+            peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
+            peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
+            `}
+            >Profile Image</label>
+          
+          <div className="image-upload-area">
+            {preview ? (
+              <div className="image-preview-container">
+                <img 
+                  src={preview} 
+                  alt="Profile preview" 
+                  className="profile-preview"
+                />
+                <button 
+                  type="button" 
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  onClick={triggerFileSelect}
+                >
+                  Change Image
+                </button>
+              </div>
+            ) : (
+              <button 
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                onClick={triggerFileSelect}
+              >
+                <span>+</span>
+                Click to upload profile image
+              </button>
+            )}
+          </div>
+        </div>
       
       {/* Username and Age */}
       <div className="flex gap-4">
