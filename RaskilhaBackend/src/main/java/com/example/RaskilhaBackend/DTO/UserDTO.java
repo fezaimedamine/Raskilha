@@ -1,6 +1,8 @@
 package com.example.RaskilhaBackend.DTO;
 
 import com.example.RaskilhaBackend.Entity.UserEntity;
+
+import jakarta.persistence.Lob;
 import lombok.Data;
 
 @Data
@@ -17,6 +19,9 @@ public class UserDTO {
     private String tel;
     private String type;
 
+    @Lob
+    private byte[] imageProfil;
+
     // Constructeur qui prend un UserEntity et initialise les champs du DTO
     public UserDTO(UserEntity user) {
         this.user_id=user.getId();
@@ -30,5 +35,6 @@ public class UserDTO {
         this.nomProfil = user.getNomProfil();
         this.tel = user.getTel();
         this.type = user.getType();
+        this.imageProfil=user.getImageProfil();
     }
 }
