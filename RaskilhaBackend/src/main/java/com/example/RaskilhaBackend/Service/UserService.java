@@ -6,10 +6,8 @@ import com.example.RaskilhaBackend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
 
 import java.util.Optional;
 
@@ -61,8 +59,7 @@ public class UserService {
     
 
     // Mise à jour des informations utilisateur
-    public UserEntity updateUser( UserEntity updatedUser) {
-        Long id;
+    public UserEntity updateUser(Long id, UserEntity updatedUser) {
         Optional<UserEntity> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             UserEntity existingUser = optionalUser.get();
