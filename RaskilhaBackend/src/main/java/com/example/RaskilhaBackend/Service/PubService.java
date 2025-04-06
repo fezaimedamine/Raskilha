@@ -44,7 +44,7 @@ public class PubService {
         if (optionalUser.isPresent()) {
             UserEntity existingUser = optionalUser.get();
             existingUser.setPoints(existingUser.getPoints()+1);
-            UserEntity user=userRepository.save(existingUser);
+           // UserEntity user=userRepository.save(existingUser);
         } else {
             throw new RuntimeException("Utilisateur non trouvé avec l'ID : " + pub.getUser().getId());
         }

@@ -1,3 +1,4 @@
+
 package com.example.RaskilhaBackend.Controller;
 import com.example.RaskilhaBackend.DTO.PubDTO;
 import com.example.RaskilhaBackend.Entity.PubEntity;
@@ -11,7 +12,7 @@ import org.springframework.data.domain.Sort;
 
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/pubs")
 public class PubController {

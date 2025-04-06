@@ -100,10 +100,10 @@ function PostCard({ post }) {
         <div className="flex flex-col w-80 md:w-full mt-5 mb-5 bg-white border-2 border-gray-300 dark:border-gray-800 dark:rounded-lg rounded-lg cursor-pointer">
           <div className="p-4 flex flex-col gap-2 w-full dark:bg-gray-800 dark:text-white hover:bg-gray-100" onClick={toggleExpand}>
             <div className="flex items-center gap-3">
-            {post.user?.image && <img className="w-10 h-10 rounded-full object-contain"  src={`data:${post.user.imageType};base64,${post.user.image}`}
- alt="profile image" />}
+            <img className="w-10 h-10 rounded-full object-contain"  src={`data:image/jpeg;base64,${post.imageProfil}`}
+ alt="profile image" />
               <div>
-              {post.user?.nom_profil && <div className="text-base font-medium">{post.user.nom_profil}</div>}
+               <div className="text-base font-medium">{post.userNomProfil}</div>
                 <div className="text-xs text-gray-500">{getTimeAgo(post.dateHeure)}</div>
               </div>
             </div>
@@ -148,9 +148,9 @@ function PostCard({ post }) {
               {/* Post Content */}
               <div className="flex flex-col gap-2 justify-center overflow-y-auto max-h-[100vh]">  
                 <div className="flex items-center gap-3">
-                {post.user?.image &&<img className="w-10 h-10 rounded-full"  src={`data:image/jpeg;base64,${post.user.image}`} alt="" />}
+                <img className="w-10 h-10 rounded-full"  src={`data:image/jpeg;base64,${post.imageProfil}`} alt="profil_image" />
                   <div>
-                   {post.user?.nom_profil && <div className="text-md font-medium">{post.user.nom_profil}</div>}
+                    <div className="text-md font-medium">{post.userNomProfil}</div>
                     <div className="text-xs text-gray-500">{getTimeAgo(post.dateHeure)}</div>
                   </div>
                 </div>
@@ -173,7 +173,7 @@ function PostCard({ post }) {
                     {comments ? (
                       comments.map((comment) => (
                         <div key={comment.id} className="flex items-center gap-3">
-                  <img className="w-8 h-8 object-contain rounded-full" src={`data:image/jpeg;base64,${comment.imageProfil}`} alt="image" />
+                  <img className="w-8 h-8 object-contain rounded-full" src={`data:image/jpeg;base64,${comment.imageProfil}`} alt="image_profil" />
                   <div className="bg-gray-100 py-1 px-2 rounded">
                     <div className="text-base font-medium">{comment.profilName}</div>
                     <div className="text-sm text-gray-700  ">{comment.texte}</div>
