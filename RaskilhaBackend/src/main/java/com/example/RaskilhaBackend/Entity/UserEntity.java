@@ -16,7 +16,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-
 @Entity
 @Table(name = "users")
 @Data
@@ -31,16 +30,13 @@ public class UserEntity {
     private String genre;
     private String region;
     private String adresse;
+    
     @Lob
     private byte[] imageProfil;
     
     @Column(unique = true, nullable = false)
     private String email;
 
-<<<<<<< HEAD
-    
-=======
->>>>>>> 396ae4e6eb35421d215dab7a15b3cd8c65e56a23
     private String password;
     private String nomProfil;
     private String tel;
@@ -54,6 +50,7 @@ public class UserEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-reference")
     private Commentaire commentaire;
+
     public long getPoints() {
         return points;
     }
@@ -62,6 +59,3 @@ public class UserEntity {
         this.points = points;
     }
 }
-
-
-
