@@ -2,3 +2,13 @@ mvn clean install
 mvn clean
 mvn dependency:purge-local-repository
 // aprés chaque ajout des dépendences il faut taper dans terminale : # mvn clean install
+
+
+// sql
+ALTER TABLE commentaire DROP FOREIGN KEY FKmru48t4nk57igcva25tfyl5v6;
+
+ALTER TABLE commentaire DROP INDEX UKsboatkskl7ntf4tnwblgtj6ix;
+
+ALTER TABLE commentaire 
+ADD CONSTRAINT FKmru48t4nk57igcva25tfyl5v6 
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;

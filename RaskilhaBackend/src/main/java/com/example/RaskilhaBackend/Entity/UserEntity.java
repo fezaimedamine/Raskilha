@@ -37,7 +37,10 @@ public class UserEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
+<<<<<<< HEAD
     
+=======
+>>>>>>> 396ae4e6eb35421d215dab7a15b3cd8c65e56a23
     private String password;
     private String nomProfil;
     private String tel;
