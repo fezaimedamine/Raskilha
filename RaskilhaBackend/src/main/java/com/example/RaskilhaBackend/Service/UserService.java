@@ -36,11 +36,7 @@ public class UserService {
     if (existingUser.isPresent()) {
         throw new RuntimeException("Email déjà utilisé !");
     }
-   // If an image is present, decode it from Base64 and save it as byte[]
-if (user.getImageProfil() != null && user.getImageProfil().length > 0) {
-    user.setImageProfil(Base64.getDecoder().decode(user.getImageProfil()));
-}
-
+   
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     return userRepository.save(user);
 }
