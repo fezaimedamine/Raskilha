@@ -5,7 +5,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { ThemeContext } from "../context/ThemeContext";
 import axios from "axios";
 
-function MenuBar({ setFilteredPosts }) {
+function MenuBar({ setFilteredPosts ,onClearSearch }) {
   
   const { darkMode, setDarkMode } = useContext(ThemeContext);
   const [search, setSearch] = useState("");
@@ -23,9 +23,7 @@ function MenuBar({ setFilteredPosts }) {
 
   const handleDeleteSearch = () => {
     setSearch("");
-    axios.get("http://localhost:8081/api/pubs")
-      .then(response => setFilteredPosts(response.data))
-      .catch(error => console.error("Erreur lors de la récupération des publications :", error));
+    onClearSearch();
   };
 
   const handleFilterChange = (e) => {

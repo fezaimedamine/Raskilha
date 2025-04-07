@@ -181,15 +181,18 @@ const Signup = () => {
       if (responseData.includes("Email déjà utilisé !")) {
         throw new Error("Email déjà utilisé !");
       }
-  
+      else{
+        console.log("success");
+        toast.success("Utilisateur enregistré avec succès", {
+          closeOnClick: true,
+          autoClose: 3000,
+        });
+        navigate("/Login");
+      }
       // If the response is successful, navigate or show success message
-      console.log("success");
-      toast.success("Utilisateur enregistré avec succès", {
-        closeOnClick: true,
-        autoClose: 3000,
-      });
+      
   
-      navigate("/Login");
+      
     } catch (error) {
       console.error(error);
       toast.error("Error during signup: " + error.message, {
