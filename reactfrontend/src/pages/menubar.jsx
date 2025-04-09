@@ -8,7 +8,7 @@ import { UserContext } from "./UserContext"; // Assuming UserContext is availabl
 import ExpandedPub from "./ExpandedPub"
 
 
-function MenuBar({ setFilteredPosts }) {
+function MenuBar({ setFilteredPosts ,onClearSearch }) {
   const { userDetails } = useContext(UserContext); // Access user details
   const [user_id, setUserId] = useState(""); // Store user_id
 
@@ -28,7 +28,7 @@ function MenuBar({ setFilteredPosts }) {
 
   const handleDeleteSearch = () => {
     setSearch("");
-    console.log("Clearing search");
+    onClearSearch();
   };
 
   useEffect(() => {

@@ -2,7 +2,6 @@ package com.example.RaskilhaBackend.Entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -16,7 +15,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-
 
 @Entity
 @Table(name = "users")
@@ -32,6 +30,7 @@ public class UserEntity {
     private String genre;
     private String region;
     private String adresse;
+    
     @Lob
     private byte[] imageProfil;
     
@@ -43,7 +42,7 @@ public class UserEntity {
     private String tel;
     private String type;
     private long points = 0;
-    @JsonIgnore
+    
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<PubEntity> publications;
@@ -51,6 +50,7 @@ public class UserEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-reference")
     private Commentaire commentaire;
+
     public long getPoints() {
         return points;
     }
@@ -59,6 +59,3 @@ public class UserEntity {
         this.points = points;
     }
 }
-
-
-

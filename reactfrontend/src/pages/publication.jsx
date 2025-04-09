@@ -38,7 +38,6 @@ export default function Publication() {
         navigate("/login")
       }
     }, [userDetails]);
-    console.log(userDetails)
   const validateForm = () => {
     
     // Title validation
@@ -158,9 +157,11 @@ const fetchLocations = async () => {
     const [hasMore, setHasMore] = useState(true);
     const POSTS_PER_PAGE = 10;
     const fetchPosts = async () => {
+      console.log(loading,!hasMore)
       if (loading || !hasMore) return;
+      console.log("fetching")
       setLoading(true);
-  
+      
       try {
         const response = await axios.get('http://localhost:8081/api/pubs', {
           params: {
@@ -213,6 +214,51 @@ const fetchLocations = async () => {
         console.log(page)
       }
     };
+    const handleClearSearch = async () => {
+      console.log("Clearing search and resetting posts");
+      setFilteredPosts([]); 
+      setPage(0); // Reset pagination to first page
+      setHasMore(true)
+      
+        
+      
+      try {
+        console.log("beforefetch",!hasMore)
+
+        setLoading(true);
+        const response = await axios.get('http://localhost:8081/api/pubs', {
+          params: {
+            page: page,
+            size: POSTS_PER_PAGE,
+          },
+        });
+  
+        const posts = response.data.content;
+  
+        if (posts.length < POSTS_PER_PAGE) {
+          setHasMore(false);
+        }
+        
+        if (page === 0) {
+          setFilteredPosts(posts); // Replace on first load
+        } else {
+          // Append only new posts
+          setFilteredPosts((prevPosts) => {
+            const newPosts = posts.filter(
+              post => !prevPosts.some(p => p.id === post.id)
+            );
+            console.log(newPosts)
+            return [...prevPosts, ...newPosts];
+          });
+        }
+  
+      } catch (error) {
+        console.error('Error resetting posts:', error);
+      } finally {
+        setLoading(false);
+      } 
+        console.log("afterfetch")// Refetch initial posts
+      }
     
     useEffect(() => {
       // Listen for the scroll event
@@ -247,7 +293,7 @@ const fetchLocations = async () => {
   return (
     <>
     <Sidebar/>
-    <MenuBar />
+    <MenuBar setFilteredPosts={setFilteredPosts} onClearSearch={handleClearSearch}/>
     
     
     {isOpen && (
