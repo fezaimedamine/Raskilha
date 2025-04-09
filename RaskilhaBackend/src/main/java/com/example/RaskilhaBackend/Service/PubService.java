@@ -3,6 +3,7 @@ package com.example.RaskilhaBackend.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -47,7 +48,7 @@ public class PubService {
         if (optionalUser.isPresent()) {
             UserEntity existingUser = optionalUser.get();
             existingUser.setPoints(existingUser.getPoints()+1);
-            UserEntity user=userRepository.save(existingUser);
+           // UserEntity user=userRepository.save(existingUser);
         } else {
             throw new RuntimeException("Utilisateur non trouvé avec l'ID : " + pub.getUser().getId());
         }

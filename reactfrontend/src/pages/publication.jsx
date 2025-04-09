@@ -3,7 +3,12 @@ import Sidebar from "./sidebar";
 import MenuBar from "./menubar";
 
 import { motion } from "framer-motion";
+<<<<<<< HEAD
 import Rpoint from "../Images/P4.png"
+=======
+import Rpoint from "../Images/P.png"
+import toast from "react-hot-toast";
+>>>>>>> dbfe19c78d7536bc158d4026791be2b4d48864af
 
 import axios from "axios";
 import PostCard from "./PostCard";
@@ -64,17 +69,22 @@ export default function Publication() {
       fetchData();
     }, [userDetails]);
   const validateForm = () => {
-    let newErrors = {};
-    console.log(formData.title)
-    // Title validation
-    if (!formData.title.trim()) newErrors.title = "Title is required.";
-    else if (formData.title.length < 3) newErrors.title = "Title must be at least 3 characters.";
-  
-    // Image validation (must be a valid image type)
     
+    // Title validation
+    if (!formData.title.trim()) {
+      throw ("Title is required.")  ;
+     }
+      if (formData.title.length < 3) {
+        throw ("Title must be at least 3 characters.") 
+      }
+      if (!formData.image){
+        throw ("An image is required.")
+      }
+    // Image validation (must be a valid image type)
+    return true;
   
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    
+    
   };
 
   const handleChange = (e) => {
@@ -83,9 +93,7 @@ export default function Publication() {
     console.log(formData.title)
 
 };
- const [selectedImage, setSelectedImage] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [uploading, setUploading] = useState(false);
+
   const [error, setError] = useState('');
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -97,23 +105,17 @@ export default function Publication() {
         reader.onloadend = () => {setFormData({ ...formData, image: reader.result.split(",")[1] })}; // Convert to Base64
         setMediaPreview(URL.createObjectURL(file));
       }else{
-        setErrors({image:"File must be a file type"})
+        setError("File must be an image type")
       }
-    }else{
-      setErrors({image:"Image is required"})
     }
-/*if (!formData.image) {
-  newErrors.image = "Image is required.";
-} else if (!formData.image.type.startsWith("image/")) {
-  newErrors.image = "File must be an image.";
-}*/
 };
 
 
 const handleSubmit = async(e) => {
   e.preventDefault();
-  if (!validateForm()) return; 
+  
   try{
+    if (!validateForm()) return
         const response = await fetch("http://localhost:8081/api/pubs", {
           method: "POST",
           headers: {
@@ -135,12 +137,9 @@ const handleSubmit = async(e) => {
           }),
         });
   
-        const data = await response.json();
+        
         fetchPosts()
-      }catch (error) {
-        console.log("Error during login: " + error);
-      }
-    closeForm()
+        closeForm()
     setMediaPreview(null);
     setQuery("")
     setFormData({
@@ -150,6 +149,10 @@ const handleSubmit = async(e) => {
       location: "",
       region:""
     })
+      }catch (error) {
+        setError("Error while adding a post: " + error);
+      }
+    
     
 };
 
@@ -290,6 +293,27 @@ const fetchLocations = async () => {
         window.removeEventListener('scroll', handleScroll);
       };
     }, [loading, hasMore]);
+    const[user_image,setuser_image]=useState(null)
+    useEffect(() => {
+          
+          if(userDetails){
+            setuser_image(userDetails.user.imageProfil)
+          }
+      },[userDetails])  ; 
+      const showError = () => {
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+        });
+      };
+      useEffect(() => {
+        if (error) {
+          showError();
+          setError(null);
+        }
+      }, [error]);
   return (
     <>
     <Sidebar/>
@@ -317,7 +341,7 @@ const fetchLocations = async () => {
       </button>
       <div className="flex items-center gap-3 mb-4">
         {/* Placeholder for profile picture */}
-        <img className="w-10 h-10 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="profile_image" />
+        <img className="w-10 h-10 rounded-full" src={`data:image/jpeg;base64,${user_image}`} alt="profile_image" />
         <h2 className="text-xl font-semibold">Create a Post</h2>
         </div>
         
@@ -438,7 +462,7 @@ const fetchLocations = async () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <input
-                          required
+                          
                           id="media-upload"
                           type="file"
                           accept="image/*"
@@ -482,12 +506,11 @@ const fetchLocations = async () => {
               {/* Create Post Header */}
               <div className="flex items-center mb-4">
                 <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 overflow-hidden">
-                <img 
-                src={`data:image/jpeg;base64,${userDetails?.user?.imageProfil}`} 
-                   alt="User" 
-                  className="w-full h-full object-cover" 
-                />
-
+                  <img 
+                    src={`data:image/jpeg;base64,${user_image}`}
+                    alt="User" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <button 
                   className="flex-1 text-left bg-gray-100 hover:bg-gray-200 rounded-full py-2 px-4 text-gray-500 transition"
