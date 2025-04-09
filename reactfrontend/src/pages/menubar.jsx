@@ -5,6 +5,8 @@ import { IoSearchOutline } from "react-icons/io5";
 import { ThemeContext } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { UserContext } from "./UserContext"; // Assuming UserContext is available
+import ExpandedPub from "./ExpandedPub"
+
 
 function MenuBar({ setFilteredPosts }) {
   const { userDetails } = useContext(UserContext); // Access user details
@@ -13,6 +15,7 @@ function MenuBar({ setFilteredPosts }) {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
   const [search, setSearch] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+
   const navigate = useNavigate(); // Initialize useNavigate
 
   const toggleNotif = () => {
@@ -91,13 +94,14 @@ const Notifications = ({ user_id }) => {
     }
   }, [user_id]);
 
-  const navigate = useNavigate();
-
-  const openPublication = (publicationId) => {
-    navigate(`/publication/${publicationId}`);
+  const[thatPost,setthatPost]=useState(null);
+  const [show, setshow] = useState(false);
+  const openPublication = (post) => {
+    setshow(!show);
+    setthatPost(post)
   };
 
-  return (
+  return (<>
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -106,31 +110,69 @@ const Notifications = ({ user_id }) => {
       className="fixed right-2 top-24 w-80 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 z-50"
     >
       <h2 className="text-lg text-gray-700 dark:text-white font-semibold mb-2">Notifications</h2>
-      <div>
+     
         {newPosts.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400">No new posts.</p>
+          <p className="text-gray-500 dark:text-gray-400">No posts in your Region yet.</p>
         ) : (<>
           <ul className="space-y-3">
           <h3 className=" text-gray-700 dark:text-white font-semibold mb-2">You have new posts in your Region</h3>
             {newPosts.map(post => (
               
-              
               <li
-                key={post.id}
-                onClick={() => openPublication(post.id)}
-                className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 shadow-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-all cursor-pointer"
-              >
-                <p className="text-gray-800 dark:text-white font-medium">{post.titre}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{post.description?.slice(0, 60)}...</p>
-        
+              
+              key={post.id}
+              onClick={() => openPublication(post)}
+              className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 shadow-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-all cursor-pointer"
+            >     
+                     
+                     <div className="flex items-center gap-2 mb-2">
+             <img
+    src={`data:image/jpeg;base64,${post.imageProfil}`} alt="profil_image"               
+    className="w-10 h-10 rounded-full object-cover"
+  /> <p className="text-gray-800 dark:text-white font-normal mb-1  ">
+             <b>{post.userNomProfil}</b> created a new post in your region
+           </p>
+           </div>
+           {post.titre && (
+  <p className="text-sm text-gray-700 dark:text-gray-200 font-semibold mb-1">
+     {post.titre}
+  </p>
+)}
+{post.description && (
+  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+   {post.description.length > 60
+      ? `${post.description.slice(0, 60)}...`
+      : post.description}
+  </p>
+)}
+         
+         {post.dateHeure && (
+  <p className="text-xs text-gray-400 dark:text-gray-300">
+    {new Date(post.dateHeure).toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    })}
+  </p>
+)}
               </li>
-            ))}
+            
+          
+          ))}
           </ul>
-          </>
+           </> 
+       
         )}
-      </div>
+      
     </motion.div>
-  );
+    {show && <ExpandedPub post={thatPost} toggleExpand={openPublication}/>}
+  </>);
 };
+
+
+
 
 export default MenuBar;
