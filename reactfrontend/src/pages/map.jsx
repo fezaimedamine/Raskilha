@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap,useMapEvents  } from "react-leaflet";
 import { GiBroom } from "react-icons/gi";
 import "leaflet/dist/leaflet.css";
-import L, { point } from "leaflet";
+import L from "leaflet";
 import Sidebar from "./sidebar";
 import trash from "../Images/recycle-bin.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -13,8 +13,7 @@ import { FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import DistanceSlider from "./DistanceSlider";
 import Swal from "sweetalert2";
-import IconButton from '@mui/material/IconButton';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import toast from "react-hot-toast";
 import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 
@@ -68,7 +67,7 @@ const Map = () => {
   const [distance, setDistance] = useState(10); 
   const navigate = useNavigate(); 
 
-
+  const [error, setError] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
@@ -103,7 +102,7 @@ const Map = () => {
     // Fetch FRESH user data to ensure up-to-date points/info
     try {
       const response = await fetch(
-        `http://localhost:8081/api/users/${userDetails.user.id}`
+        `http://localhost:8081/api/users/${userDetails.user.user_id}`
       );
       const updatedUser = await response.json();
       console.log(updatedUser);
@@ -149,7 +148,7 @@ const Map = () => {
   
       const savedMarker = await response.json();
       setMarkers((prevMarkers) => [...prevMarkers, savedMarker]);
-      await fetch(`http://localhost:8081/api/users/${userDetails.user.id}/points`, {
+      await fetch(`http://localhost:8081/api/users/${userDetails.user.user_id}/points`, {
         method: "PUT", // or PUT
         headers: {
           "Content-Type": "application/json",
@@ -195,7 +194,7 @@ const Map = () => {
         }
         
         Swal.fire("Supprimé !", "Le marqueur a été supprimé.", "success");
-        const response2  = await fetch(`http://localhost:8081/api/users/${userDetails.user.id}/points`, {
+        const response2  = await fetch(`http://localhost:8081/api/users/${userDetails.user.user_id}/points`, {
           method: "PUT", 
           headers: {
             "Content-Type": "application/json",
@@ -271,64 +270,102 @@ const Map = () => {
   );
 
     
-    const validateForm = () => {
-      let newErrors = {};
+
+  
     
-      // Title validation
-      if (!formData.title.trim()) newErrors.title = "Title is required.";
-      else if (formData.title.length < 3) newErrors.title = "Title must be at least 3 characters.";
     
-      // Description validation
-      if (!formData.description.trim()) newErrors.description = "Description is required.";
-      else if (formData.description.length < 10) newErrors.description = "Description must be at least 10 characters.";
+  const validateForm = () => {
     
-      // Image validation (must be a valid image type)
-      if (!formData.image) {
-        newErrors.image = "Image is required.";
-      } else if (!formData.image.type.startsWith("image/")) {
-        newErrors.image = "File must be an image.";
+    // Title validation
+    if (!formData.title.trim()) {
+      throw ("Title is required.")  ;
+     }
+      if (formData.title.length < 3) {
+        throw ("Title must be at least 3 characters.") 
       }
+      if (!formData.image){
+        throw ("An image is required.")
+      }
+    // Image validation (must be a valid image type)
+    return true;
+  
     
-      setErrors(newErrors);
-      return Object.keys(newErrors).length === 0;
-    };
+    
+  };
     const handleChange = (e) => {
       const { name, value } = e.target;
       setFormData({ ...formData, [name]: value });
       let newErrors = {image:errors.image};
-    
-      // Title validation
-      if (!formData.title.trim()) newErrors.title = "Title is required.";
-      else if (formData.title.length < 3) newErrors.title = "Title must be at least 3 characters.";
-    
-      // Description validation
-      if (!formData.description.trim()) newErrors.description = "Description is required.";
-      else if (formData.description.length < 10) newErrors.description = "Description must be at least 10 characters.";
       setErrors(newErrors);
   };
   
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setFormData({ ...formData, image: file });
-      setErrors({ ...errors, image: null });
-      setMediaPreview(URL.createObjectURL(file));
+    if (file ) {
+      if(file.type.startsWith("image/")){
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        
+        reader.onloadend = () => {setFormData({ ...formData, image: reader.result.split(",")[1] })}; // Convert to Base64
+        setMediaPreview(URL.createObjectURL(file));
+      }else{
+        setError("File must be an image type")
+      }
     }
-  };
+};
   
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    if (validateForm()) {    
-      
-      closeForm()
+   
+    try{
+      if (!validateForm()) return
+          const response = await fetch("http://localhost:8081/api/pubs", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", // Make sure we send the content type as JSON
+            },
+            body: JSON.stringify({
+              titre: formData.title,
+              description: formData.description,
+              localisation:{
+                adresse: formData.location,
+                ville: formData.region,
+              },
+              image: formData.image,  // Send image as Base64
+              etat: "ACTIVE",
+              type:"OFFRE",
+              user:{
+                id:userDetails.user.user_id
+              }
+            }),
+          });
+    
+          if(response.ok){
+            Swal.fire({
+              icon: "success",
+              title: "Thank you!",
+              text: "Post Added successfully!",
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }
+          
+          closeForm()
+      setMediaPreview(null);
+      //setQuery("")
       setFormData({
         title: "",
         description: "",
         image: null,
         location: "",
+        region:""
       })
-    }
+        }catch (error) {
+          setError("Error while adding a post: " + error);
+        }
+      
+      
   };
   
   const closeForm = () =>{
@@ -353,7 +390,27 @@ const Map = () => {
     setDistance(newDistance);
     console.log(distance);
   };
- 
+  const[user_image,setuser_image]=useState(null)
+  useEffect(() => {
+        
+        if(userDetails){
+          setuser_image(userDetails.user.imageProfil)
+        }
+    },[userDetails])  ; 
+    const showError = () => {
+            toast.error(error, {
+              position: "top-center",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+            });
+          };
+          useEffect(() => {
+            if (error) {
+              showError();
+              setError(null);
+            }
+          }, [error]);
   return (
     <div className="flex h-screen bg-gray-50">
     {!userLocation && <Loading />}
@@ -445,9 +502,9 @@ const Map = () => {
                         ✖
                       </button>
 
-                      <div className="flex items-center mb-4">
+                      <div className="flex items-center mb-4 gap-5">
                         {/* Placeholder for profile picture */}
-                        <div className="w-10 h-10 rounded-full bg-gray-300 mr-4"></div>
+                        <img className="w-10 h-10 rounded-full border-2" src={`data:image/jpeg;base64,${user_image}`} alt="profile_image" />
                         <h2 className="text-xl font-semibold">Create a Post</h2>
                       </div>
 
@@ -456,6 +513,7 @@ const Map = () => {
                         <div className="mt-4 pt-4 border-t">
                           <input
                             type="text"
+                            name="title"
                             placeholder="Set Post title "
                             className="w-full mb-4 border-none outline-none focus:ring-0 text-xl placeholder-gray-500"
                             value={formData.title}
@@ -465,6 +523,7 @@ const Map = () => {
                           <textarea
                             className="w-full border-t p-4 focus:ring-0 outline-none resize-none text-lg placeholder-gray-500"
                             rows="3"
+                            name="description"
                             placeholder="What's on your mind?"
                             value={formData.description}
                             onChange={handleChange}
@@ -519,7 +578,7 @@ const Map = () => {
                           {/* Action Buttons */}
                           <div className="flex justify-between items-center mt-4">
                             <div className="flex space-x-2">
-                              <button
+                              <div
                                 className="p-2 rounded-full hover:bg-gray-100"
                                 onClick={() => document.getElementById('media-upload').click()}
                               >
@@ -533,7 +592,7 @@ const Map = () => {
                                   className="hidden"
                                   onChange={handleFileChange}
                                 />
-                              </button>
+                              </div>
                             </div>
                           </div>
                         </div>

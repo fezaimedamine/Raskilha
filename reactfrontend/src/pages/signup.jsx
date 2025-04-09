@@ -4,24 +4,13 @@ import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import toast from "react-hot-toast";
 import collectorImage from "../Images/eboueur (2).png";
 import citizenImage from "../Images/citizen (2).png";
-
+import { FaCamera } from "react-icons/fa";
 import wasteManagementImage2 from "../Images/Volunteering-bro.png";
-
+import userpng from "../Images/user.png";
 
 const Signup = () => {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    nom: "",
-    prenom: "",
-    nomProfil: "",
-    age: "",
-    imageProfil:null,
-    genre:"Male",
-    email: "",
-    tel:"",
-    password: "",
-    adresse: "",
-  });
+  
   const [formData1, setFormData1] = useState({
     nom: "",
     prenom: "",
@@ -57,7 +46,7 @@ const Signup = () => {
     Object.keys(formData).forEach((key) => {
       newErrors[key] = validateField(key, formData[key]);
     });
-  
+  console.log(newErrors)
     setErrors(newErrors);
   
     // Return if there are no errors
@@ -68,13 +57,30 @@ const Signup = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // Get the file from the input
+    
     if (file) {
-      setSelectedImage(file);
-      setPreview(URL.createObjectURL(file)); // Create a local preview of the image
-      setFormData2({ ...formData2, imageProfil: file });
+      if (file.type.startsWith("image/")) { // Check if the file is an image
+        const reader = new FileReader();
+        
+        // Read the file as a data URL (Base64)
+        reader.readAsDataURL(file);
+        
+        reader.onloadend = () => {
+          // Set the Base64 string of the image in the form data
+          setFormData2({ ...formData2, imageProfil : reader.result.split(",")[1] }); 
+        };
+        
+        setPreview(URL.createObjectURL(file));
+      } else {
+        setErrors({ ...errors, imageProfil : "File must be an image type" });
+      }
+    } else {
+    
+      setErrors({ ...errors, imageProfil : "Image is required" });
     }
   };
+  
   const validateField = (name, value) => {
     let errorMessage = "";
 
@@ -124,7 +130,7 @@ const Signup = () => {
   
 
   const handleNext = () => {
-    const currentFormData = step === 1 ? formData1 : step === 2 ? formData2 : formData;
+    const currentFormData = step === 1 ? formData1 :   formData2 ;
     
     // Check if current step is valid before moving to the next step
     const isValid = validateForm(currentFormData);
@@ -132,25 +138,26 @@ const Signup = () => {
     if (isValid) {
       setStep(step + 1);  // Proceed to the next step
     }
+    console.log(step,isValid)
   };
 
   const handlePrev = () => {
     setStep(1);
   };
 
-  useEffect(() => {
-    if (query.length < 3) return;
-
-    const fetchLocations = async () => {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${query}`
-      );
-      const data = await response.json();
-      setSuggestions(data);
-    };
-
-    fetchLocations();
-  }, [query]);
+  const fetchLocations = async () => {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
+    );
+    const data = await response.json();
+    setSuggestions(data);
+  };
+     useEffect(() => {
+        if (query.length < 3) return;
+    
+  
+        fetchLocations();
+      }, [query]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -170,10 +177,11 @@ const Signup = () => {
       });
   
       const responseData = await response.text();
-  
+      if(responseData){
       if (responseData.includes("Email déjà utilisé !")) {
         throw new Error("Email déjà utilisé !");
       }
+      
       else{
         console.log("success");
         toast.success("Utilisateur enregistré avec succès", {
@@ -182,6 +190,7 @@ const Signup = () => {
         });
         navigate("/Login");
       }
+    }
       // If the response is successful, navigate or show success message
       
   
@@ -215,13 +224,13 @@ const Signup = () => {
     <div className="h-screen flex items-center justify-center bg-gradient-to-r from-green-50 to-green-50">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-11/12  flex flex-row items-center">
         {/* Left Side: Form */}
-        <div className="sm:w-full md:w-1/2 flex flex-col gap-7">
-          <div>
+        <div className="w-full md:w-1/2 flex flex-col gap-7">
+          {step===1 && <div>
             <h2 className="text-3xl font-bold text-center text-gray-800">Get Started Now</h2>
             <h2 className="text-base font-thin text-center text-gray-800">
               Welcome to Raskilha - Let's create your account.
             </h2>
-          </div>
+          </div>}
           <form className="flex flex-col gap-7" onSubmit={handleSubmit}>
             {step === 1 && (
               <>
@@ -410,24 +419,34 @@ const Signup = () => {
             {step === 2 && (
               <>
               {/* Image Upload Section */}
-              <div className="mb-4 flex flex-col items-center justify-center">
-                <label htmlFor="imageProfil" className="block text-sm font-semibold">Profile Picture</label>
-                <input 
-                  type="file" 
-                  id="imageProfil"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="mt-2"
-                />
-                {preview && (
-                  <div className="mt-4">
-                    <img 
-                      src={preview} 
-                      alt="Profile Preview" 
-                      className="w-24 h-24 object-cover rounded-full"
+              <div className="flex items-center justify-center mb-7">
+                  <div className="relative w-44 h-44 flex flex-col gap-3">
+                   
+                    <label htmlFor="profileImage" className="cursor-pointer">
+                      <img
+                        src={
+                          preview ||
+                          userpng // Default avatar
+                        }
+                        alt="Profile"
+                        className="w-44 h-44 rounded-full object-cover border-4 border-white shadow-md"
+                      />
+                      
+                      <div className="absolute bottom-0 right-0 bg-gray-800 p-2 rounded-full border-2 border-white hover:bg-gray-700 transition-all">
+                        <FaCamera className="text-white text-sm" />
+                      </div>
+                      
+                    </label>
+                    <h1 className="font-sans text-zinc-800 font-semibold text-center">Add a profile photo</h1>
+                    
+                    <input
+                      type="file"
+                      id="profileImage"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
                     />
                   </div>
-                )}
               </div>
               {/* Tel */}
               <div className="relative">
@@ -480,14 +499,19 @@ const Signup = () => {
                   {errors.adresse  && <p className="text-red-500 text-xs fixed ml-2" >{errors.adresse}</p>}
 
 
-                                  {suggestions.length > 0 && (
-                                    <ul className="border absolute z-10 bg-white mt-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
-                                      {suggestions.map((place, index) => (
+                  {suggestions.length > 0 && (
+                                  <ul className="border absolute z-10 bg-white mt-2 rounded-lg shadow-md max-h-40 overflow-y-auto w-full">
+                                    {suggestions.map((place, index) => {
+                                      console.log(place)
+                                      const { city, town, village, municipality, county, state, state_district } = place.address || {};
+                                      const cityName = city || town || village || municipality || county || state || state_district || "Unknown City";
+                                      
+                                      return (
                                         <li
                                           key={index}
                                           onClick={() => {
-                                            setFormData2({ ...formData2, adresse: place.display_name });
-                                            setErrors({...errors,adresse:""})
+                                            setFormData2({ ...formData2, adresse: cityName });
+                                            setErrors({...errors, adresse: ""});
                                             setQuery(place.display_name);
                                             setSuggestions([]);
                                           }}
@@ -495,22 +519,32 @@ const Signup = () => {
                                         >
                                           {place.display_name}
                                         </li>
-                                      ))}
-                                    </ul>
-                                  )}
+                                      );
+                                    })}
+                                  </ul>
+                                )}
                 </div>
 
               
 
 
-              {/* Next Button */}
+              {/* Next and back Button */}
+              <div className="flex justify-around">
+              <button
+                      type="button"
+                      onClick={handlePrev}
+                      className="w-1/3 bg-gray-500 text-white p-2 px-4 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-200 transition duration-300"
+                    >
+                      Back
+                  </button>
               <button
                   type="button"
                   onClick={handleNext}
-                  className="w-full bg-green-300 text-white p-2 rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300"
+                  className="w-1/3 bg-green-300 text-white p-2 rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300"
                 >
                   Next
                 </button>
+                </div>
               </>
             )}
             {step === 3 && (
@@ -577,8 +611,8 @@ const Signup = () => {
         </div>
 
 
-        <div className=" hidden  md:w-1/2 md:flex items-center justify-center mt-8 md:mt-0">
-          <img src={wasteManagementImage2} width={600} height={600} alt="Signup Illustration" />
+        <div className=" hidden sm:hidden md:flex w-1/2 items-center justify-center mt-8 md:mt-0">
+          <img src={wasteManagementImage2} width={600} height={600} className="max-w-full h-auto" alt="Signup Illustration" />
 
         </div>
       </div>

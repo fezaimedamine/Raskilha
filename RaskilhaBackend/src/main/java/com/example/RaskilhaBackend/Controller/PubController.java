@@ -24,16 +24,13 @@ public class PubController {
     public List<PubEntity> getPubByUserId(@PathVariable long id){
         return pubService.findPubByUserId(id);
     }
-
+    @GetMapping("")
     public Page<PubDTO> getAllPubs(
-        @RequestParam(required = false) String ville,
         @PageableDefault(size = 10, sort = "dateHeure", direction = Sort.Direction.DESC) Pageable pageable) {
     
-    if (ville != null && !ville.isEmpty()) {
-        return pubService.getPubsByRegion(ville, pageable);
-    } else {
+   
         return pubService.getAllPubs(pageable);
-    }
+    
 }
 
 

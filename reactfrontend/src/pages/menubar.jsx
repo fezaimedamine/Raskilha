@@ -6,6 +6,7 @@ import { ThemeContext } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { UserContext } from "./UserContext"; // Assuming UserContext is available
 import ExpandedPub from "./ExpandedPub"
+import axios from "axios";
 
 
 function MenuBar({ setFilteredPosts ,onClearSearch }) {
@@ -23,8 +24,12 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
   };
 
   const handleSearch = () => {
-    console.log(`Searching for: ${search}`);
+    axios.get(`http://localhost:8081/api/pubs/search-by-title?titre=${search}`)
+      .then(response => setFilteredPosts(response.data))
+      .catch(error => console.error("Erreur lors de la récupération des publications :", error));
   };
+  
+  
 
   const handleDeleteSearch = () => {
     setSearch("");

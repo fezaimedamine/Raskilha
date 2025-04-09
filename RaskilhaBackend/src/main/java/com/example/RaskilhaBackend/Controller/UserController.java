@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.RaskilhaBackend.DTO.UserDTO;
 import com.example.RaskilhaBackend.Entity.UserEntity;
 import com.example.RaskilhaBackend.Repository.UserRepository;
 import com.example.RaskilhaBackend.Service.LocalisationService;  // Import UserRepository
@@ -28,15 +29,17 @@ public class UserController {
 
     // Endpoint to get user by ID
     @GetMapping("/{id}")
-    public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
-        Optional<UserEntity> user = userRepository.findById(id);
+public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+    Optional<UserEntity> user = userRepository.findById(id);
 
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
-        } else {
-            return ResponseEntity.notFound().build();  // User not found
-        }
+    if (user.isPresent()) {
+        UserDTO userDto = new UserDTO(user.get());
+        return ResponseEntity.ok(userDto);
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
+
 
     // Endpoint to update user points (this could be called after a localisation is added)
    @PutMapping("/{id}/points")

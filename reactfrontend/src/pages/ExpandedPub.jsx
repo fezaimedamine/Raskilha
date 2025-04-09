@@ -1,13 +1,45 @@
 import { useState, useEffect, useContext  } from "react";
 import dayjs from "dayjs";
 import {UserContext} from "./UserContext";
+import { useNavigate } from "react-router-dom";
 
 
 function ExpandedPub ({post ,toggleExpand}){
     const [comments,setComments]= useState([]);
     const [newComment, setNewComment] = useState("");
-    const { userDetails } = useContext(UserContext);
+    const { userDetails,setUserDetails } = useContext(UserContext);
+      const navigate = useNavigate(); 
+    useEffect(() => {
+      const fetchData = async () => {
+        // Redirect if not logged in
+        console.log(userDetails)
+
+        if (!userDetails) {
+          navigate("/login");
+          return;
+        }
+        console.log(userDetails)
+        // Fetch FRESH user data to ensure up-to-date points/info
+        try {
+          const response = await fetch(
+            `http://localhost:8081/api/users/${userDetails.user.user_id}`
+          );
+          const updatedUser = await response.json();
     
+          // Update context to trigger re-render everywhere
+          setUserDetails((prevDetails) => ({
+            ...prevDetails,   
+            user: updatedUser // 
+          })); 
+        
+
+        } catch (err) {
+          console.error("Failed to refresh user data:", err);
+        }
+      };
+  
+      fetchData();
+    }, []);
     const getTimeAgo = (date) => {
           const now = dayjs();
           const givenDate = dayjs(date);
@@ -40,7 +72,7 @@ function ExpandedPub ({post ,toggleExpand}){
                            id: post.id 
                           },
                         user:{
-                          id: 3//userDetails.id
+                          id:userDetails.user.user_id
                         }
                       
                     }),
@@ -62,7 +94,7 @@ function ExpandedPub ({post ,toggleExpand}){
           }, []);
           const fetchComments = async (pubId) => {
             try {
-              const response = await fetch(`http://localhost:8081/commentaires/pub/${pubId}`); // replace with your real API
+              const response = await fetch(`http://localhost:8081/commentaires/pub/${pubId}`);
               if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
               }

@@ -28,7 +28,6 @@ const Sidebar = () => {
       <nav className="flex flex-col gap-4  items-center dark:bg-gray-800 dark:text-white">
         <SidebarLink to="/publication" icon={<FaHome />} label="Accueil" />
         <SidebarLink to="/map" icon={<FaMapMarkedAlt />} label="Map" />
-        <SidebarLink to="/publication" icon={<FaRecycle />} label="Recyclage" />
         <SidebarLink to="/profile" icon={<FaUserCircle />} label="Profil" />
       
       <div className="flex items-center gap-3 p-3 rounded-lg transition-all duration-300 w-36 absolute  bottom-8

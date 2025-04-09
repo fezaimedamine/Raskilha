@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 import Rpoint from "../Images/P4.png"
 
-import Rpoint from "../Images/P.png"
+
 import toast from "react-hot-toast";
 
 
@@ -28,7 +28,7 @@ export default function Publication() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [errors, setErrors] = useState({});
+
 
   const [formData, setFormData] = useState({
       title: "",
@@ -40,7 +40,7 @@ export default function Publication() {
     useEffect(() => {
       const fetchData = async () => {
         // Redirect if not logged in
-        console.log(userDetails)
+        
 
         if (!userDetails) {
           navigate("/login");
@@ -67,7 +67,7 @@ export default function Publication() {
       };
   
       fetchData();
-    }, [userDetails]);
+    }, []);
   const validateForm = () => {
     
     // Title validation
@@ -189,13 +189,13 @@ const fetchLocations = async () => {
     const fetchPosts = async () => {
       if (loading || !hasMore) return;
       setLoading(true);
-      console.log(userDetails)
+      
       try {
         const response = await axios.get('http://localhost:8081/api/pubs', {
           params: {
             page: page,
             size: POSTS_PER_PAGE,
-            ville:userDetails.user.region
+       
           },
         });
   
