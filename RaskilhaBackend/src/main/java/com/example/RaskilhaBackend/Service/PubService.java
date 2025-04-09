@@ -3,6 +3,7 @@ package com.example.RaskilhaBackend.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -74,11 +75,15 @@ public class PubService {
     }
 
     // Récupérer les publications de la région d’un utilisateur
-    public List<PubEntity> getPubsByUserRegion(Long userId) {
+    public List<PubDTO> getPubsByUserRegion(Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        return pubRepository.findByLocalisation_Ville(user.getRegion());
-    }
+                List<PubEntity> pubs = pubRepository.findByLocalisation_Ville(user.getRegion());
+                  return pubs.stream()
+               .map(PubDTO::new)
+               .collect(Collectors.toList());
+}
+    
     public List<PubEntity> searchPubsByTitle(String titre) {
         return pubRepository.findByTitreContainingIgnoreCase(titre);
     }

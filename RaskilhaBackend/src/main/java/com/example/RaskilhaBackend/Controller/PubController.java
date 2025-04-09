@@ -76,7 +76,7 @@ public class PubController {
     // Endpoint pour récupérer les publications de la région d'un utilisateur
     // exemple : http://localhost:8081/api/pubs/region/user/3
     @GetMapping("/region/user/{userId}")
-    public List<PubEntity> getPubsByUserRegion(@PathVariable Long userId) {
+    public List<PubDTO> getPubsByUserRegion(@PathVariable Long userId) {
         return pubService.getPubsByUserRegion(userId);
     }
     // exemple : http://localhost:8081/api/pubs/search-by-title?titre=pub
