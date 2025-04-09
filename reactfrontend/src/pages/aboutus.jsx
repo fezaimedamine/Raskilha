@@ -1,32 +1,19 @@
 import React from "react";
 import { MdGroups, MdCode, MdEco, MdLocationOn } from "react-icons/md";
-import logo from "../Images/logo.png";
-import aboutIllustration from "../Images/protecting the environment-bro.png";
-import { Link } from 'react-router-dom';
 
+import aboutIllustration from "../Images/Volunteering-amico (1).png";
+
+import Header from "./header";
 const AboutUs = () => {
   return (
     <div className="bg-white text-black min-h-screen px-4 flex flex-col">
       {/* Header - Same as Home page */}
-      <div className="flex justify-around items-center p-6 gap-14">
-        <div className="text-2xl font-bold flex items-center ml-4">
-          <img src={logo} width={200} height={200} alt="logo" /> 
-        </div>
-        <ul className="flex items-center gap-10">
-          <li><Link to="/">Home</Link></li>
-          <li className="font-bold text-green-300"><Link to="/aboutus">About Us</Link></li>
-          <li><Link to="/contactus">Contact</Link></li>
-          
-        </ul>
-        <button className="bg-green-300 px-5 text-white py-2 rounded-2xl shadow-md hover:bg-green-400">
-          Join Us
-        </button>
-      </div>
+      <Header></Header>
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row justify-between items-center w-full px-6 md:px-20 py-16 gap-10">
-        <div className="w-full md:w-1/2">
-          <h1 className="text-5xl font-bold mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center w-full px-6 md:px-20 py-8 gap-10 mb-10">
+        <div className="w-full md:w-1/2 mb-12">
+          <h1 className="text-5xl font-bold mb-10">
             About <span className="text-green-300">Raskilha</span>
           </h1>
           <p className="text-lg text-gray-600 mb-8">
@@ -66,8 +53,10 @@ const AboutUs = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-1/2 flex justify-center">
+        <div className="hidden  md:flex justify-center ">
           <img 
+            width={550}
+            height={450}
             src={aboutIllustration} 
             alt="About Raskilha" 
             className="max-w-full h-auto"

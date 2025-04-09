@@ -1,26 +1,12 @@
 import React from "react";
 import { MdEmail, MdPhone, MdLocationOn, MdSend } from "react-icons/md";
-import logo from "../Images/logo.png";
-import contactIllustration from "../Images/citizen.png";
-import { Link } from 'react-router-dom';
 
+import Header from "./header";
 const ContactUs = () => {
   return (
     <div className="bg-white text-black min-h-screen px-4 flex flex-col">
       {/* Header - Consistent with other pages */}
-      <div className="flex justify-around items-center p-6 gap-14">
-        <div className="text-2xl font-bold flex items-center ml-4">
-          <img src={logo} width={200} height={200} alt="logo" /> 
-        </div>
-        <ul className="flex items-center gap-10">
-        <li><Link to="/">Home</Link></li>
-          <li><Link to="/aboutus">About Us</Link></li>
-          <li className="font-bold text-green-300"><Link to="/contactus">Contact</Link></li>
-        </ul>
-        <button className="bg-green-300 px-5 text-white py-2 rounded-2xl shadow-md hover:bg-green-400">
-          Join Us
-        </button>
-      </div>
+      <Header></Header>
 
       {/* Main Content */}
       <div className="flex flex-col md:flex-row justify-between items-center w-full px-6 md:px-20 py-16 gap-10">

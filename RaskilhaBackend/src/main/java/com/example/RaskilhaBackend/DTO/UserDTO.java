@@ -18,7 +18,7 @@ public class UserDTO {
     private String nomProfil;
     private String tel;
     private String type;
-
+    private long points;
     @Lob
     private byte[] imageProfil;
 
@@ -36,5 +36,6 @@ public class UserDTO {
         this.tel = user.getTel();
         this.type = user.getType();
         this.imageProfil=user.getImageProfil();
+        this.points=user.getPoints();
     }
 }

@@ -47,8 +47,7 @@ public class UserService {
     UserEntity user = userRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé !"));
     
-    System.out.println(user.getPassword());
-    System.out.println(passwordEncoder.encode(rawPassword));
+
     if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
         throw new BadCredentialsException("Mot de passe incorrect !");
     }

@@ -8,7 +8,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.example.RaskilhaBackend.DTO.PubDTO;
 import com.example.RaskilhaBackend.Entity.PubEntity;
@@ -75,15 +78,13 @@ public class PubService {
     }
 
     // Récupérer les publications de la région d’un utilisateur
-    public List<PubDTO> getPubsByUserRegion(Long userId) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-                List<PubEntity> pubs = pubRepository.findByLocalisation_Ville(user.getRegion());
-                  return pubs.stream()
-               .map(PubDTO::new)
-               .collect(Collectors.toList());
-}
     
+    public Page<PubDTO> getPubsByRegion(String ville, Pageable pageable) {
+        Page<PubEntity> pubsPage = pubRepository.findByLocalisation_VilleIgnoreCase(ville, pageable);
+        return pubsPage.map(PubDTO::new);  // Transformer chaque PubEntity en PubDTO
+    }
+    
+
     public List<PubEntity> searchPubsByTitle(String titre) {
         return pubRepository.findByTitreContainingIgnoreCase(titre);
     }

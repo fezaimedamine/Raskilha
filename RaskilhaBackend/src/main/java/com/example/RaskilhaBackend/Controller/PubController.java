@@ -24,10 +24,13 @@ public class PubController {
     public List<PubEntity> getPubByUserId(@PathVariable long id){
         return pubService.findPubByUserId(id);
     }
-
-    @GetMapping()
-    public Page<PubDTO> getAllPubs(@PageableDefault(size = 10, sort = "dateHeure", direction = Sort.Direction.DESC) Pageable pageable) {
+    @GetMapping("")
+    public Page<PubDTO> getAllPubs(
+        @PageableDefault(size = 10, sort = "dateHeure", direction = Sort.Direction.DESC) Pageable pageable) {
+    
+   
         return pubService.getAllPubs(pageable);
+    
 }
 
 
@@ -75,10 +78,10 @@ public class PubController {
 
     // Endpoint pour récupérer les publications de la région d'un utilisateur
     // exemple : http://localhost:8081/api/pubs/region/user/3
-    @GetMapping("/region/user/{userId}")
-    public List<PubDTO> getPubsByUserRegion(@PathVariable Long userId) {
+   /*  @GetMapping("/region/user/{userId}")
+    public List<PubEntity> getPubsByUserRegion(@PathVariable Long userId) {
         return pubService.getPubsByUserRegion(userId);
-    }
+    }*/
     // exemple : http://localhost:8081/api/pubs/search-by-title?titre=pub
     @GetMapping("/search-by-title")
     public List<PubEntity> searchPubs(@RequestParam String titre) {
