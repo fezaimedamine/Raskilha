@@ -105,24 +105,24 @@ const [formData, setFormData] = useState({
     e.preventDefault();
     
     try {
-
-      const response = await axios.post(
-        `http://localhost:8081/api/user/update/${userDetails.user.user_id}`,
+      const userData = {
+        nom: formData.firstName,
+        premon: formData.lastName,
+        age: formData.age,
+        nomProfil: formData.nomProfil,
+        adress: formData.region,
+        password: formData.password,
+        image: formData.image, // Assuming formData.image is the image data (e.g., base64 string)
+      };
+  
+      const response = await axios.put(
+        `http://localhost:8081/api/users/update/${userDetails.user.user_id}`,
+        userData, // Send the JavaScript object directly; Axios will serialize it to JSON
         {
-          method: "POST",
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'application/json', // Correct Content-Type for JSON
           },
-        body: JSON.stringify({
-          'nom':formData.firstName,
-          'premon':formData.lastName,
-          'age':formData.age,
-          'nomProfil':formData.nomProfil,
-          'adress':formData.region,
-          'password':formData.password,
-          'image':formData.image,
-         } )
-        },
+        }
       );
 
       // Update user context with new data
