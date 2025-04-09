@@ -3,12 +3,12 @@ import Sidebar from "./sidebar";
 import MenuBar from "./menubar";
 
 import { motion } from "framer-motion";
-<<<<<<< HEAD
+
 import Rpoint from "../Images/P4.png"
-=======
+
 import Rpoint from "../Images/P.png"
 import toast from "react-hot-toast";
->>>>>>> dbfe19c78d7536bc158d4026791be2b4d48864af
+
 
 import axios from "axios";
 import PostCard from "./PostCard";
