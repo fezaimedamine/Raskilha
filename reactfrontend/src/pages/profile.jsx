@@ -29,7 +29,8 @@ useEffect(() => {
 }, []);
   const [publications, setPublications] = useState([])
   useEffect(() => {
-    axios.get("http://localhost:8081/api/pubs")
+    axios.get("http://localhost:8081/api/pubs/user/"+user.user_id)
+
       .then(response => {
         setPublications(response.data); // Axios automatically parses JSON
       })
@@ -118,12 +119,12 @@ const [formData, setFormData] = useState({
   };
   const handleSubmit = async() =>{
     try {
-      const response = await fetch("http://localhost:8081/raskilha/update", {
+      const response = await fetch("http://localhost:8081/api/user/"+user.user_id+"/update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user:user }),
+        body: JSON.stringify({ user:user, id:user.user_id}),
       });
     }catch (error) {
       console.error("Error during update:" + error.message);

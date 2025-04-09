@@ -54,5 +54,27 @@ public ResponseEntity<UserEntity> updateUserPoints(@PathVariable Long id, @Reque
         return ResponseEntity.notFound().build();  // User not found
     }
 }
+  @PutMapping("/{id}/update")
+public ResponseEntity<UserEntity> update(@PathVariable Long id, @RequestBody UserEntity updatedUser) {
+    Optional<UserEntity> optionalUser = userRepository.findById(id);
+
+    if (optionalUser.isPresent()) {
+            UserEntity existingUser = optionalUser.get();
+            
+            existingUser.setNom(updatedUser.getNom());
+            existingUser.setPrenom(updatedUser.getPrenom());
+            existingUser.setAge(updatedUser.getAge());
+            existingUser.setGenre(updatedUser.getGenre());
+            existingUser.setRegion(updatedUser.getRegion());
+            existingUser.setAdresse(updatedUser.getAdresse());
+            existingUser.setTel(updatedUser.getTel());
+            existingUser.setNomProfil(updatedUser.getNomProfil());
+            existingUser.setType(updatedUser.getType());
+            existingUser.setPoints(updatedUser.getPoints());
+        return ResponseEntity.ok(existingUser);
+    } else {
+        return ResponseEntity.notFound().build();  // User not found
+    }
+}
 
 }
