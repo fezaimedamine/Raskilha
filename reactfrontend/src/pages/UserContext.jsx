@@ -5,7 +5,9 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     
     const [userDetails, setUserDetails] = useState(null);
-
+    const updateUser = (newDetails) => {
+        setUserDetails(newDetails);
+      };
     
     useEffect(() => {
         const storedUserDetails = localStorage.getItem('userDetails');
@@ -15,7 +17,7 @@ export const UserProvider = ({ children }) => {
     }, []); 
 
     return (
-        <UserContext.Provider value={{ userDetails, setUserDetails }}>
+        <UserContext.Provider value={{ userDetails, setUserDetails,updateUser }}>
             {children}
         </UserContext.Provider>
     );

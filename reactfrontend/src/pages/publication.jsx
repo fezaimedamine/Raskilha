@@ -3,7 +3,7 @@ import Sidebar from "./sidebar";
 import MenuBar from "./menubar";
 
 import { motion } from "framer-motion";
-import Rpoint from "../Images/P.png"
+import Rpoint from "../Images/P4.png"
 
 import axios from "axios";
 import PostCard from "./PostCard";
@@ -33,9 +33,35 @@ export default function Publication() {
       region:""
     }); 
     useEffect(() => {
-      if (!userDetails) {
-        navigate("/login")
-      }
+      const fetchData = async () => {
+        // Redirect if not logged in
+        console.log(userDetails)
+
+        if (!userDetails) {
+          navigate("/login");
+          return;
+        }
+        console.log(userDetails)
+        // Fetch FRESH user data to ensure up-to-date points/info
+        try {
+          const response = await fetch(
+            `http://localhost:8081/api/users/${userDetails.user.user_id}`
+          );
+          const updatedUser = await response.json();
+    
+          // Update context to trigger re-render everywhere
+          setUserDetails((prevDetails) => ({
+            ...prevDetails,   
+            user: updatedUser // 
+          })); 
+        
+
+        } catch (err) {
+          console.error("Failed to refresh user data:", err);
+        }
+      };
+  
+      fetchData();
     }, [userDetails]);
   const validateForm = () => {
     let newErrors = {};
@@ -158,16 +184,15 @@ const fetchLocations = async () => {
     const [hasMore, setHasMore] = useState(true);
     const POSTS_PER_PAGE = 10;
     const fetchPosts = async () => {
-      console.log(loading,!hasMore)
       if (loading || !hasMore) return;
-      console.log("fetching")
       setLoading(true);
-      
+      console.log(userDetails)
       try {
         const response = await axios.get('http://localhost:8081/api/pubs', {
           params: {
             page: page,
             size: POSTS_PER_PAGE,
+            ville:userDetails.user.region
           },
         });
   
@@ -180,7 +205,6 @@ const fetchLocations = async () => {
         if (page === 0) {
           setFilteredPosts(posts); // Replace on first load
         } else {
-          // Append only new posts
           setFilteredPosts((prevPosts) => {
             const newPosts = posts.filter(
               post => !prevPosts.some(p => p.id === post.id)
@@ -216,7 +240,6 @@ const fetchLocations = async () => {
       }
     };
     const handleClearSearch = async () => {
-      console.log("Clearing search and resetting posts");
       setFilteredPosts([]); 
       setPage(0); // Reset pagination to first page
       setHasMore(true)
@@ -224,7 +247,6 @@ const fetchLocations = async () => {
         
       
       try {
-        console.log("beforefetch",!hasMore)
 
         setLoading(true);
         const response = await axios.get('http://localhost:8081/api/pubs', {
@@ -248,7 +270,6 @@ const fetchLocations = async () => {
             const newPosts = posts.filter(
               post => !prevPosts.some(p => p.id === post.id)
             );
-            console.log(newPosts)
             return [...prevPosts, ...newPosts];
           });
         }
@@ -258,7 +279,6 @@ const fetchLocations = async () => {
       } finally {
         setLoading(false);
       } 
-        console.log("afterfetch")// Refetch initial posts
       }
     
     useEffect(() => {
@@ -456,7 +476,7 @@ const fetchLocations = async () => {
         
         <div className="flex ml-30    mt-28 mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
           
-          <div className="  w-80 md:w-1/2 ml-40 mt-4 flex flex-col  items-center">
+          <div className="  w-96 md:w-1/2 ml-40 mt-4 flex flex-col  items-center">
             {/* Create Post Component */}
             <div className="bg-white rounded-lg shadow p-4 mb-4 w-full">
               {/* Create Post Header */}
@@ -533,37 +553,26 @@ const fetchLocations = async () => {
             )}
 
           </div>
-          <div className=" h-36 fixed top-32 right-10 w-24 md:w-1/6 border-2 border-gray-200  rounded-md shadow-sm bg-white flex justify-around   items-center">
-            <span className="text-lg font-semibold">You have :</span>
-          <div className="flex items-center gap-3" >
-            <img src={Rpoint} alt="pointlogo" className="h-12 w-12"/>
-            <span className="text-lg text-green-500">{userDetails?.user?.points}</span>
-            </div>
-          </div>
+          {/*eco-score*/}
+           <div className=" h-28 hidden fixed top-32 right-10 w-28 md:w-1/5 border-2 p-4
+            border-gray-100 md:flex flex-col items-center justify-around  rounded-md shadow-sm bg-white">  
+              <div className=" flex justify-around   items-center gap-2">
+                <span className="text-lg font-semibold">Your eco-score :</span>
+              <div className="flex items-center gap-3" >
+                <img src={Rpoint} alt="pointlogo" className="h-12 w-12"/>
+                <span className="text-lg text-green-400">{userDetails?.user?.points}</span>
+                </div>
+                
+              </div>
+              <span className="text-lg text-green-400">🍃You're making a difference🌍</span>
+          </div> 
         </div>
   
 
   
 
 
-   {/*<div className="flex">
-     
-     <Sidebar/>
-     
-
-   <div className="flex ml-24 items-center flex-col gap-9 mt-16  mb-5 w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
-   <MenuBar/>
-   
-        {filteredPosts.length > 0 ? (
-          filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
-        ) : (
-          <p className="text-center text-gray-500">No posts found.</p>
-        )}
-   
-   
-      
-      </div>
-      </div>*/}
+  
  
   </>
   );

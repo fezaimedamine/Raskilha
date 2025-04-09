@@ -91,8 +91,39 @@ const Map = () => {
       );
     }
   }, []);
+  const fetchData = async () => {
+    // Redirect if not logged in
+    console.log(userDetails)
 
+    if (!userDetails) {
+      navigate("/login");
+      return;
+    }
+    console.log(userDetails)
+    // Fetch FRESH user data to ensure up-to-date points/info
+    try {
+      const response = await fetch(
+        `http://localhost:8081/api/users/${userDetails.user.id}`
+      );
+      const updatedUser = await response.json();
+      console.log(updatedUser);
+      // Update context to trigger re-render everywhere
+      setUserDetails((prevDetails) => ({
+        ...prevDetails,   
+        user: updatedUser // 
+      })); 
+      console.log(userDetails)
 
+    } catch (err) {
+      console.error("Failed to refresh user data:", err);
+    }
+  };
+  useEffect(() => {
+    
+
+    fetchData();
+  }, []);
+  
 
   const addMarker = async (position) => {
     const newMarker = {
@@ -119,7 +150,7 @@ const Map = () => {
       const savedMarker = await response.json();
       setMarkers((prevMarkers) => [...prevMarkers, savedMarker]);
       await fetch(`http://localhost:8081/api/users/${userDetails.user.id}/points`, {
-        method: "POST", // or PUT
+        method: "PUT", // or PUT
         headers: {
           "Content-Type": "application/json",
         },
@@ -164,15 +195,15 @@ const Map = () => {
         }
         
         Swal.fire("Supprimé !", "Le marqueur a été supprimé.", "success");
-        const response2  = await fetch(`http://localhost:8081/api/users/${userDetails.user.user_id}/points`, {
-          method: "PUT", // Use PUT instead of POST
+        const response2  = await fetch(`http://localhost:8081/api/users/${userDetails.user.id}/points`, {
+          method: "PUT", 
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ pointsToAdd: 10 }) // You can choose the amount
+          body: JSON.stringify({ pointsToAdd: 10 }) 
         });
         const updatedUser=await response2.json();
-        console.log(updatedUser)
+        if(updatedUser){
         // ✅ Optional: show a toast
         Swal.fire({
           icon: "success",
@@ -180,12 +211,9 @@ const Map = () => {
           text: "You've earned 10 points!",
           timer: 2000,
           showConfirmButton: false
-        });
-        setUserDetails((prevDetails) => ({
-          ...prevDetails,   // Spread the previous details
-          points: updatedUser.points // Update the points
-        }));
-        console.log(userDetails.user.points)
+        });}
+        fetchData();
+        
         fetch_markers();
       } catch (error) {
         Swal.fire("Erreur", "Une erreur s'est produite : " + error.message, "error");
@@ -325,12 +353,7 @@ const Map = () => {
     setDistance(newDistance);
     console.log(distance);
   };
-  useEffect(() => {
-    if (!userDetails) {
-      navigate("/login")
-    }
-    console.log(userDetails?.user)
-  }, [userDetails]);
+ 
   return (
     <div className="flex h-screen bg-gray-50">
     {!userLocation && <Loading />}
