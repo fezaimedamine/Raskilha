@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import com.example.RaskilhaBackend.Entity.UserEntity;
 import com.example.RaskilhaBackend.Repository.UserRepository;
@@ -22,6 +24,7 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;  // Injecting the UserRepository
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private LocalisationService localisationService;  // If you need to get localisation info
@@ -54,23 +57,19 @@ public ResponseEntity<UserEntity> updateUserPoints(@PathVariable Long id, @Reque
         return ResponseEntity.notFound().build();  // User not found
     }
 }
-  @PutMapping("/{id}/update")
-public ResponseEntity<UserEntity> update(@PathVariable Long id, @RequestBody UserEntity updatedUser) {
+  @PutMapping("/update/{id}")
+public ResponseEntity<UserEntity> update(@PathVariable Long id,String nom,String prenom,String age,String nomProfil,String passwrord,byte[] image) {
     Optional<UserEntity> optionalUser = userRepository.findById(id);
 
     if (optionalUser.isPresent()) {
             UserEntity existingUser = optionalUser.get();
             
-            existingUser.setNom(updatedUser.getNom());
-            existingUser.setPrenom(updatedUser.getPrenom());
-            existingUser.setAge(updatedUser.getAge());
-            existingUser.setGenre(updatedUser.getGenre());
-            existingUser.setRegion(updatedUser.getRegion());
-            existingUser.setAdresse(updatedUser.getAdresse());
-            existingUser.setTel(updatedUser.getTel());
-            existingUser.setNomProfil(updatedUser.getNomProfil());
-            existingUser.setType(updatedUser.getType());
-            existingUser.setPoints(updatedUser.getPoints());
+            existingUser.setNom(nom);
+            existingUser.setPrenom(prenom);
+            existingUser.setAge( Integer.parseInt(age));
+            existingUser.setNomProfil(nomProfil);
+            existingUser.setImageProfil(image);
+            existingUser.setPassword(passwordEncoder.encode(passwrord));
         return ResponseEntity.ok(existingUser);
     } else {
         return ResponseEntity.notFound().build();  // User not found

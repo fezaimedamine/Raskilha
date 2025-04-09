@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useState, useEffect ,useContext } from "react";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
-import { useState } from "react";
 import { useRef } from "react";
 import Sidebar from "./sidebar"
 import { motion } from "framer-motion";
@@ -8,28 +7,15 @@ import PostCard from "./PostCard";
 import axios from "axios";
 import userpng from "../Images/user.png";
 import { FaCamera } from "react-icons/fa";
+import { UserContext } from "./UserContext";
 
 
 
-const ProfilePage = () => {
-  const [user, setUser] = useState([])
-  
-useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      setUser(JSON.parse(localStorage.getItem('userDetails')).user);
-    } catch (err) {
-      console.error("Error fetching user:", err);
-    } finally {
-
-    }
-  };
-
-  fetchUser();
-}, []);
+const ProfilePage = () => {  
+  const { userDetails, setUserDetails } = useContext(UserContext);
   const [publications, setPublications] = useState([])
   useEffect(() => {
-    axios.get("http://localhost:8081/api/pubs/user/"+user.user_id)
+    axios.get("http://localhost:8081/api/pubs/user/"+userDetails.user.user_id)
 
       .then(response => {
         setPublications(response.data); // Axios automatically parses JSON
@@ -51,7 +37,6 @@ const [formData, setFormData] = useState({
     lastName: "",
     username: "",
     age: "",
-    email: "",
     password: "",
     region: "",
     adresse:"",
@@ -60,17 +45,15 @@ const [formData, setFormData] = useState({
   useEffect(() => {
   const fillForm = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem('userDetails')).user;
       setFormData({
-        firstName: user.nom,
-        lastName: user.prenom,
-        username: user.nomProfil,
-        age: user.age,
-        email: user.email,
-        region: user.region,
-        adresse:user.adresse,
-        image:null
+        firstName:userDetails. user.nom,
+        lastName: userDetails.user.prenom,
+        username: userDetails.user.nomProfil,
+        age: userDetails.user.age,
+        region: userDetails.user.adresse,
+        image:userDetails.user.imageProfil
       });
+      setPreview(userDetails.user.image);
     } catch (err) {
       console.error("Error fetching user:", err);
     } finally {
@@ -117,17 +100,45 @@ const [formData, setFormData] = useState({
   const handleUpdateProfile = () => {
     alert("Update Profile clicked!");
   };
-  const handleSubmit = async() =>{
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
     try {
-      const response = await fetch("http://localhost:8081/api/user/"+user.user_id+"/update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+
+      const response = await axios.post(
+        `http://localhost:8081/api/user/update/${userDetails.user.user_id}`,
+        {
+          method: "POST",
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        body: JSON.stringify({
+          'nom':formData.firstName,
+          'premon':formData.lastName,
+          'age':formData.age,
+          'nomProfil':formData.nomProfil,
+          'adress':formData.region,
+          'password':formData.password,
+          'image':formData.image,
+         } )
         },
-        body: JSON.stringify({ user:user, id:user.user_id}),
+      );
+
+      // Update user context with new data
+      setUserDetails({
+        ...userDetails,
+        user: {
+          ...userDetails.user,
+          ...response.data.user // Assuming the API returns updated user data
+        }
       });
-    }catch (error) {
-      console.error("Error during update:" + error.message);
+
+      setShowForm(false);
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error during update:", error);
+      alert("Failed to update profile. Please try again.");
     }
   };
 
@@ -139,10 +150,10 @@ const [formData, setFormData] = useState({
       {/* Profile Header */}
       <div className="border-b-4 pb-8">
       <div className="flex items-center mb-4">
-        <img src={user.image} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />
+        <img src={`data:image/jpeg;base64,${userDetails.user.imageProfil}`} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />
         <div>
-          <h2 className="text-xl font-bold">profil</h2>
-          <p className="text-gray-600">{user.nomProfil}</p>
+          <h2 className="text-xl font-bold">profile</h2>
+          <p className="text-gray-600">{userDetails.user.nomProfil}</p>
         </div>
       </div>
       
@@ -309,28 +320,6 @@ const [formData, setFormData] = useState({
         </div>
       </div>
       
-      {/* Email */}
-      <div className="relative">
-        <input
-          type="email"
-          name="email"
-          id="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-2 border-2 rounded-lg text-gray-700 border-gray-300 focus:border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 transition duration-300 peer"
-          placeholder=" "
-          required
-        />
-        <label
-          htmlFor="email"
-          className={`absolute left-3  text-gray-500 bg-white px-1 transition-all duration-300 pointer-events-none
-            peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500
-            peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500
-            ${formData.email ? "-top-3 text-sm " : "top-2"}`}
-        >
-          Email
-        </label>
-      </div>
       
       {/* Password */}
       <div className="relative">
