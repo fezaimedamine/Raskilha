@@ -51,9 +51,8 @@ const [formData, setFormData] = useState({
         username: userDetails.user.nomProfil,
         age: userDetails.user.age,
         region: userDetails.user.adresse,
-        image:userDetails.user.imageProfil
       });
-      setPreview(userDetails.user.imageProfil);
+      setPreview('data:image/jpeg;base64,'+userDetails.user.imageProfil);
     } catch (err) {
       console.error("Error fetching user:", err);
     } finally {
@@ -78,18 +77,21 @@ const [formData, setFormData] = useState({
         alert('Image size should be less than 40MB');
         return;
       }
-
-      setFormData({
-        ...formData,
-        image: file
-      });
-
-
       const reader = new FileReader();
+
+      
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        // Set the Base64 string of the image in the form data
+        setFormData({ ...formData, profileImage : reader.result.split(",")[1] }); 
+      };
       reader.onloadend = () => {
         setPreview(URL.createObjectURL(file));
       };
-      reader.readAsDataURL(file);
+
+
+
+      
     }
   };
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -109,10 +111,10 @@ const [formData, setFormData] = useState({
         nom: formData.firstName,
         premon: formData.lastName,
         age: formData.age,
-        nomProfil: formData.nomProfil,
+        nomProfil: formData.username,
         adress: formData.region,
         password: formData.password,
-        imageProfil: formData.image, // Assuming formData.image is the image data (e.g., base64 string)
+        imageProfil: formData.profileImage,
       };
   
       const response = await axios.put(
