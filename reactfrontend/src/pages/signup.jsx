@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import toast from "react-hot-toast";
@@ -7,8 +7,17 @@ import citizenImage from "../Images/citizen (2).png";
 import { FaCamera } from "react-icons/fa";
 import wasteManagementImage2 from "../Images/Volunteering-bro.png";
 import userpng from "../Images/user.png";
+import { UserContext } from "./UserContext";
 
 const Signup = () => {
+   const navigate = useNavigate(); 
+    const { userDetails } = useContext(UserContext);
+    useEffect(() => {
+      if (userDetails) {
+        navigate("/publication");
+      }
+    }, [userDetails]);
+
   const [step, setStep] = useState(1);
   
   const [formData1, setFormData1] = useState({
@@ -30,13 +39,13 @@ const Signup = () => {
   const[errors,setErrors]=useState([])
   
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const navigate = useNavigate();
+ 
   const [selectedRole, setSelectedRole] = useState("");
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
+
   const [preview, setPreview] = useState(null);
-  const [uploading, setUploading] = useState(false);
+
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
   };

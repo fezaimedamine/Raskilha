@@ -12,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -47,9 +47,9 @@ public class UserEntity {
     @JsonManagedReference
     private List<PubEntity> publications;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-reference")
-    private Commentaire commentaire;
+    private List<Commentaire> commentaire;
 
     public long getPoints() {
         return points;

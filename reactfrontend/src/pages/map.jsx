@@ -91,14 +91,7 @@ const Map = () => {
     }
   }, []);
   const fetchData = async () => {
-    // Redirect if not logged in
-    console.log(userDetails)
-
-    if (!userDetails) {
-      navigate("/login");
-      return;
-    }
-    console.log(userDetails)
+   
     // Fetch FRESH user data to ensure up-to-date points/info
     try {
       const response = await fetch(
@@ -106,22 +99,20 @@ const Map = () => {
       );
       const updatedUser = await response.json();
       console.log(updatedUser);
-      // Update context to trigger re-render everywhere
-      setUserDetails((prevDetails) => ({
-        ...prevDetails,   
-        user: updatedUser // 
-      })); 
-      console.log(userDetails)
+      setUserDetails((prevDetails) => {
+        const newDetails = { ...prevDetails, user: updatedUser };
+        
+        // Update localStorage with the updated user details
+        localStorage.setItem('userDetails', JSON.stringify(newDetails));
+  
+        return newDetails;
+      });
 
     } catch (err) {
       console.error("Failed to refresh user data:", err);
     }
   };
-  useEffect(() => {
-    
 
-    fetchData();
-  }, []);
   
 
   const addMarker = async (position) => {
@@ -154,9 +145,11 @@ const Map = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ pointsToAdd: 10 }) // you can choose the amount
+        
       });
   
       // ✅ Optional: show a toast
+      fetchData();
       Swal.fire({
         icon: "success",
         title: "Thank you!",
@@ -193,7 +186,7 @@ const Map = () => {
           throw new Error("Erreur lors de la suppression du marqueur");
         }
         
-        Swal.fire("Supprimé !", "Le marqueur a été supprimé.", "success");
+        Swal.fire("Supprimé !", "Le marqueur a été supprimé.", "success" ,{timer:2000});
         const response2  = await fetch(`http://localhost:8081/api/users/${userDetails.user.user_id}/points`, {
           method: "PUT", 
           headers: {
@@ -350,7 +343,7 @@ const Map = () => {
               showConfirmButton: false
             });
           }
-          
+          fetchData()
           closeForm()
       setMediaPreview(null);
       //setQuery("")
@@ -417,7 +410,7 @@ const Map = () => {
     {userLocation && (
       <>
         <Sidebar />
-  
+
         <div className="flex flex-col items-center justify-around w-[calc(100vw-80px)] md:w-[calc(100vw-240px)] md:ml-64 ml-20 h-screen p-4">
               <MapContainer
                 center={userLocation || [48.8566, 2.3522]}
@@ -474,7 +467,7 @@ const Map = () => {
                   </Marker>
                 ))}
               </MapContainer>
-                <DistanceSlider
+              <DistanceSlider
                   value={distance}
                   onChange={handleDistanceChange}
                   valueLabelDisplay="on"

@@ -8,22 +8,21 @@ import Lottie from "lottie-react";
 import { UserContext } from "./UserContext";
 
 const Login = () => {
-  const { userDetails, setUserDetails } = useContext(UserContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
   const navigate = useNavigate(); 
-  const [passwordVisible, setPasswordVisible] = useState(false);
-
-  const changeVisible = () => {
-    setPasswordVisible((prev) => !prev);
-  };
-
-useEffect(() => {
+  const { userDetails, setUserDetails } = useContext(UserContext);
+  useEffect(() => {
     if (userDetails) {
       navigate("/publication");
     }
   }, [userDetails]);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const changeVisible = () => {
+    setPasswordVisible((prev) => !prev);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,12 +53,14 @@ useEffect(() => {
         if (responseData.includes("Mot de passe incorrect")) {
           throw new Error("Wrong Password !");
         }
+        throw(responseData)
       }   
     } catch (error) {
       setError("Error during login:" + error.message);
     }
   };
-
+  
+  const [error, setError] = useState(null);
   const showError = () => {
     toast.error(error, {
       position: "top-center",

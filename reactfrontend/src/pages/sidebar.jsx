@@ -30,10 +30,10 @@ const Sidebar = () => {
         <SidebarLink to="/map" icon={<FaMapMarkedAlt />} label="Map" />
         <SidebarLink to="/profile" icon={<FaUserCircle />} label="Profil" />
       
-      <div className="flex items-center gap-3 p-3 rounded-lg transition-all duration-300 w-36 absolute  bottom-8
+      <div className="flex items-center gap-3 p-3 rounded-lg transition-all duration-300 w-18 md:w-36 absolute  bottom-8
        hover:bg-green-400 hover:scale-105  justify-center md:justify-start cursor-pointer" 
               onClick={handleLogout}>
-                <span><TbLogout2 className='text-2xl'/></span> 
+                <span><TbLogout2 className=' text-2xl'/></span> 
                 <span className="hidden md:inline text-lg">Logout</span>
         </div>
       </nav>

@@ -1,11 +1,18 @@
-import React from "react";
+import React,{useContext,useEffect } from "react";
 import { MdLocationOn } from "react-icons/md";
 import { BiSolidRightArrow } from "react-icons/bi";
 import recycleIllustration from "../Images/upscalemedia-transformed.png";
-import { Link } from 'react-router-dom';
-
+import { Link,useNavigate } from 'react-router-dom';
+import { UserContext } from './UserContext';
 import Header from "./header";
 const Home = () => {
+  const navigate = useNavigate(); 
+  const { userDetails } = useContext(UserContext);
+  useEffect(() => {
+      if (userDetails) {
+        navigate("/publication");
+      }
+    }, [userDetails]);
   return (
     <div className="bg-white text-black h-screen px-4 flex flex-col justify-between">
       

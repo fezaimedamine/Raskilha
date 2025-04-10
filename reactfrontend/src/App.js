@@ -11,7 +11,7 @@ import Contactus  from "./pages/contactus";
 import Publication from "./pages/publication";
 import  { Toaster } from 'react-hot-toast';
 import { UserProvider } from './pages/UserContext'; 
-
+import ProtectedRoute from './pages/ProtectedRoute';
 function App() {
   return (
     <UserProvider> 
@@ -23,9 +23,12 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<ProfileSettings />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/publication" element={<Publication />} />
+
+        <Route path="/profile" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
+          <Route path="/map" element={<ProtectedRoute><Map /></ProtectedRoute>} />
+          <Route path="/publication" element={<ProtectedRoute><Publication /></ProtectedRoute>} />
+
+        
         <Route path="/aboutus" element={<Aboutus />} />
         <Route path="/contactus" element={<Contactus />} />
         <Route path="*" element={<NotFound />} />
