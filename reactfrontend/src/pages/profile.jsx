@@ -40,7 +40,7 @@ const [formData, setFormData] = useState({
     password: "",
     region: "",
     adresse:"",
-    image:null
+    imageProfil:null
   })
   useEffect(() => {
   const fillForm = async () => {
@@ -51,8 +51,7 @@ const [formData, setFormData] = useState({
         username: userDetails.user.nomProfil,
         age: userDetails.user.age,
         region: userDetails.user.adresse,
-        profileImage: userDetails.user.imageProfil,
-
+        imageProfil: userDetails.user.imageProfil,
       });
       setPreview('data:image/jpeg;base64,'+userDetails.user.imageProfil);
     } catch (err) {
@@ -63,7 +62,6 @@ const [formData, setFormData] = useState({
   };fillForm();
 }, []); 
   const handleChange = (e) => {
-    console.log(formData)
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
@@ -85,7 +83,8 @@ const [formData, setFormData] = useState({
       reader.readAsDataURL(file);
       reader.onloadend = () => {
         // Set the Base64 string of the image in the form data
-        setFormData({ ...formData, profileImage : reader.result.split(",")[1] }); 
+        setFormData({ ...formData, imageProfil : reader.result.split(",")[1] }); 
+        console.log(formData);
       };
       reader.onloadend = () => {
         setPreview(URL.createObjectURL(file));
@@ -135,7 +134,7 @@ const [formData, setFormData] = useState({
         nomProfil: formData.username,
         adress: formData.region,
         password: formData.password,
-        imageProfil: formData.profileImage,
+        imageProfil: formData.imageProfil,
       };
   
       const response = await axios.put(
