@@ -71,7 +71,7 @@ const AboutUs = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[
-            { name: "Mohamed El Amine Fezai", role: "Developer" },
+            { name: "Mohamed El Amine Fezai", role: "CEO" },
             { name: "Moedem Errachi", role: "Developer" },
             { name: "Abderrazek Houidi", role: "Developer" },
             { name: "Louay Hamdani", role: "Developer" }
