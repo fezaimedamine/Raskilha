@@ -65,34 +65,29 @@ const [formData, setFormData] = useState({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
+  
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // Get the file from the input
+    
     if (file) {
-      if (!file.type.match('image.*')) {
-        alert('Please select an image file (jpeg, png, etc.)');
-        return;
-      }
-      
-      if (file.size > 40 * 1024 * 1024) {
-        alert('Image size should be less than 40MB');
-        return;
-      }
-      const reader = new FileReader();
-
-      
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        // Set the Base64 string of the image in the form data
-        setFormData({ ...formData, imageProfil : reader.result.split(",")[1] }); 
-        console.log(formData);
-      };
-      reader.onloadend = () => {
+      if (file.type.startsWith("image/")) { // Check if the file is an image
+        const reader = new FileReader();
+        
+        // Read the file as a data URL (Base64)
+        reader.readAsDataURL(file);
+        
+        reader.onloadend = () => {
+          // Set the Base64 string of the image in the form data
+          setFormData({ ...formData, imageProfil : reader.result.split(",")[1] }); 
+        };
+        
         setPreview(URL.createObjectURL(file));
-      };
-
-
-
-      
+      } else {
+       // setErrors({ ...errors, imageProfil : "File must be an image type" });
+      }
+    } else {
+    
+      //setErrors({ ...errors, imageProfil : "Image is required" });
     }
   };
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -264,7 +259,7 @@ const [formData, setFormData] = useState({
       <div className="flex items-center justify-center mb-7">
                         <div className="relative w-44 h-44 flex flex-col gap-3">
                          
-                          <label htmlFor="profileImage" className="cursor-pointer">
+                          <label htmlFor="imageProfil" className="cursor-pointer">
                             <img
                               src={
                                 preview ||
@@ -283,7 +278,7 @@ const [formData, setFormData] = useState({
                           
                           <input
                             type="file"
-                            id="profileImage"
+                            id="imageProfil"
                             accept="image/*"
                             onChange={handleImageChange}
                             className="hidden"
