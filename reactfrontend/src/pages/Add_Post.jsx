@@ -190,7 +190,8 @@ useEffect(() => {
       }, [error]);
 return (
     <div
-      className="fixed inset-0 bg-slate-700 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 bg-slate-700 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50
+      "
       onClick={closeForm} // Close form when clicking outside
     >
       <motion.div
@@ -199,7 +200,7 @@ return (
         exit={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.4 }}
         onClick={(e) => e.stopPropagation()}
-        className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-lg relative"
+        className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-lg relative dark:bg-gray-800 dark:text-white"
       >
         <button
           className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full"
@@ -207,7 +208,7 @@ return (
         >
           ✖
         </button>
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4 ">
           {/* Placeholder for profile picture */}
           <img className="w-10 h-10 rounded-full" src={`data:image/jpeg;base64,${user_image}`} alt="profile_image" />
           <h2 className="text-xl font-semibold">Create a Post</h2>
@@ -217,9 +218,9 @@ return (
   
         <form onSubmit={handleSubmit}>
           {/* Post content */}
-          <div className="mt-4 pt-4 border-t">
+          <div className="mt-4 pt-4 border-t ">
                     <input type="text" placeholder="Set Post title " 
-                    className="w-full mb-4 border-none outline-none focus:ring-0  text-2xl font-medium placeholder-gray-500"
+                    className="w-full mb-4 border-none outline-none focus:ring-0 dark:bg-gray-800 dark:text-white  text-2xl font-medium placeholder-gray-400"
                     required
                     name="title"
                     value={formData.title}
@@ -227,7 +228,7 @@ return (
                     />
                      
                     <textarea
-                      className="w-full border-t p-4 focus:ring-0 outline-none resize-none text-lg placeholder-gray-500"
+                      className="w-full border-t p-4 focus:ring-0 outline-none dark:bg-gray-800 dark:text-white resize-none text-lg placeholder-gray-500"
                       rows="2"
                       name="description"
                       placeholder="What's on your mind?"
