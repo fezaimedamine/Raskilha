@@ -53,7 +53,7 @@ const [formData, setFormData] = useState({
         region: userDetails.user.adresse,
         image:userDetails.user.imageProfil
       });
-      setPreview(userDetails.user.image);
+      setPreview(userDetails.user.imageProfil);
     } catch (err) {
       console.error("Error fetching user:", err);
     } finally {
@@ -112,7 +112,7 @@ const [formData, setFormData] = useState({
         nomProfil: formData.nomProfil,
         adress: formData.region,
         password: formData.password,
-        image: formData.image, // Assuming formData.image is the image data (e.g., base64 string)
+        imageProfil: formData.image, // Assuming formData.image is the image data (e.g., base64 string)
       };
   
       const response = await axios.put(
