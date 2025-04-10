@@ -8,74 +8,106 @@ import axios from "axios";
 import userpng from "../Images/user.png";
 import { FaCamera } from "react-icons/fa";
 import { UserContext } from "./UserContext";
-
-
-
-const ProfilePage = () => {  
+import Swal from "sweetalert2";
+const ProfilePage = () => {
   const { userDetails, setUserDetails } = useContext(UserContext);
-  const [publications, setPublications] = useState([])
-  useEffect(() => {
-    axios.get("http://localhost:8081/api/pubs/user/"+userDetails.user.user_id)
+  const [publications, setPublications] = useState([]);
+  const [error, setError] = useState('');
 
-      .then(response => {
-        setPublications(response.data); // Axios automatically parses JSON
-      })
-      .catch(error => {
-        console.error("Error fetching posts:", error);
-      });
-  }, []);
-  
-  const [preview, setPreview] = useState('');
+  // Fetch user publications only if userDetails is available
+  useEffect(() => {
+    if (userDetails && userDetails.user && userDetails.user.user_id) {
+      axios.get(`http://localhost:8081/api/pubs/user/${userDetails.user.user_id}`)
+        .then(response => {
+          setPublications(response.data);
+          fetchData();
+          console.log(userDetails); // Axios automatically parses JSON
+        })
+        .catch(error => {
+          setError("Error fetching posts: " + error);
+          console.error("Error fetching posts:", error);
+        });
+    }
+  }, []);  // Depend on the whole userDetails
+
+  const [preview, setPreview] = useState(userDetails?.user?.imageProfil || '');
   const fileInputRef = useRef(null);
   const triggerFileSelect = () => {
     fileInputRef.current.click();
   };
 
-const [showForm,setShowForm]=useState(false)
-const [formData, setFormData] = useState({
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     username: "",
     age: "",
     password: "",
     region: "",
-    adresse:"",
-    image:null
-  })
+    adresse: "",
+    image: null
+  });
+
+  // Load userDetails from localStorage if not available in context
   useEffect(() => {
-  const fillForm = async () => {
-    try {
+    const storedUserDetails = localStorage.getItem('userDetails');
+    if (storedUserDetails) {
+      setUserDetails(JSON.parse(storedUserDetails));  // Set the user details from localStorage
+    }
+  }, [setUserDetails]);
+
+  // Fill the form with the current user data when userDetails changes
+  useEffect(() => {
+    if (userDetails?.user) {
       setFormData({
-        firstName:userDetails. user.nom,
+        firstName: userDetails.user.nom,
         lastName: userDetails.user.prenom,
         username: userDetails.user.nomProfil,
         age: userDetails.user.age,
         region: userDetails.user.adresse,
-        image:userDetails.user.imageProfil
+        image: userDetails.user.imageProfil
       });
-      setPreview(userDetails.user.imageProfil);
-    } catch (err) {
-      console.error("Error fetching user:", err);
-    } finally {
-
+      setPreview(userDetails.user.imageProfil || userpng);
     }
-  };fillForm();
-}, []); 
+  }, [userDetails]);
+
+  // Fetch fresh user data from API
+  const fetchData = async () => {
+    if (userDetails?.user?.user_id) {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/api/users/${userDetails.user.user_id}`
+        );
+        const updatedUser = await response.json();
+        setUserDetails((prevDetails) => {
+          const newDetails = { ...prevDetails, user: updatedUser };
+          localStorage.setItem('userDetails', JSON.stringify(newDetails));
+          return newDetails;
+        });
+      } catch (err) {
+        setError("Failed to refresh user data: " + err);
+        console.error("Failed to refresh user data:", err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchData(); // Fetch fresh user data on component mount
+  }, [userDetails?.user?.user_id]); // Ensure it only fetches when userDetails are available
+
   const handleChange = (e) => {
-    console.log(formData)
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.match('image.*')) {
-        alert('Please select an image file (jpeg, png, etc.)');
+        setError('Please select an image file (jpeg, png, etc.)');
         return;
       }
-      
       if (file.size > 40 * 1024 * 1024) {
-        alert('Image size should be less than 40MB');
+        setError('Image size should be less than 40MB');
         return;
       }
 
@@ -84,7 +116,6 @@ const [formData, setFormData] = useState({
         profileImage: file
       });
 
-
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(URL.createObjectURL(file));
@@ -92,55 +123,61 @@ const [formData, setFormData] = useState({
       reader.readAsDataURL(file);
     }
   };
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
 
-  const handleUpdateProfile = () => {
-    alert("Update Profile clicked!");
-  };
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    const formDataToSend = new FormData();
+    formDataToSend.append("nom", formData.firstName);
+    formDataToSend.append("prenom", formData.lastName);
+    formDataToSend.append("age", formData.age);
+    formDataToSend.append("nomProfil", formData.username);
+    formDataToSend.append("adresse", formData.region);
+    formDataToSend.append("password", formData.password);
+    if (formData.profileImage) {
+      formDataToSend.append("imageProfil", formData.profileImage);
+    }
+
     try {
-      const userData = {
-        nom: formData.firstName,
-        premon: formData.lastName,
-        age: formData.age,
-        nomProfil: formData.nomProfil,
-        adress: formData.region,
-        password: formData.password,
-        imageProfil: formData.image, // Assuming formData.image is the image data (e.g., base64 string)
-      };
-  
       const response = await axios.put(
         `http://localhost:8081/api/users/update/${userDetails.user.user_id}`,
-        userData, // Send the JavaScript object directly; Axios will serialize it to JSON
+        formDataToSend,
         {
           headers: {
-            'Content-Type': 'application/json', // Correct Content-Type for JSON
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
 
-      // Update user context with new data
-      setUserDetails({
-        ...userDetails,
-        user: {
-          ...userDetails.user,
-          ...response.data.user // Assuming the API returns updated user data
-        }
-      });
+      // Fetch fresh user data after update
+      fetchData();
 
       setShowForm(false);
-      alert("Profile updated successfully!");
+      Swal.fire({
+        icon: "success",
+        title: "Profile updated!",
+        text: "Your data updated successfully",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } catch (error) {
-      console.error("Error during update:", error);
-      alert("Failed to update profile. Please try again.");
+      setError("Error during update: " + error);
+      Swal.fire({
+        icon: "error",
+        title: "Update failed!",
+        text: "Error during update",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     }
   };
+
+  
 
   return (<>
       <Sidebar/>

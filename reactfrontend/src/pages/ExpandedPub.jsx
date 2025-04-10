@@ -109,7 +109,7 @@ function ExpandedPub ({post ,toggleExpand}){
                   onClick={toggleExpand}
                 >
                   <div 
-                    className="bg-white p-5 w-7/12 relative rounded-lg shadow-lg transition-transform transform scale-100"
+                    className="bg-white p-5 w-7/12 relative rounded-lg shadow-lg transition-transform transform scale-100 dark:bg-gray-800 dark:text-white"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
@@ -125,38 +125,38 @@ function ExpandedPub ({post ,toggleExpand}){
                       <img className="w-10 h-10 rounded-full"  src={`data:image/jpeg;base64,${post.imageProfil}`} alt="profil_image" />
                         <div>
                           <div className="text-md font-medium">{post.userNomProfil}</div>
-                          <div className="text-xs text-gray-500">{getTimeAgo(post.dateHeure)}</div>
+                          <div className="text-xs text-gray-500 dark:bg-gray-800 dark:text-white">{getTimeAgo(post.dateHeure)}</div>
                         </div>
                       </div>
         
-                      <p className="mt-1 text-xl font-semibold text-gray-800">{post.titre}</p>
+                      <p className="mt-1 text-xl font-semibold text-gray-800 dark:bg-gray-800 dark:text-white">{post.titre}</p>
                       <p className="text-gray-700">{post.description}</p>
                       <div className="flex justify-center bg-inherit">  
                         <img 
                           
                           src={`data:image/jpeg;base64,${post.image}`}
                           alt="Post content"
-                          className="w-4/6 bg-inherit max-h-80 object-contain rounded-lg border-gray-300"
+                          className="w-4/6 bg-inherit max-h-80 object-contain rounded-lg border-gray-300 "
                         />
                       </div>
                       
                       {/* Comments Section */}
                       <div className="mt-4 border-t h-40 p-2 mb-2">
-                        <h3 className="text-sm font-semibold text-gray-800">Comments</h3>
+                        <h3 className="text-sm font-semibold text-gray-800 dark:bg-gray-800 dark:text-white">Comments</h3>
                         <div className="mt-2 space-y-2">
                           {comments ? (
                             comments.map((comment) => (
                               <div key={comment.id} className="flex items-center gap-3">
                         <img className="w-8 h-8 object-contain rounded-full" src={`data:image/jpeg;base64,${comment.imageProfil}`} alt="image_profil" />
-                        <div className="bg-gray-100 py-1 px-2 rounded">
+                        <div className="bg-gray-100 py-1 px-2 dark:bg-gray-800 dark:text-white rounded">
                           <div className="text-base font-medium">{comment.profilName}</div>
-                          <div className="text-sm text-gray-700  ">{comment.texte}</div>
+                          <div className="text-sm text-gray-700  dark:bg-gray-800 dark:text-white">{comment.texte}</div>
                         </div>
                       </div>
                               
                             ))
                           ) : (
-                            <p className="text-sm text-gray-500">No comments yet.</p>
+                            <p className="text-sm text-gray-500 dark:bg-gray-800 dark:text-white">No comments yet.</p>
                           )}
                         </div>
                       </div>
@@ -166,13 +166,13 @@ function ExpandedPub ({post ,toggleExpand}){
                     <div className="mt-3 w-full flex gap-2">
                       <input
                         type="text"
-                        className="border p-2 flex-1 rounded-md text-sm"
+                        className="border p-2 flex-1 rounded-md text-sm dark:bg-gray-700 dark:text-white"
                         placeholder="Write a comment..."
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                       />
                       <button
-                        className="bg-gray-500 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-400"
+                        className="bg-gray-500 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-400 "
                         onClick={handleAddComment}
                       >
                         Post
