@@ -51,6 +51,8 @@ const [formData, setFormData] = useState({
         username: userDetails.user.nomProfil,
         age: userDetails.user.age,
         region: userDetails.user.adresse,
+        profileImage: userDetails.user.imageProfil,
+
       });
       setPreview('data:image/jpeg;base64,'+userDetails.user.imageProfil);
     } catch (err) {
@@ -99,8 +101,27 @@ const [formData, setFormData] = useState({
     setPasswordVisible((prev) => !prev);
   };
 
-  const handleUpdateProfile = () => {
-    alert("Update Profile clicked!");
+  const fetchData = async () => {
+   
+    // Fetch FRESH user data to ensure up-to-date points/info
+    try {
+      const response = await fetch(
+       "http://localhost:8081/api/users/"+userDetails.user.user_id
+      );
+      const updatedUser = await response.json();
+      console.log(updatedUser);
+      setUserDetails((prevDetails) => {
+        const newDetails = { ...prevDetails, user: updatedUser };
+        
+        // Update localStorage with the updated user details
+        localStorage.setItem('userDetails', JSON.stringify(newDetails));
+  
+        return newDetails;
+      });
+
+    } catch (err) {
+      //setError("Failed to refresh user data:", err);
+    }
   };
   
   const handleSubmit = async (e) => {
@@ -127,14 +148,7 @@ const [formData, setFormData] = useState({
         }
       );
 
-      // Update user context with new data
-      setUserDetails({
-        ...userDetails,
-        user: {
-          ...userDetails.user,
-          ...response.data.user // Assuming the API returns updated user data
-        }
-      });
+      fetchData();
 
       setShowForm(false);
       alert("Profile updated successfully!");
