@@ -9,175 +9,162 @@ import userpng from "../Images/user.png";
 import { FaCamera } from "react-icons/fa";
 import { UserContext } from "./UserContext";
 import Swal from "sweetalert2";
-const ProfilePage = () => {
+
+
+
+const ProfilePage = () => {  
   const { userDetails, setUserDetails } = useContext(UserContext);
-  const [publications, setPublications] = useState([]);
-  const [error, setError] = useState('');
-
-  // Fetch user publications only if userDetails is available
+  const [publications, setPublications] = useState([])
   useEffect(() => {
-    if (userDetails && userDetails.user && userDetails.user.user_id) {
-      axios.get(`http://localhost:8081/api/pubs/user/${userDetails.user.user_id}`)
-        .then(response => {
-          setPublications(response.data); // Axios automatically parses JSON
-        })
-        .catch(error => {
-          setError("Error fetching posts: " + error);
-          console.error("Error fetching posts:", error);
-        });
-    }
-  }, [userDetails]);  // Depend on the whole userDetails
+    axios.get("http://localhost:8081/api/pubs/user/"+userDetails?.user.user_id)
 
-  const [preview, setPreview] = useState(userDetails?.user?.imageProfil || '');
+      .then(response => {
+        setPublications(response.data); // Axios automatically parses JSON
+      })
+      .catch(error => {
+        console.error("Error fetching posts:", error);
+      });
+  }, [userDetails]);
+  
+  const [preview, setPreview] = useState('');
   const fileInputRef = useRef(null);
   const triggerFileSelect = () => {
     fileInputRef.current.click();
   };
 
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
+const [showForm,setShowForm]=useState(false)
+const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     username: "",
     age: "",
     password: "",
     region: "",
-    adresse: "",
-    image: null
-  });
-
-  // Load userDetails from localStorage if not available in context
+    adresse:"",
+    imageProfil:null
+  })
   useEffect(() => {
-    const storedUserDetails = localStorage.getItem('userDetails');
-    if (storedUserDetails) {
-      setUserDetails(JSON.parse(storedUserDetails));  // Set the user details from localStorage
-    }
-  }, [setUserDetails]);
-
-  // Fill the form with the current user data when userDetails changes
-  useEffect(() => {
-    if (userDetails?.user) {
+  const fillForm = async () => {
+    try {
       setFormData({
-        firstName: userDetails.user.nom,
-        lastName: userDetails.user.prenom,
-        username: userDetails.user.nomProfil,
-        age: userDetails.user.age,
-        region: userDetails.user.adresse,
-        image: userDetails.user.imageProfil
+        firstName:userDetails?.user.nom,
+        lastName: userDetails?.user.prenom,
+        username: userDetails?.user.nomProfil,
+        age: userDetails?.user.age,
+        region: userDetails?.user.adresse,
+        imageProfil: userDetails?.user.imageProfil,
       });
-      setPreview(userDetails.user.imageProfil || userpng);
+      setPreview('data:image/jpeg;base64,'+userDetails?.user.imageProfil);
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    } finally {
+
     }
-    console.log(formData)
-  }, [userDetails]);
-
-  // Fetch fresh user data from API
-  const fetchData = async () => {
-    if (userDetails?.user?.user_id) {
-      try {
-        const response = await fetch(
-          `http://localhost:8081/api/users/${userDetails.user.user_id}`
-        );
-        const updatedUser = await response.json();
-        setUserDetails((prevDetails) => {
-          const newDetails = { ...prevDetails, user: updatedUser };
-          localStorage.setItem('userDetails', JSON.stringify(newDetails));
-          return newDetails;
-        });
-      } catch (err) {
-        setError("Failed to refresh user data: " + err);
-        console.error("Failed to refresh user data:", err);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchData(); 
-    // Fetch fresh user data on component mount
-  }, [userDetails?.user?.user_id]); // Ensure it only fetches when userDetails are available
-
+  };fillForm();
+}, [userDetails]); 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  
+  
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // Get the file from the input
+    
     if (file) {
-      if (!file.type.match('image.*')) {
-        setError('Please select an image file (jpeg, png, etc.)');
-        return;
-      }
-      if (file.size > 40 * 1024 * 1024) {
-        setError('Image size should be less than 40MB');
-        return;
-      }
-
-      setFormData({
-        ...formData,
-        profileImage: file
-      });
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      if (file.type.startsWith("image/")) { // Check if the file is an image
+        const reader = new FileReader();
+        
+        // Read the file as a data URL (Base64)
+        reader.readAsDataURL(file);
+        
+        reader.onloadend = () => {
+          // Set the Base64 string of the image in the form data
+          setFormData({ ...formData, imageProfil : reader.result.split(",")[1] }); 
+        };
+        
         setPreview(URL.createObjectURL(file));
-      };
-      reader.readAsDataURL(file);
+      } else {
+       // setErrors({ ...errors, imageProfil : "File must be an image type" });
+      }
+    } else {
+    
+      //setErrors({ ...errors, imageProfil : "Image is required" });
     }
   };
-
   const [passwordVisible, setPasswordVisible] = useState(false);
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
 
+  const fetchData = async () => {
+   
+    // Fetch FRESH user data to ensure up-to-date points/info
+    try {
+      const response = await fetch(
+       "http://localhost:8081/api/users/"+userDetails?.user.user_id
+      );
+      const updatedUser = await response.json();
+      console.log(updatedUser);
+      setUserDetails((prevDetails) => {
+        const newDetails = { ...prevDetails, user: updatedUser };
+        
+        // Update localStorage with the updated user details
+        localStorage.setItem('userDetails', JSON.stringify(newDetails));
+  
+        return newDetails;
+      });
+
+    } catch (err) {
+      //setError("Failed to refresh user data:", err);
+    }
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const formDataToSend = new FormData();
-    formDataToSend.append("nom", formData.firstName);
-    formDataToSend.append("prenom", formData.lastName);
-    formDataToSend.append("age", formData.age);
-    formDataToSend.append("nomProfil", formData.username);
-    formDataToSend.append("adresse", formData.region);
-    formDataToSend.append("password", formData.password);
-    if (formData.profileImage) {
-      formDataToSend.append("imageProfil", formData.profileImage);
-    }
-
     try {
+      const userData = {
+        nom: formData.firstName,
+        prenom: formData.lastName,
+        age: formData.age,
+        nomProfil: formData.username,
+        adress: formData.region,
+        password: formData.password,
+        imageProfil: formData.imageProfil,
+      };
+  
       const response = await axios.put(
         `http://localhost:8081/api/users/update/${userDetails.user.user_id}`,
-        formDataToSend,
+        userData, // Send the JavaScript object directly; Axios will serialize it to JSON
         {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json', // Correct Content-Type for JSON
           },
         }
       );
 
-      // Fetch fresh user data after update
       fetchData();
 
       setShowForm(false);
       Swal.fire({
-        icon: "success",
-        title: "Profile updated!",
-        text: "Your data updated successfully",
-        timer: 2000,
-        showConfirmButton: false,
-      });
+              icon: "success",
+              title: "Profile updated!",
+              text: "Your data updated with success!",
+              timer: 2000,
+              showConfirmButton: false
+            });
     } catch (error) {
-      setError("Error during update: " + error);
+      console.error("Error during update:", error);
+      alert("Failed to update profile. Please try again.");
       Swal.fire({
-        icon: "error",
-        title: "Update failed!",
-        text: "Error during update",
+        icon: "success",
+        title: "Failed to update profile",
+        text: "Please try again.",
         timer: 2000,
-        showConfirmButton: false,
+        showConfirmButton: false
       });
     }
   };
-
-  
 
   return (<>
       <Sidebar/>
@@ -188,10 +175,10 @@ const ProfilePage = () => {
       <div className="border-b-4 pb-8">
       <div className="flex items-center justify-around mb-4">
       <div className="flex items-center">
-        {userDetails &&<img src={`data:image/jpeg;base64,${userDetails.user.imageProfil}`} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />}
+      {userDetails && <img src={`data:image/jpeg;base64,${userDetails?.user?.imageProfil}`} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />}
         <div>
           <h2 className="text-xl font-bold">Profile</h2>
-         {userDetails&& <p className="text-gray-600  dark:text-white">{userDetails.user.nomProfil}</p>}
+          {userDetails && <p className="text-gray-600  dark:text-white">{userDetails.user.nomProfil}</p>}
           </div>
         </div>
       
@@ -286,7 +273,7 @@ const ProfilePage = () => {
       <div className="flex items-center justify-center mb-7">
                         <div className="relative w-44 h-44 flex flex-col gap-3">
                          
-                          <label htmlFor="profileImage" className="cursor-pointer">
+                          <label htmlFor="imageProfil" className="cursor-pointer">
                             <img
                               src={
                                 preview ||
@@ -305,7 +292,7 @@ const ProfilePage = () => {
                           
                           <input
                             type="file"
-                            id="profileImage"
+                            id="imageProfil"
                             accept="image/*"
                             onChange={handleImageChange}
                             className="hidden"

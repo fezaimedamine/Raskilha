@@ -2,18 +2,22 @@ import React,{useContext} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaMapMarkedAlt, FaRecycle, FaUserCircle, FaHome } from "react-icons/fa";
 import logo from "../Images/logo.png";
+import logodark from "../Images/logodark.png";
 import { TbLogout2 } from "react-icons/tb";
 import { UserContext } from "./UserContext";
- 
 
+import { ThemeContext } from "../context/ThemeContext";
 
 const Sidebar = () => {
   const { setUserDetails } = useContext(UserContext);
+  const { setDarkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
   const handleLogout = () => {
     
     setUserDetails(null);
     localStorage.removeItem('userDetails'); 
+    setDarkMode(false); // Disable dark mode
+    localStorage.setItem("darkMode", "false");
     navigate('/'); 
   };
   
@@ -21,7 +25,8 @@ const Sidebar = () => {
     <div className="dark:bg-gray-800 dark:text-white h-screen fixed bottom-0 bg-gray-50 text-gray-800 flex flex-col items-center p-4 shadow-lg w-20 md:w-64 transition-all duration-300">
       {/* Logo (Masqué sur mobile) */}
       <div className="hidden md:flex items-center mb-10 mt-1">
-        <img src={logo} width={160} alt="logo" />
+        <img src={logo} width={160} alt="logo"  className="dark:hidden"/>
+        <img src={logodark} width={160} alt="logo" className="dark:block hidden" />
       </div>
 
       {/* Navigation */}

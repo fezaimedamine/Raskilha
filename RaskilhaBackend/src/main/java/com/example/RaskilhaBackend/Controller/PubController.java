@@ -21,9 +21,11 @@ public class PubController {
     private PubService pubService;
 
     @GetMapping("/user/{id}")
-    public List<PubEntity> getPubByUserId(@PathVariable long id){
+    public List<PubDTO> getPubByUserId(@PathVariable long id) {
+    
         return pubService.findPubByUserId(id);
     }
+
     @GetMapping("")
     public Page<PubDTO> getAllPubs(
         @PageableDefault(size = 10, sort = "dateHeure", direction = Sort.Direction.DESC) Pageable pageable) {

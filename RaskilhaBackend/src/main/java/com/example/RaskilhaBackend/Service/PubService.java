@@ -27,9 +27,13 @@ public class PubService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<PubEntity> findPubByUserId(long user_id){
-        return pubRepository.findByUserId(user_id);
+    public List<PubDTO> findPubByUserId(long userId) {
+        List<PubEntity> pubs = pubRepository.findByUserId(userId);
+        return pubs.stream()
+                   .map(PubDTO::new) 
+                   .collect(Collectors.toList());
     }
+    
 
     public Page<PubDTO> getAllPubs(Pageable pageable) {
         Page<PubEntity> pubEntities = pubRepository.findAll(pageable);
