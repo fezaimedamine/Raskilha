@@ -19,16 +19,14 @@ const ProfilePage = () => {
     if (userDetails && userDetails.user && userDetails.user.user_id) {
       axios.get(`http://localhost:8081/api/pubs/user/${userDetails.user.user_id}`)
         .then(response => {
-          setPublications(response.data);
-          fetchData();
-          console.log(userDetails); // Axios automatically parses JSON
+          setPublications(response.data); // Axios automatically parses JSON
         })
         .catch(error => {
           setError("Error fetching posts: " + error);
           console.error("Error fetching posts:", error);
         });
     }
-  }, []);  // Depend on the whole userDetails
+  }, [userDetails]);  // Depend on the whole userDetails
 
   const [preview, setPreview] = useState(userDetails?.user?.imageProfil || '');
   const fileInputRef = useRef(null);
@@ -69,6 +67,7 @@ const ProfilePage = () => {
       });
       setPreview(userDetails.user.imageProfil || userpng);
     }
+    console.log(formData)
   }, [userDetails]);
 
   // Fetch fresh user data from API
@@ -92,7 +91,8 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    fetchData(); // Fetch fresh user data on component mount
+    fetchData(); 
+    // Fetch fresh user data on component mount
   }, [userDetails?.user?.user_id]); // Ensure it only fetches when userDetails are available
 
   const handleChange = (e) => {
@@ -149,7 +149,7 @@ const ProfilePage = () => {
         formDataToSend,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -188,10 +188,10 @@ const ProfilePage = () => {
       <div className="border-b-4 pb-8">
       <div className="flex items-center justify-around mb-4">
       <div className="flex items-center">
-        <img src={`data:image/jpeg;base64,${userDetails.user.imageProfil}`} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />
+        {userDetails &&<img src={`data:image/jpeg;base64,${userDetails.user.imageProfil}`} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />}
         <div>
           <h2 className="text-xl font-bold">Profile</h2>
-          <p className="text-gray-600  dark:text-white">{userDetails.user.nomProfil}</p>
+         {userDetails&& <p className="text-gray-600  dark:text-white">{userDetails.user.nomProfil}</p>}
           </div>
         </div>
       
