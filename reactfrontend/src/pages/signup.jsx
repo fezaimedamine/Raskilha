@@ -151,7 +151,7 @@ const Signup = () => {
   };
 
   const handlePrev = () => {
-    setStep(1);
+    setStep(step-1);
   };
 
   const fetchLocations = async () => {

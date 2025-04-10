@@ -409,7 +409,7 @@ const Map = () => {
       <>
         <Sidebar />
 
-        <div className="flex flex-col items-center justify-around w-[calc(100vw-80px)] md:w-[calc(100vw-240px)] md:ml-64 ml-20 h-screen p-4">
+        <div className="flex flex-col items-center justify-around w-[calc(100vw-80px)] md:w-[calc(100vw-240px)] md:ml-64 ml-20 h-screen p-4 dark:bg-gray-900">
               <MapContainer
                 center={userLocation || [48.8566, 2.3522]}
                 zoom={5}

@@ -147,10 +147,10 @@ const[error,setError]=useState(null)
           
           <div className="  w-96 md:w-1/2 ml-40 mt-4 flex flex-col  items-center">
             {/* Create Post Component */}
-            <div className="bg-white rounded-lg shadow p-4 mb-4 w-full">
+            <div className="bg-white rounded-lg shadow p-4 mb-4 w-full dark:bg-gray-800 dark:text-white">
               {/* Create Post Header */}
               <div className="flex items-center mb-4">
-                <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 overflow-hidden">
+                <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 overflow-hidden  ">
                   <img 
                     src={`data:image/jpeg;base64,${user_image}`}
                     alt="User" 
@@ -158,7 +158,8 @@ const[error,setError]=useState(null)
                   />
                 </div>
                 <button 
-                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 rounded-full py-2 px-4 text-gray-500 transition"
+                  className="flex-1 text-left bg-gray-100 hover:bg-gray-200 rounded-full py-2 px-4 text-gray-500 
+                  transition dark:bg-gray-700 dark:text-white"
                   onClick={() => setIsOpen(true)}
                 >
                   What's on your mind?
@@ -171,7 +172,8 @@ const[error,setError]=useState(null)
               {/* Post Options */}
               <div className="flex justify-between">
                 <button 
-                  className="flex items-center justify-center flex-1 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
+                  className="flex items-center justify-center flex-1 py-2 dark:bg-gray-800 dark:hover:bg-gray-700
+                   dark:text-white text-gray-500 hover:bg-gray-100 rounded-lg transition"
                   onClick={() => {
                     setIsOpen(true);
                     
@@ -188,7 +190,9 @@ const[error,setError]=useState(null)
                 
 
                 <button 
-                  className="flex items-center justify-center flex-1 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
+                  className="flex items-center justify-center flex-1 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition
+                  dark:bg-gray-800 dark:hover:bg-gray-700
+                   dark:text-white"
                   onClick={() => {
                     setIsOpen(true);
                     
@@ -222,8 +226,8 @@ const[error,setError]=useState(null)
 
           </div>
           {/*eco-score*/}
-           <div className=" h-28 hidden fixed top-32 right-10 w-28 md:w-1/5 border-2 p-4
-            border-gray-100 md:flex flex-col items-center justify-around  rounded-md shadow-sm bg-white">  
+           <div className=" h-28 hidden fixed top-32 right-10 w-28 md:w-1/5  p-4
+             md:flex flex-col items-center justify-around  rounded-lg shadow bg-white dark:bg-gray-800 dark:text-white">  
               <div className=" flex justify-around   items-center gap-2">
                 <span className="text-lg font-semibold">Your eco-score :</span>
               <div className="flex items-center gap-3" >
