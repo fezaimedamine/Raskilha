@@ -109,7 +109,7 @@ const [formData, setFormData] = useState({
     try {
       const userData = {
         nom: formData.firstName,
-        premon: formData.lastName,
+        prenom: formData.lastName,
         age: formData.age,
         nomProfil: formData.username,
         adress: formData.region,
