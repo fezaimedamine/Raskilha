@@ -34,6 +34,7 @@ const Signup = () => {
     imageProfil:null,
     tel:"",
     adresse: "",
+    region:""
   });
   const[error,setError]=useState(null)
   const[errors,setErrors]=useState([])
@@ -525,7 +526,7 @@ const Signup = () => {
                                         <li
                                           key={index}
                                           onClick={() => {
-                                            setFormData2({ ...formData2, adresse: cityName });
+                                            setFormData2({ ...formData2, region: cityName, adresse:place.display_name });
                                             setErrors({...errors, adresse: ""});
                                             setQuery(place.display_name);
                                             setSuggestions([]);

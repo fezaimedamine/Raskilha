@@ -11,8 +11,8 @@ import toast from "react-hot-toast";
 
 function MenuBar({ setFilteredPosts ,onClearSearch }) {
   const { userDetails } = useContext(UserContext); // Access user details
-  const [user_id, setUserId] = useState(""); // Store user_id
-
+  const [region, setRegion] = useState(""); // Store user_id
+  const [user_id, setUser_id] = useState(""); // Store user_id
   const { darkMode, setDarkMode } = useContext(ThemeContext);
   const [search, setSearch] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
@@ -37,7 +37,8 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
 
   useEffect(() => {
     if (userDetails) {
-      setUserId(userDetails.user.user_id); // Set user_id from context
+      setUser_id(userDetails.user.user_id)
+      setRegion(userDetails.user.region); // Set user_id from context
     }
   }, [userDetails]);
   const[error,setError]=useState(null)
@@ -57,7 +58,7 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
   }, [error]);
   return (
     <>
-      {isExpanded && <Notifications user_id={user_id} />}
+      {isExpanded && <Notifications region={region} user_id={user_id} />}
       <div className="bg-gray-50 dark:bg-gray-800 fixed top-0 right-0 text-gray-800 dark:text-white flex justify-around items-center h-24 w-[calc(100vw-90px)] md:w-[calc(100vw-256px)]">
         <div className="flex w-1/3 items-center gap-2 p-1 rounded-2xl h-10 bg-gray-700 dark:bg-gray-600">
           <input
@@ -85,12 +86,12 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
   );
 }
 
-const Notifications = ({ user_id }) => {
+const Notifications = ({ region , user_id }) => {
   const [newPosts, setNewPosts] = useState([]);
 
-  const fetchNewPosts = async (user_id) => {
+  const fetchNewPosts = async (region) => {
     try {
-      const response = await fetch(`http://localhost:8081/api/pubs/region/user/${user_id}`, {
+      const response = await fetch(`http://localhost:8081/api/pubs/region/${region}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -115,10 +116,10 @@ const Notifications = ({ user_id }) => {
   };
 
   useEffect(() => {
-    if (user_id) {
-      fetchNewPosts(user_id); // Fetch posts when user_id changes
+    if ((region)) {
+      fetchNewPosts(region); // Fetch posts when user_id changes
     }
-  }, [user_id]);
+  }, [region]);
 
   const[thatPost,setthatPost]=useState(null);
   const [show, setshow] = useState(false);
@@ -148,7 +149,7 @@ const Notifications = ({ user_id }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
-      className="fixed right-2 top-24 w-80 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 z-50"
+      className="fixed right-2 top-24 w-80 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 z-50 max-h-96 overflow-auto"
     >
       <h2 className="text-lg text-gray-700 dark:text-white font-semibold mb-2">Notifications</h2>
      
@@ -157,7 +158,7 @@ const Notifications = ({ user_id }) => {
         ) : (<>
           <ul className="space-y-3">
           <h3 className=" text-gray-700 dark:text-white font-semibold mb-2">You have new posts in your Region</h3>
-            {newPosts.map(post => (
+            {newPosts.map(post => (user_id!=post.user_id &&
               
               <li
               
@@ -179,13 +180,7 @@ const Notifications = ({ user_id }) => {
      {post.titre}
   </p>
 )}
-{post.description && (
-  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-   {post.description.length > 60
-      ? `${post.description.slice(0, 60)}...`
-      : post.description}
-  </p>
-)}
+
          
          {post.dateHeure && (
   <p className="text-xs text-gray-400 dark:text-gray-300">
