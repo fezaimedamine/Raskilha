@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext  } from "react";
 import dayjs from "dayjs";
 import {UserContext} from "./UserContext";
+import toast from "react-hot-toast";
 
 
 
@@ -46,22 +47,30 @@ function ExpandedPub ({post ,toggleExpand}){
                         }
                       
                     }),
-                  }); const data = await response.json();
-             if(data){
-              console.log(data)
-              fetchComments(post.id)
-                setNewComment("")
-              }
+                  });
+                  const contentType = response.headers.get("Content-Type");
+                  let responseData;
+            
+                  if (contentType && contentType.includes("application/json")) {
+                    responseData = await response.json(); // Parse JSON response
+                    fetchComments(post.id)
+                    setNewComment("")
+            
+                  } else {
+                    responseData = await response.text(); // Read as text
+                    throw(responseData)
+            
+                  }
+             
                 }catch (error) {
-                  console.log("Error during login: " + error);
+                  setError("Error during login: " + error);
                 }
           };
           useEffect(() => {
-            console.log(post)
-        
-      
+  
             fetchComments(post.id);
           }, []);
+
           const fetchComments = async (pubId) => {
             try {
               const response = await fetch(`http://localhost:8081/commentaires/pub/${pubId}`);
@@ -71,12 +80,27 @@ function ExpandedPub ({post ,toggleExpand}){
               const data = await response.json();
              setComments(data)
             } catch (error) {
-              console.error("Failed to fetch comments:", error);
+              setError("Failed to fetch comments:"+ error);
               return [];
             }
           }; 
           
-          
+          const[error,setError]=useState(null)
+      const showError = () => {
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+        });
+      };
+      useEffect(() => {
+        if (error) {
+          showError();
+          setError(null);
+        }
+      }, [error]);
+
           return(
           
             

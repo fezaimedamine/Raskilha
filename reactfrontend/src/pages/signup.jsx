@@ -155,11 +155,22 @@ const Signup = () => {
   };
 
   const fetchLocations = async () => {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
-    );
-    const data = await response.json();
-    setSuggestions(data);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
+      );
+      
+      // Check if the response is successful (status code 200)
+      if (!response.ok) {
+        throw ('Network response was not ok');
+      }
+      const data = await response.json();
+      setSuggestions(data);
+    } catch (error) {
+      // Handle any errors that occur during the fetch
+      setError('Error while fetching locations:'+ error);
+      // Optionally, you could show a message to the user or handle the error in a different way
+    }
   };
      useEffect(() => {
         if (query.length < 3) return;
@@ -187,6 +198,9 @@ const Signup = () => {
   
       const responseData = await response.text();
       if(responseData){
+        if (responseData.includes("Packet for query is too large")) {
+          throw ("Image is too large to upload. Please choose a smaller file.");
+        }
       if (responseData.includes("Email déjà utilisé !")) {
         throw new Error("Email déjà utilisé !");
       }
@@ -200,20 +214,12 @@ const Signup = () => {
         navigate("/Login");
       }
     }
-      // If the response is successful, navigate or show success message
-      
   
-      
     } catch (error) {
-      console.error(error);
-      toast.error("Error during signup: " + error.message, {
-        closeOnClick: true,
-        autoClose: 3000,
-      });
+      setError("Error during signup: " + error)
     }
   };
   
-
   const showError = () => {
     toast.error(error, {
       position: "top-center",

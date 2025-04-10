@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate for naviga
 import { UserContext } from "./UserContext"; // Assuming UserContext is available
 import ExpandedPub from "./ExpandedPub"
 import axios from "axios";
-
+import toast from "react-hot-toast";
 
 function MenuBar({ setFilteredPosts ,onClearSearch }) {
   const { userDetails } = useContext(UserContext); // Access user details
@@ -17,7 +17,7 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
   const [search, setSearch] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const navigate = useNavigate(); // Initialize useNavigate
+ 
 
   const toggleNotif = () => {
     setIsExpanded(!isExpanded);
@@ -26,9 +26,8 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
   const handleSearch = () => {
     axios.get(`http://localhost:8081/api/pubs/search-by-title?titre=${search}`)
       .then(response => setFilteredPosts(response.data))
-      .catch(error => console.error("Erreur lors de la récupération des publications :", error));
+      .catch(error => setError("Erreur lors de la récupération des publications :"+ error));
   };
-  
   
 
   const handleDeleteSearch = () => {
@@ -41,7 +40,21 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
       setUserId(userDetails.user.user_id); // Set user_id from context
     }
   }, [userDetails]);
-
+  const[error,setError]=useState(null)
+  const showError = () => {
+    toast.error(error, {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+    });
+  };
+  useEffect(() => {
+    if (error) {
+      showError();
+      setError(null);
+    }
+  }, [error]);
   return (
     <>
       {isExpanded && <Notifications user_id={user_id} />}
@@ -84,12 +97,20 @@ const Notifications = ({ user_id }) => {
         },
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("Content-Type");
+      let responseData;
 
-      console.log(data)
-      setNewPosts(data);
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json(); // Parse JSON response
+        setNewPosts(responseData);
+
+      } else {
+        responseData = await response.text(); // Read as text
+        throw(responseData)
+
+      }
     } catch (err) {
-      console.error("Error fetching new posts:", err);
+      setError("Error fetching new posts:"+ err);
     }
   };
 
@@ -105,6 +126,21 @@ const Notifications = ({ user_id }) => {
     setshow(!show);
     setthatPost(post)
   };
+  const[error,setError]=useState(null)
+  const showError = () => {
+    toast.error(error, {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+    });
+  };
+  useEffect(() => {
+    if (error) {
+      showError();
+      setError(null);
+    }
+  }, [error]);
 
   return (<>
     <motion.div

@@ -65,11 +65,10 @@ const Map = () => {
   const [mediaFile, setMediaFile] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [distance, setDistance] = useState(10); 
-  const navigate = useNavigate(); 
 
   const [error, setError] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [errors, setErrors] = useState({});
+  
     const [formData, setFormData] = useState({
       title: "",
       description: "",
@@ -85,7 +84,7 @@ const Map = () => {
 
         },
         (error) => {
-          console.error("Erreur de géolocalisation :", error);
+          setError("Erreur de géolocalisation :"+ error);
         }
       );
     }
@@ -109,7 +108,7 @@ const Map = () => {
       });
 
     } catch (err) {
-      console.error("Failed to refresh user data:", err);
+      setError("Failed to refresh user data:", err);
     }
   };
 
@@ -158,7 +157,7 @@ const Map = () => {
         showConfirmButton: false
       });
     } catch (error) {
-      console.error("Erreur:", error);
+      setError("Erreur:", error);
     }
   };
   const deleteMarker = async (markerID) => {
@@ -222,7 +221,7 @@ const Map = () => {
       console.log('Address:', address);
       return address;
     } catch (error) {
-      console.error('Error fetching address:', error);
+     setError('Error fetching address:', error);
     }
   };
   const fetch_markers = async () => {
@@ -249,7 +248,7 @@ const Map = () => {
       setMarkers(markers);
       console.log(markers)
     } catch (error) {
-      console.error("Erreur:", error);
+      setError("Erreur:", error);
     }
   };
   
@@ -288,8 +287,7 @@ const Map = () => {
     const handleChange = (e) => {
       const { name, value } = e.target;
       setFormData({ ...formData, [name]: value });
-      let newErrors = {image:errors.image};
-      setErrors(newErrors);
+    
   };
   
   const handleFileChange = (e) => {
@@ -364,7 +362,7 @@ const Map = () => {
   const closeForm = () =>{
     setIsOpen(!isOpen)
   
-    setErrors({})
+ 
   }
   useEffect(() => {
     const fetchLocation = async () => {

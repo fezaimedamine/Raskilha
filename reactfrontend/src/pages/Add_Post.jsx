@@ -142,11 +142,22 @@ const handleSubmit = async(e) => {
 const [query, setQuery] = useState("");
 const [suggestions, setSuggestions] = useState([]);
 const fetchLocations = async () => {
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
-  );
-  const data = await response.json();
-  setSuggestions(data);
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
+    );
+    
+    // Check if the response is successful (status code 200)
+    if (!response.ok) {
+      throw ('Network response was not ok');
+    }
+    const data = await response.json();
+    setSuggestions(data);
+  } catch (error) {
+    // Handle any errors that occur during the fetch
+    setError('Error while fetching locations:'+ error);
+    // Optionally, you could show a message to the user or handle the error in a different way
+  }
 };
 
 useEffect(() => {

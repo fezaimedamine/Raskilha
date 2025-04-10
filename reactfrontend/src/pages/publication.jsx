@@ -70,7 +70,7 @@ export default function Publication() {
         }
   
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        setError('Error fetching posts:'+error);
       } finally {
         setLoading(false);
       }
@@ -97,43 +97,11 @@ export default function Publication() {
       setFilteredPosts([]); 
       setPage(0); // Reset pagination to first page
       setHasMore(true)
-      
+      fetchPosts()
+    }
         
       
-      try {
-
-        setLoading(true);
-        const response = await axios.get('http://localhost:8081/api/pubs', {
-          params: {
-            page: page,
-            size: POSTS_PER_PAGE,
-          },
-        });
-  
-        const posts = response.data.content;
-  
-        if (posts.length < POSTS_PER_PAGE) {
-          setHasMore(false);
-        }
-        
-        if (page === 0) {
-          setFilteredPosts(posts); // Replace on first load
-        } else {
-          // Append only new posts
-          setFilteredPosts((prevPosts) => {
-            const newPosts = posts.filter(
-              post => !prevPosts.some(p => p.id === post.id)
-            );
-            return [...prevPosts, ...newPosts];
-          });
-        }
-  
-      } catch (error) {
-        console.error('Error resetting posts:', error);
-      } finally {
-        setLoading(false);
-      } 
-      }
+      
     
     useEffect(() => {
       // Listen for the scroll event
