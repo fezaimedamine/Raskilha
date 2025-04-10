@@ -8,10 +8,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 import com.example.RaskilhaBackend.DTO.PubDTO;
 import com.example.RaskilhaBackend.Entity.PubEntity;
@@ -73,9 +72,13 @@ public class PubService {
     }
 
     // Récupérer les publications d'une région spécifique
-    public List<PubEntity> getPubsByRegion(String ville) {
-        return pubRepository.findByLocalisation_Ville(ville);
+    public List<PubDTO> getPubsByRegion(String ville) {
+        List<PubEntity> liste_ville = pubRepository.findByLocalisation_Ville(ville);
+        return liste_ville.stream()
+                          .map(PubDTO::new)
+                          .collect(Collectors.toList());
     }
+    
 
     // Récupérer les publications de la région d’un utilisateur
     

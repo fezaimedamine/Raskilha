@@ -11,8 +11,8 @@ import toast from "react-hot-toast";
 
 function MenuBar({ setFilteredPosts ,onClearSearch }) {
   const { userDetails } = useContext(UserContext); // Access user details
-  const [region, setRegion] = useState("tunis"); // Store user_id
-
+  const [region, setRegion] = useState(""); // Store user_id
+  const [user_id, setUser_id] = useState(""); // Store user_id
   const { darkMode, setDarkMode } = useContext(ThemeContext);
   const [search, setSearch] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
@@ -37,6 +37,7 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
 
   useEffect(() => {
     if (userDetails) {
+      setUser_id(userDetails.user.user_id)
       setRegion(userDetails.user.region); // Set user_id from context
     }
   }, [userDetails]);
@@ -57,7 +58,7 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
   }, [error]);
   return (
     <>
-      {isExpanded && <Notifications region={region} />}
+      {isExpanded && <Notifications region={region} user_id={user_id} />}
       <div className="bg-gray-50 dark:bg-gray-800 fixed top-0 right-0 text-gray-800 dark:text-white flex justify-around items-center h-24 w-[calc(100vw-90px)] md:w-[calc(100vw-256px)]">
         <div className="flex w-1/3 items-center gap-2 p-1 rounded-2xl h-10 bg-gray-700 dark:bg-gray-600">
           <input
@@ -85,7 +86,7 @@ function MenuBar({ setFilteredPosts ,onClearSearch }) {
   );
 }
 
-const Notifications = ({ region }) => {
+const Notifications = ({ region , user_id }) => {
   const [newPosts, setNewPosts] = useState([]);
 
   const fetchNewPosts = async (region) => {
@@ -115,8 +116,8 @@ const Notifications = ({ region }) => {
   };
 
   useEffect(() => {
-    if (("tunis")) {
-      fetchNewPosts("tunis"); // Fetch posts when user_id changes
+    if ((region)) {
+      fetchNewPosts(region); // Fetch posts when user_id changes
     }
   }, [region]);
 
@@ -157,7 +158,7 @@ const Notifications = ({ region }) => {
         ) : (<>
           <ul className="space-y-3">
           <h3 className=" text-gray-700 dark:text-white font-semibold mb-2">You have new posts in your Region</h3>
-            {newPosts.map(post => (
+            {newPosts.map(post => (user_id!=post.user_id &&
               
               <li
               
@@ -179,13 +180,7 @@ const Notifications = ({ region }) => {
      {post.titre}
   </p>
 )}
-{post.description && (
-  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-   {post.description.length > 60
-      ? `${post.description.slice(0, 60)}...`
-      : post.description}
-  </p>
-)}
+
          
          {post.dateHeure && (
   <p className="text-xs text-gray-400 dark:text-gray-300">

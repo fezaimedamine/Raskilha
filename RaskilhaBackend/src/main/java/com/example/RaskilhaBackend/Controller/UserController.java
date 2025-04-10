@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.RaskilhaBackend.DTO.UserDTO;
 import com.example.RaskilhaBackend.Entity.UserEntity;
 import com.example.RaskilhaBackend.Repository.UserRepository;
-import com.example.RaskilhaBackend.Service.LocalisationService;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,9 +27,7 @@ public class UserController {
     @Autowired // Make sure PasswordEncoder is properly configured as a Bean
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private LocalisationService localisationService;
-
+  
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         Optional<UserEntity> user = userRepository.findById(id);
