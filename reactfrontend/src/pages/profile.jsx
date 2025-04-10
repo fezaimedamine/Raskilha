@@ -81,7 +81,7 @@ const [formData, setFormData] = useState({
 
       setFormData({
         ...formData,
-        profileImage: file
+        image: file
       });
 
 
