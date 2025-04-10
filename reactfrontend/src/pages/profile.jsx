@@ -146,16 +146,18 @@ const [formData, setFormData] = useState({
       <Sidebar/>
 
       <div className=" ml-24  w-[calc(100vw-94px)] md:w-[calc(100vw-272px)] md:ml-64">
-<div className="max-w-xl mx-auto p-6 bg-white  rounded-lg">
+<div className="max-w-xl mx-auto p-6 bg-white  rounded-lg dark:bg-gray-800 dark:text-white">
       {/* Profile Header */}
       <div className="border-b-4 pb-8">
-      <div className="flex items-center mb-4">
+      <div className="flex items-center justify-around mb-4">
+      <div className="flex items-center">
         <img src={`data:image/jpeg;base64,${userDetails.user.imageProfil}`} alt="Avatar" className="w-16 h-16 rounded-full mr-4" />
         <div>
-          <h2 className="text-xl font-bold">profile</h2>
-          <p className="text-gray-600">{userDetails.user.nomProfil}</p>
+          <h2 className="text-xl font-bold">Profile</h2>
+          <p className="text-gray-600  dark:text-white">{userDetails.user.nomProfil}</p>
+          </div>
         </div>
-      </div>
+      
       
       <button
         onClick={()=>setShowForm(!showForm)}
@@ -163,6 +165,7 @@ const [formData, setFormData] = useState({
       >
         Update Profile
       </button>
+      </div>
       </div>
       {/* Publications List */}
       <h3 className="mt-6 text-lg font-semibold">Your Posts</h3>
